@@ -1,0 +1,58 @@
+@charset "UTF-8";
+@font-face {
+  font-family: dana;
+  font-style: normal;
+  font-weight: 500;
+  src: url("../../assets/font/woff2/Dana-Regular.woff2") format("woff2"),
+    url("../../assets/font/woff/Dana-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: dana;
+  font-style: normal;
+  font-weight: 700;
+  src: url("../../assets/font/woff2/Dana-Bold.woff2") format("woff2"),
+    url("../../assets/font/woff/Dana-Bold.woff") format("woff");
+}
+html,
+body {
+  direction: rtl;
+  font-family: "dana";
+  text-align: right;
+  scroll-behavior: smooth !important;
+}
+.sticky-top {
+  position: sticky;
+  top: 0px;
+  z-index: 1000;
+}
+.mail-content {
+  z-index: 100;
+}
+.topFooterShape {
+  background-color: #3d3c3c;
+  height: 20px;
+  position: relative;
+  top: -40px;
+  border-radius: 100%;
+}
+.footer {
+  background-color: #fdfdfd;
+}
+.footer a {
+  width: 100%;
+}
+.footer i {
+  width: 100%;
+  z-index: 99999;
+  height: 100%;
+  transition: color 0.2s ease;
+  -webkit-transition: color 0.2s ease;
+  -o-transition: color 0.2s ease;
+  -moz-transition: color 0.2s ease;
+}
+a {
+  text-decoration: none !important;
+}
+.footer-link {
+  font-size: 12px !important;
+}

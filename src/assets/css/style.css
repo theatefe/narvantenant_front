@@ -1,0 +1,290 @@
+@import url(fontiran.css);
+
+* {
+  font-family: fontSite;
+  scroll-behavior: smooth !important;
+}
+.MuiTypography-root {
+  font-family: fontSite !important;
+}
+.MuiButtonBase-root {
+  font-family: fontSite !important;
+}
+.MuiAutocomplete-root {
+  font-family: fontSite !important;
+}
+.MuiInputBase-input {
+  font-family: fontSite !important;
+}
+.MuiFormLabel-root {
+  font-family: fontSite !important;
+}
+.Toastify__toast-body {
+  font-family: fontSite !important;
+}
+.MuiTooltip-tooltip {
+  font-family: fontSite !important;
+}
+.MuiBadge-badge {
+  font-family: fontSite !important;
+}
+.MuiAutocomplete-popper {
+  font-family: fontSite !important;
+}
+.ant-popconfirm-inner-content {
+  font-family: fontSite !important;
+}
+.MuiSpeedDialAction-staticTooltipLabel {
+  text-align: right !important;
+  font-family: fontSite !important;
+}
+.MuiSpeedDialAction-staticTooltipLabel {
+  min-width: 140px !important;
+  color: #202020 !important;
+  margin-left: 0px !important;
+}
+
+.rdt_Table {
+  font-family: fontSite !important;
+}
+.rmdp-wrapper {
+  font-family: fontSite !important;
+}
+.Mui-disabled {
+  color: #000 !important;
+}
+.button {
+  font-family: fontSite !important;
+}
+
+.dash-content {
+  text-align: right !important;
+  direction: rtl !important;
+  font-family: fontSite !important;
+}
+h1 {
+  text-align: right !important;
+  direction: rtl !important;
+  font-family: fontSite !important;
+}
+@media screen and (max-width: 768px) {
+  .menuBig {
+    background-color: red;
+  }
+}
+.panel-link {
+  text-decoration: none !important;
+  color: black !important;
+}
+.panel-link-row {
+  background-color: #d2d2d2 !important;
+}
+.sub-menu {
+  margin-right: 18px !important;
+  color: #000;
+}
+.text-left {
+  text-align: left !important;
+}
+.MuiSpeedDialAction-staticTooltipLabel {
+  min-width: 180px !important;
+  color: #202020 !important;
+  margin-left: 0px !important;
+}
+.muirtl-cveggr-MuiListItemIcon-root {
+  min-width: 35px !important;
+}
+.blur {
+  filter: blur(3px) !important;
+}
+.pointer {
+  cursor: pointer;
+}
+.MuiContainer-root {
+  width: 0% !important;
+}
+.rmdp-input {
+  display: none !important;
+}
+.no-hover:hover {
+  color: white !important;
+}
+.abstract p {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 50px !important;
+}
+.cards {
+  margin-top: 15px;
+  background-color: #f8f8f8;
+  padding: 8px;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px #919191;
+}
+.designCat2:focus {
+  color: blue;
+}
+.designCat2 {
+  font-size: 12px !important;
+}
+.badge-warning {
+  color: #212529;
+  font-size: 16px !important;
+  background-color: #ffc107;
+}
+/*  upload file */
+.card--inverted {
+  --color-background: var(--color-dark);
+  color: var(--color-light);
+}
+.input {
+  position: relative;
+}
+
+.input__label {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: calc(var(--size-bezel) * 0.75) calc(var(--size-bezel) * 0.5);
+  margin: calc(var(--size-bezel) * 0.75 + 3px) calc(var(--size-bezel) * 0.5);
+  white-space: nowrap;
+  transform: translate(0, 0);
+  transform-origin: 0 0;
+  background: white;
+  transition: transform 120ms ease-in;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.input__field {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  border: 1px solid #e2e6e8;
+  padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
+  color: black;
+  background: transparent;
+  border-radius: var(--size-radius);
+}
+.attachment {
+  background-color: #deeffe;
+  height: 80px;
+  width: 199px;
+  border-radius: 47px;
+}
+
+.attachment span {
+  font-size: 18px;
+  color: #51b9ff;
+  font-weight: bold;
+}
+
+.attachmentInput {
+  height: 80px;
+  margin: auto;
+}
+
+#file {
+  margin: 0 auto;
+}
+.divgrid {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 3px !important;
+}
+.divgrid h6 {
+  font-size: 16px !important;
+}
+.mobileGrid h6 {
+  font-size: 11px !important;
+}
+.scrollBar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollBar::-webkit-scrollbar-track {
+  background: #1565c0;
+}
+
+.scrollBar::-webkit-scrollbar-thumb {
+  background: #1565c0;
+  border-radius: 6px;
+}
+
+.scrollBar::-webkit-scrollbar-thumb:hover {
+  background: #1565c0;
+}
+
+/* Firefox */
+.scrollBar * {
+  scrollbar-width: thin;
+  scrollbar-color: #1565c0 #778da7;
+}
+.svg-menu-icon {
+  cursor: pointer;
+}
+.Mui-error {
+  direction: rtl !important;
+  font-family: fontSite !important;
+}
+.permission-list {
+  height: 550px !important;
+  max-height: 550px !important;
+  overflow: auto;
+}
+
+/* error pages */
+.errorTitle {
+  text-align: right;
+  font-size: 36px;
+  font-weight: 300;
+  opacity: 0.7;
+}
+
+.glitch {
+  font-size: 8rem;
+  font-weight: bold;
+  position: relative;
+  display: inline-block;
+  text-transform: uppercase;
+  animation: glitch-effect 1.5s infinite steps(1);
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  background: transparent;
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -3px 3px rgb(0, 0, 0);
+  animation: glitch-swipe 2.5s infinite steps(1);
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: 3px -3px cyan;
+  animation: glitch-swipe 2.5s infinite steps(1) reverse;
+}
+.message {
+  font-size: 1.2rem;
+  margin-top: 20px;
+  opacity: 1;
+}
+.errorBtn {
+  background: #fff;
+  color: #051d3a;
+  border-radius: 14px;
+  padding: 6px;
+  font-weight: 600;
+  margin-top: 25px;
+  font-size: 16px;
+}
