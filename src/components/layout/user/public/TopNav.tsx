@@ -22,6 +22,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import SchoolIcon from '@mui/icons-material/School';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import PaidIcon from '@mui/icons-material/Paid';
 
 import IconSettings from '../../../ui/icon/IconSettings';
 import IconEdit from '../../../ui/icon/IconEdit';
@@ -48,6 +49,7 @@ function TopNav(props) {
   const [openUser, setOpenUser] = React.useState(false);
   const [openCompany, setOpenCompany] = React.useState(false);
   const [openClass, setOpenClass] = React.useState(false);
+  const [openPayment, setOpenPayment] = React.useState(false);
   const dispatch = useDispatch();
   const openMenu = props.Open;
   const styleList = !openMenu
@@ -63,6 +65,9 @@ function TopNav(props) {
   }
   const handleClickClass = () => {
     setOpenClass(!openClass);
+  }
+  const handleClickPayment = () => {
+    setOpenPayment(!openPayment);
   }
   const handleClickUser = () => {
     setOpenUser(!openUser);
@@ -210,6 +215,36 @@ function TopNav(props) {
                 >
                   <ListItemText>
                     <div className="sub-menu">کلاس های آموزشی</div>
+                  </ListItemText>
+                </ListItemButton>
+              </Link>
+            </List>
+          </Collapse>
+        )}
+
+        <ListItemButton onClick={handleClickPayment}>
+          {openMenu ? (
+            openPayment ? <ExpandLessIcon /> : <ExpandMoreIcon />
+          ) : (
+            ''
+          )}
+          {openMenu ? <ListItemText primary="مدیریت پرداخت ها" /> : ''}
+
+          <ListItemIcon style={styleList}>
+            <PaidIcon className="ms-auto" />
+          </ListItemIcon>
+        </ListItemButton>
+
+        {openMenu && (
+          <Collapse in={openPayment} timeout="auto" unmountOnExit>
+            {/* پرداخت شهریه ها */}
+            <List component="div" disablePadding>
+              <Link to="/payments" className="panel-link">
+                <ListItemButton
+                  sx={{ pr: 4 }}
+                  className={selectedMenu('/payments')}>
+                  <ListItemText>
+                    <div className="sub-menu">پرداخت شهریه‌ها</div>
                   </ListItemText>
                 </ListItemButton>
               </Link>

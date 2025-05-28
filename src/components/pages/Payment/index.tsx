@@ -1,32 +1,33 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // REDUX SETTER *****************************************
 import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
-import GetAllClassEnrollmentApi from '../../api/ClassEnrollment/GetAll';
+import GetAllPaymentsApi from '../../api/Payment/GetAll';
 // MUI **************************************************
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
+import Button from '@mui/material/Button';
 // MUi Icon ***************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import IconTrash from '../../ui/icon/IconTrash';
+// MUI Icon ****************************************************
+import IconEdit from '../../ui/icon/IconEdit';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
-import CreateClassEnrollmentModal from '../../ui/modals/classEnrollment/CreateClassEnrollmentModal';
-import DeleteClassEnrollmentModal from '../../ui/modals/classEnrollment/DeleteClassEnrollmentModal';
+import CreatePaymentModal from '../../ui/modals/payment/CreatePaymentModal';
+// HELPERS *****************************************************
+import { numberSpace } from '../../helpers/NumberTools'
 // OTHER *******************************************************
 import {
   jalaliDate,
   jalaliDateWithTime,
 } from '../../helpers/convertDate.helper';
-// COLUMNS FOR GRID **************************************************
+// COLUMNS FOR GRID *********************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام و نام خانوادگی دانش آموز', 'نام کلاس', 'وضعیت پرداخت شهریه', 'تعداد جلسات مانده', 'تاریخ ثبت'];
+const header = ['ردیف', 'نام و نام خانوادگی دانش آموز', ' کلاس', 'مبلغ پرداختی', 'تاریخ پرداخت', 'نحوه پرداخت', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -36,22 +37,32 @@ const columns = [
   },
   {
     accessorKey: 'student',
-    header: 'نام و نام خانوادگی دانش‌آموز',
-    size: 200,
+    header: ' دانش‌آموز',
+    size: 160,
   },
   {
     accessorKey: 'class',
-    header: 'عنوان کلاس',
-    size: 120,
+    header: 'کلاس',
+    size: 160,
+  },
+  {
+    accessorKey: 'amount',
+    header: 'مبلغ پرداختی',
+    size: 60,
+  },
+  {
+    accessorKey: 'paymentDate',
+    header: 'تاریخ پرداخت',
+    size: 60,
+  },
+  {
+    accessorKey: 'paymentMethod',
+    header: 'نحوه پرداخت',
+    size: 60,
   },
   {
     accessorKey: 'paymentStatus',
     header: 'وضعیت پرداخت شهریه',
-    size: 120,
-  },
-  {
-    accessorKey: 'remainingSessions',
-    header: 'تعداد جلسات مانده',
     size: 60,
   },
   {
@@ -62,56 +73,57 @@ const columns = [
   {
     accessorKey: 'option',
     header: 'عملیات',
-    size: 50,
+    size: 60,
   },
 ];
 
 
-const ClassEnrollmentList = () => {
-  // PARAMS *******************************************************
-  const { classId } = useParams();
+const PaymentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
   const token = auth.token;
   // STATE *********************************************************
-  const [selectedClassEnrollmentId, setSelectedClassEnrollmentId] = React.useState(null);
+  const [selectedPaymentId, setSelectedPaymentId] = React.useState(null);
   const [data, setData] = React.useState([]);
   const [isLoaded, setIsloaded] = React.useState(false);
-  // modal *********************************************************
+  // modal **********************************************************
   const [modal, setModal] = React.useState(false);
-  const [deleteModal, setDeleteModal] = React.useState(false);
-  // QUERY *********************************************************
-  // ***************************************************************
-  // open info modal ***********************************************
-  const openDeleteModal = (id: number) => {
-    setSelectedClassEnrollmentId(id);
-    setDeleteModal(true);
+  // QUERY **********************************************************
+  // open edit modal ************************************************
+  const openEditModal = (id: number) => {
+    setSelectedPaymentId(id);
+    setModal(true);
   };
   // close modal ****************************************************
   const closeModal = () => {
-    setSelectedClassEnrollmentId(null);
-    setDeleteModal(false);
+    setSelectedPaymentId(null);
     setModal(false);
   };
-  // Get ClASS ENROLLMENT List **************************************************
-  const getClassEnrollmentList = async () => {
-    const list = await GetAllClassEnrollmentApi(token, Number(classId));
+  // Get PAYMENT List *************************************************
+  const getPaymentsList = async () => {
+    const list = await GetAllPaymentsApi(token);
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
         student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
         class: item?.class?.name,
-        remainingSessions: item?.remainingSessions + ' جلسه ',
-        paymentStatus: (
-          <>
-            <span
-              className={item?.paymentStatus == 'پرداخت شده' ? "bg-success text-dark px-2 py-1 rounded" : item?.paymentStatus == 'پرداخت نشده' ? "bg-danger text-dark px-2 py-1 rounded" : "bg-warning text-dark px-2 py-1 rounded"}
-            >
-              {item?.paymentStatus}
+        amount: (
+          <Tooltip title='تراکنش موفق' arrow>
+            <span>
+              <span className='bg-success text-white rounded px-1'>{numberSpace(item?.amount)}</span>
             </span>
-          </>
+          </Tooltip>
         ),
+        paymentStatus: <span className={item?.class?.tuitionFee - item?.amount == 0 ? 'text-success' : 'text-danger'}>
+          {item?.class?.tuitionFee - item?.amount == 0 ? 'پرداخت تکمیل شده است' : 'پرداخت تکمیل نشده است'}
+        </span>,
+        paymentDate: <Tooltip title={jalaliDateWithTime(item.paymentDate)} arrow>
+          <span>
+            {jalaliDate(item.paymentDate)}
+          </span>
+        </Tooltip>,
+        paymentMethod: item?.paymentMethod,
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
             {jalaliDate(item.createdAt)}
@@ -119,12 +131,12 @@ const ClassEnrollmentList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip title="حذف" arrow>
+            <Tooltip className="mx-2" title="ویرایش" arrow>
               <span
                 className="svg-container cursor-pointer"
-                onClick={() => openDeleteModal(item.id)}
+                onClick={() => openEditModal(item.id)}
               >
-                <IconTrash className="svg-menu-icon text-danger" />
+                <IconEdit className="svg-menu-icon" />
               </span>
             </Tooltip>
           </>
@@ -135,17 +147,17 @@ const ClassEnrollmentList = () => {
     dispatch(setIsLoading(false));
     setIsloaded(true)
   };
-  // USE EFFECT ***********************************************************
+  // USE EFFECT *******************************************************
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - مدیریت کلاس‌بندی دانش آموزان',
-        description: ' مدیریت کلاس‌بندی دانش آموزان',
+        title: 'نارون - پرداخت شهریه دانش آموزان',
+        description: ' لیست پرداخت شهریه های کل دانش آموزان',
       }),
     );
-    getClassEnrollmentList();
+    getPaymentsList();
   }, []);
-  // RETURN ****************************************************************
+  // RETURN ************************************************************
   return (
     <Box sx={{ flexGrow: 1 }}>
       <div className="flex flex-col h-full">
@@ -154,7 +166,7 @@ const ClassEnrollmentList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دانش آموزان کلاس {data && data[0].class}</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">لیست پرداخت شهریه ها</h3></div>
                 <div className="col-6 text-left">
                   <Button
                     onClick={() => {
@@ -166,24 +178,15 @@ const ClassEnrollmentList = () => {
                     disableElevation
                     endIcon={<AddCircleOutlineIcon />}
                   >
-                    افزودن دانش‌آموز جدید به کلاس
+                    ثبت پرداخت جدید
                   </Button>
 
                 </div>
-                <CreateClassEnrollmentModal
-                  list={getClassEnrollmentList}
+                <CreatePaymentModal
+                  list={getPaymentsList}
                   token={token}
-                  classId={classId}
-                  id={selectedClassEnrollmentId}
+                  id={selectedPaymentId}
                   openModal={modal}
-                  setOpenModal={closeModal}
-                />
-                <DeleteClassEnrollmentModal
-                  list={getClassEnrollmentList}
-                  token={token}
-                  classId={classId}
-                  id={selectedClassEnrollmentId}
-                  openModal={deleteModal}
                   setOpenModal={closeModal}
                 />
               </div>
@@ -237,4 +240,4 @@ const ClassEnrollmentList = () => {
     </Box>
   );
 };
-export default ClassEnrollmentList;
+export default PaymentList;

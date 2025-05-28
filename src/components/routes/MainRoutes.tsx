@@ -15,10 +15,10 @@ const CourseLevel = Loadable(
   lazy(() => import('../pages/CourseLevel'))
 )
 const Coach = Loadable(
-  lazy(()=> import('../pages/Coach'))
+  lazy(() => import('../pages/Coach'))
 )
 const Student = Loadable(
-  lazy(()=> import('../pages/Student'))
+  lazy(() => import('../pages/Student'))
 )
 const Class = Loadable(
   lazy(() => import('../pages/Class'))
@@ -28,6 +28,9 @@ const ClassEnrollment = Loadable(
 )
 const Attendance = Loadable(
   lazy(() => import('../pages/Attendance'))
+)
+const Payment = Loadable(
+  lazy(() => import('../pages/Payment'))
 )
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -69,6 +72,10 @@ const MainRoutes = {
         {
           path: '/attendances/:classId',
           element: <Attendance />,
+        },
+        {
+          path: '/payments',
+          element: <Payment />,
         },
       ],
     },
