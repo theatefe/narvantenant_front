@@ -1,6 +1,7 @@
 import React from 'react';
 
 // API *************************************************
+import GetRoleListApi from '../../../api/Role/GetAll';
 import CoachUpdateApi from '../../../api/Coach/Update';
 import CoachCreateApi from '../../../api/Coach/Add';
 import GetCoachApi from '../../../api/Coach/GetOne';
@@ -17,6 +18,7 @@ import Modal from '@mui/material/Modal';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Autocomplete from "@mui/material/Autocomplete";
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import { styled } from '@mui/material/styles';
 // UI ********************************************************
@@ -63,6 +65,7 @@ const CreateCoachModal = (props) => {
   const [sportsInsuranceCard, setSportsInsuranceDard] = React.useState(null);
   const [birthDate, setBirthDate] = React.useState(null);
   const [toDate, setTodDate] = React.useState(null);
+  const [roleList, setRoleList] = React.useState([]);
   const [sending, setSending] = React.useState(false);
   // FORMIK *******************************************************
   const formik = useFormik({
@@ -75,6 +78,7 @@ const CreateCoachModal = (props) => {
       mobile: "",
       address: "",
       coachingCardIssueDate: "",
+      roleId: null,
     },
     validationSchema: Yup.object({
       name: Yup.string()
@@ -92,6 +96,9 @@ const CreateCoachModal = (props) => {
       mobile: Yup.string()
         .required("شماره همراه مربی الزامی است")
         .min(3, "شماره همراه مربی به درستی وارد نشده است"),
+      roleId: Yup.mixed()
+        .required("نقش کاربر الزامی است")
+        .test("is-valid-role", "نقش کاربر نامعتبر است", (value) => value !== null),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -104,6 +111,7 @@ const CreateCoachModal = (props) => {
   const submitForm = async (values) => {
     const body = {
       "user": {
+        "roleId": values.roleId,
         "name": values.name,
         "lastName": values.lastName,
         "gender": values.gender,
@@ -150,6 +158,7 @@ const CreateCoachModal = (props) => {
         const coach = await GetCoachApi(token, id);
         if (coach.status === 200) {
           formik.setValues({
+            roleId: coach.data.user.roleId,
             name: coach.data.user.name || "",
             lastName: coach.data.user.lastName || "",
             gender: coach.data.user.gender || "",
@@ -173,6 +182,14 @@ const CreateCoachModal = (props) => {
     } else {
       formik.resetForm();
     }
+  }
+  // GET ROLE LIST *******************************************
+  const getRoleList = async () => {
+    const result = await GetRoleListApi(token);
+    const roles = result.data.filter((item) => item.isActive).map((item) => ({
+      value: item.id, label: item.name
+    }));
+    setRoleList(roles);
   }
   // HANDLE FILE CHANGE ***************************************
   const handleFileChange = async (label: string, event) => {
@@ -204,6 +221,7 @@ const CreateCoachModal = (props) => {
   // USE EFFECT **********************************************
   React.useEffect(() => {
     getCoach();
+    getRoleList();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -264,6 +282,32 @@ const CreateCoachModal = (props) => {
               />
             </Grid>
             <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+              <Autocomplete
+                disablePortal
+                fullWidth
+                options={roleList}
+                size="small"
+                value={roleList.find((option) => option.value === formik.values.roleId) || null}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                onChange={(event, item) => {
+                  formik.setFieldValue("roleId", item ? item.value : "");
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    fullWidth
+                    id="roleId"
+                    name="roleId"
+                    type="text"
+                    {...params}
+                    size="small"
+                    label="نقش کاربر *"
+                    error={formik.touched.roleId && Boolean(formik.errors.roleId)}
+                    helperText={formik.touched.roleId && typeof formik.errors.roleId === 'string' ? formik.errors.roleId : undefined}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('dateOfBirth', date); setBirthDate(date); }}
                 selectedDate={formik.values.dateOfBirth}
@@ -307,6 +351,17 @@ const CreateCoachModal = (props) => {
               </TextField>
             </Grid>
             <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+              <DatePickersInputWithTime
+                setSelectedDate={(date: Date) => { formik.setFieldValue('coachingCardIssueDate', date); setTodDate(date); }}
+                selectedDate={formik.values.coachingCardIssueDate}
+                fullWidth
+                label={`تاریخ صدور کارت مربیگری `}
+              />
+              {formik.touched.coachingCardIssueDate && typeof formik.errors.coachingCardIssueDate === 'string' && (
+                <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.coachingCardIssueDate}</div>
+              )}
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`آدرس `}
@@ -319,17 +374,6 @@ const CreateCoachModal = (props) => {
                 helperText={formik.touched.address && formik.errors.address}
                 size="small"
               />
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('coachingCardIssueDate', date); setTodDate(date); }}
-                selectedDate={formik.values.coachingCardIssueDate}
-                fullWidth
-                label={`تاریخ صدور کارت مربیگری `}
-              />
-              {formik.touched.coachingCardIssueDate && typeof formik.errors.coachingCardIssueDate === 'string' && (
-                <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.coachingCardIssueDate}</div>
-              )}
             </Grid>
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Button

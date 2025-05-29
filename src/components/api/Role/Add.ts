@@ -1,15 +1,14 @@
 import axios from 'axios';
 
-const ChangeStatusUnit = async (token: string, unitId: number) => {
-  const body = {};
+const AddRole = async (token, body) => {
   const config = {
     headers: {
       jtoken: token,
     },
   };
   try {
-    const { data, status } = await axios.patch(
-      `${process.env.REACT_APP_HOST}unituser/unit/${unitId}`,
+    const { data, status } = await axios.post(
+      `${process.env.REACT_APP_HOST}user/role`,
       body,
       config,
     );
@@ -20,4 +19,4 @@ const ChangeStatusUnit = async (token: string, unitId: number) => {
   }
 };
 
-export default ChangeStatusUnit;
+export default AddRole;

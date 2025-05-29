@@ -32,6 +32,9 @@ const Attendance = Loadable(
 const Payment = Loadable(
   lazy(() => import('../pages/Payment'))
 )
+const Role = Loadable(
+  lazy(() => import('../pages/Role'))
+)
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -56,6 +59,10 @@ const MainRoutes = {
         {
           path: '/coaches',
           element: <Coach />,
+        },
+        {
+          path: '/roles',
+          element: <Role />,
         },
         {
           path: '/students',

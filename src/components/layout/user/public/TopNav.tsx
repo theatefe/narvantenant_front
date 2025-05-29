@@ -133,8 +133,8 @@ function TopNav(props) {
 
         {openMenu && (
           <Collapse in={openUser} timeout="auto" unmountOnExit>
-            {/* مربیان */}
             <List component="div" disablePadding>
+              {/* مربیان */}
               <Link to="/coaches" className="panel-link">
                 <ListItemButton
                   sx={{ pr: 4 }}
@@ -155,6 +155,18 @@ function TopNav(props) {
                 >
                   <ListItemText>
                     <div className="sub-menu"> دانش آموزان</div>
+                  </ListItemText>
+                </ListItemButton>
+              </Link>
+
+              {/* نقش ها و دسترسی ها */}
+              <Link to="/roles" className="panel-link">
+                <ListItemButton
+                  sx={{ pr: 4 }}
+                  className={selectedMenu('/roles')}
+                >
+                  <ListItemText>
+                    <div className="sub-menu">نقش ها و دسترسی ها</div>
                   </ListItemText>
                 </ListItemButton>
               </Link>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const ChangeStatusUnit = async (token: string, unitId: number) => {
+const ChangeStatusRole = async (token: string, roleId: number) => {
   const body = {};
   const config = {
     headers: {
@@ -9,7 +9,7 @@ const ChangeStatusUnit = async (token: string, unitId: number) => {
   };
   try {
     const { data, status } = await axios.patch(
-      `${process.env.REACT_APP_HOST}unituser/unit/${unitId}`,
+      `${process.env.REACT_APP_HOST}user/role/${roleId}`,
       body,
       config,
     );
@@ -20,4 +20,4 @@ const ChangeStatusUnit = async (token: string, unitId: number) => {
   }
 };
 
-export default ChangeStatusUnit;
+export default ChangeStatusRole;
