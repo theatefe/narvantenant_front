@@ -43,6 +43,8 @@ function TopNav(props) {
 
   // redux hooks
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const permissions = auth.userInfo.Role.Permissions;
+  console.log(permissions);
   const token = auth.token;
   const location = useLocation();
   const [openModal, setOpenModal] = React.useState(false);
@@ -135,41 +137,44 @@ function TopNav(props) {
           <Collapse in={openUser} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {/* مربیان */}
-              <Link to="/coaches" className="panel-link">
-                <ListItemButton
-                  sx={{ pr: 4 }}
-                  className={selectedMenu('/coaches')}
-                >
-                  <ListItemText>
-                    <div className="sub-menu">مربیان</div>
-                  </ListItemText>
-                </ListItemButton>
-              </Link>
+              {permissions.find((p) => p.operationId === 'tenantListCoaches') ?
+                <Link to="/coaches" className="panel-link">
+                  <ListItemButton
+                    sx={{ pr: 4 }}
+                    className={selectedMenu('/coaches')}
+                  >
+                    <ListItemText>
+                      <div className="sub-menu">مربیان</div>
+                    </ListItemText>
+                  </ListItemButton>
+                </Link> : null}
 
 
               {/*  دانش آموزان */}
-              <Link to="/students" className="panel-link">
-                <ListItemButton
-                  sx={{ pr: 4 }}
-                  className={selectedMenu('/students')}
-                >
-                  <ListItemText>
-                    <div className="sub-menu"> دانش آموزان</div>
-                  </ListItemText>
-                </ListItemButton>
-              </Link>
+              {permissions.find((p) => p.operationId === 'tenantListStudents') ?
+                <Link to="/students" className="panel-link">
+                  <ListItemButton
+                    sx={{ pr: 4 }}
+                    className={selectedMenu('/students')}
+                  >
+                    <ListItemText>
+                      <div className="sub-menu"> دانش آموزان</div>
+                    </ListItemText>
+                  </ListItemButton>
+                </Link> : null}
 
               {/* نقش ها و دسترسی ها */}
-              <Link to="/roles" className="panel-link">
-                <ListItemButton
-                  sx={{ pr: 4 }}
-                  className={selectedMenu('/roles')}
-                >
-                  <ListItemText>
-                    <div className="sub-menu">نقش ها و دسترسی ها</div>
-                  </ListItemText>
-                </ListItemButton>
-              </Link>
+              {permissions.find((p) => p.operationId === 'tenantListRoles') ?
+                <Link to="/roles" className="panel-link">
+                  <ListItemButton
+                    sx={{ pr: 4 }}
+                    className={selectedMenu('/roles')}
+                  >
+                    <ListItemText>
+                      <div className="sub-menu">نقش ها و دسترسی ها</div>
+                    </ListItemText>
+                  </ListItemButton>
+                </Link> : null}
             </List>
           </Collapse>
         )}
@@ -190,16 +195,17 @@ function TopNav(props) {
           <Collapse in={openCompany} timeout="auto" unmountOnExit>
             {/* سطوح آموزشی */}
             <List component="div" disablePadding>
-              <Link to="/levelCats" className="panel-link">
-                <ListItemButton
-                  sx={{ pr: 4 }}
-                  className={selectedMenu('/levelCats')}
-                >
-                  <ListItemText>
-                    <div className="sub-menu">دسته بندی مقاطع آموزشی</div>
-                  </ListItemText>
-                </ListItemButton>
-              </Link>
+              {permissions.find((p) => p.operationId === 'tenantListCourseLevelCategory') ?
+                <Link to="/levelCats" className="panel-link">
+                  <ListItemButton
+                    sx={{ pr: 4 }}
+                    className={selectedMenu('/levelCats')}
+                  >
+                    <ListItemText>
+                      <div className="sub-menu">دسته بندی مقاطع آموزشی</div>
+                    </ListItemText>
+                  </ListItemButton>
+                </Link> : null}
             </List>
           </Collapse>
         )}
@@ -220,16 +226,17 @@ function TopNav(props) {
           <Collapse in={openClass} timeout="auto" unmountOnExit>
             {/* تعریف کلاس ها */}
             <List component="div" disablePadding>
-              <Link to="/classes" className="panel-link">
-                <ListItemButton
-                  sx={{ pr: 4 }}
-                  className={selectedMenu('/classes')}
-                >
-                  <ListItemText>
-                    <div className="sub-menu">کلاس های آموزشی</div>
-                  </ListItemText>
-                </ListItemButton>
-              </Link>
+              {permissions.find((p) => p.operationId === 'tenantListClasses') ?
+                <Link to="/classes" className="panel-link">
+                  <ListItemButton
+                    sx={{ pr: 4 }}
+                    className={selectedMenu('/classes')}
+                  >
+                    <ListItemText>
+                      <div className="sub-menu">کلاس های آموزشی</div>
+                    </ListItemText>
+                  </ListItemButton>
+                </Link> : null}
             </List>
           </Collapse>
         )}
@@ -251,6 +258,7 @@ function TopNav(props) {
           <Collapse in={openPayment} timeout="auto" unmountOnExit>
             {/* پرداخت شهریه ها */}
             <List component="div" disablePadding>
+              {permissions.find((p) => p.operationId === 'tenantListPayments') ?
               <Link to="/payments" className="panel-link">
                 <ListItemButton
                   sx={{ pr: 4 }}
@@ -259,7 +267,7 @@ function TopNav(props) {
                     <div className="sub-menu">پرداخت شهریه‌ها</div>
                   </ListItemText>
                 </ListItemButton>
-              </Link>
+                </Link> : null}
             </List>
           </Collapse>
         )}
