@@ -1,7 +1,8 @@
 import React from 'react';
+
 // API *************************************************
-import DeleteClassEnrollmentApi from '../../../api/ClassEnrollment/Delete';
-import GetClassEnrollmentApi from '../../../api/ClassEnrollment/GetOne';
+import DeleteSkillRecordApi from '../../../api/SkillRecord/Delete';
+import GetSkillRecordApi from '../../../api/SkillRecord/GetOne';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
@@ -14,6 +15,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
+import SendIcon from '@mui/icons-material/Send';
+// Formik & yup ************************************************
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 // redux seters ************************************************
 
 // STYLE MODAL
@@ -28,21 +33,21 @@ const style = {
   p: 2,
 };
 
-const DeleteAttendanceModal = (props) => {
+const DeleteCourseLevelCatModal = (props) => {
   const { token, id, openModal, setOpenModal, list } = props;
   // HOOKS FORM **************************************************
-  const [classEnrollment, setClassEnrollment] = React.useState(null);
+  const [record, setRecord] = React.useState(null);
   const [sending, setSending] = React.useState(false);
   // SUBMIT **************************************************
-  const handleDeleteCoach = async () => {
+  const handleDeleteSkillRecord = async () => {
     if (id) {
       //updated
       const body = {
         id,
       }
-      const deleted = await DeleteClassEnrollmentApi(token, body);
+      const deleted = await DeleteSkillRecordApi(token, body);
       if (deleted.status === 200) {
-        toast.SuccessNotify('دانش آموز با موفقیت از کلاس مورد نظر حذف شد');
+        toast.SuccessNotify('رکورد دانش آموز با موفقیت حذف شد');
         handleCancel();
         setSending(false);
         list();
@@ -52,19 +57,19 @@ const DeleteAttendanceModal = (props) => {
       }
     }
   };
-  // GET CLASSENROLLMENT ********************************************
-  const getClassEnrollment = async () => {
+  // GET SkillRecord ********************************************
+  const getSkillRecord = async () => {
     if (id) {
       try {
-        const classEnrollment = await GetClassEnrollmentApi(token, id);
-        if (classEnrollment.status === 200) {
-          setClassEnrollment(classEnrollment.data);
+        const record = await GetSkillRecordApi(token, id);
+        if (record.status === 200) {
+          setRecord(record.data);
         } else {
-          toast.ErrorNotify(classEnrollment.data.error);
+          toast.ErrorNotify(record.data.error);
           setOpenModal(false);
         }
       } catch (error) {
-        console.error("Error loading classEnrollment:", error);
+        console.error("Error loading record:", error);
         setOpenModal(false);
       }
     }
@@ -75,7 +80,7 @@ const DeleteAttendanceModal = (props) => {
   };
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getClassEnrollment();
+    getSkillRecord();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -87,14 +92,14 @@ const DeleteAttendanceModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {`حذف دانش آموز از کلاس`}
+            {`حذف دسته بندی`}
           </Typography>
         </Grid>
         <hr />
         <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
           <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
             <Typography>
-              آیا برای حذف دانش آموز<span className='text-danger'>{classEnrollment?.student?.user?.name + ' ' + classEnrollment?.student?.user?.lastName}</span>  از کلاس <span className='text-danger'>{classEnrollment?.class?.name }</span> اطمینان دارید؟
+              آیا برای حذف رکورد شنای دانش آموز <span className='text-danger'>{record?.student?.user?.name + ' '+ record?.student?.user?.lastName}</span> اطمینان دارید؟
             </Typography>
           </Grid>
         </Grid>
@@ -124,7 +129,7 @@ const DeleteAttendanceModal = (props) => {
               loadingPosition="start"
               variant="contained"
               disabled={sending}
-              onClick={() => handleDeleteCoach()}
+              onClick={() => handleDeleteSkillRecord()}
             >
               تایید
             </LoadingButton>
@@ -154,4 +159,4 @@ const DeleteAttendanceModal = (props) => {
     </Modal>
   );
 };
-export default DeleteAttendanceModal;
+export default DeleteCourseLevelCatModal;

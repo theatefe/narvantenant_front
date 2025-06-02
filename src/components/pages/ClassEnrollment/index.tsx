@@ -14,6 +14,8 @@ import Skeleton from '@mui/material/Skeleton';
 // MUi Icon ***************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconTrash from '../../ui/icon/IconTrash';
+// TOAST ******************************************************
+import * as toast from '../../ui/Toast';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
@@ -73,6 +75,7 @@ const ClassEnrollmentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
   const [selectedClassEnrollmentId, setSelectedClassEnrollmentId] = React.useState(null);
@@ -97,6 +100,14 @@ const ClassEnrollmentList = () => {
   // Get ClASS ENROLLMENT List **************************************************
   const getClassEnrollmentList = async () => {
     const list = await GetAllClassEnrollmentApi(token, Number(classId));
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
@@ -119,14 +130,17 @@ const ClassEnrollmentList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip title="حذف" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openDeleteModal(item.id)}
-              >
-                <IconTrash className="svg-menu-icon text-danger" />
-              </span>
-            </Tooltip>
+            {permissions.find((p) => p.operationId === 'tenantDeleteClassEnrollment') ?
+              <Tooltip title="حذف" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openDeleteModal(item.id)}
+                >
+                  <IconTrash className="svg-menu-icon text-danger" />
+                </span>
+              </Tooltip>
+              : null
+            }
           </>
         ),
       }));
@@ -154,21 +168,24 @@ const ClassEnrollmentList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دانش آموزان کلاس {data && data[0].class}</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دانش آموزان کلاس {data && data[0]?.class}</h3></div>
                 <div className="col-6 text-left">
-                  <Button
-                    onClick={() => {
-                      setModal(true);
-                    }}
-                    sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
-                    color="success"
-                    variant="contained"
-                    disableElevation
-                    endIcon={<AddCircleOutlineIcon />}
-                  >
-                    افزودن دانش‌آموز جدید به کلاس
-                  </Button>
-
+                  {
+                    permissions.find((p) => p.operationId === 'tenantCreateClassEnrollment') ?
+                      <Button
+                        onClick={() => {
+                          setModal(true);
+                        }}
+                        sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
+                        color="success"
+                        variant="contained"
+                        disableElevation
+                        endIcon={<AddCircleOutlineIcon />}
+                      >
+                        افزودن دانش‌آموز جدید به کلاس
+                      </Button>
+                      : null
+                  }
                 </div>
                 <CreateClassEnrollmentModal
                   list={getClassEnrollmentList}

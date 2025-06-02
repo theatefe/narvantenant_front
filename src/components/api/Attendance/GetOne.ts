@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GetClassEnrollment = async (token: string, id: number) => {
+const GetAttandence = async (token: string, id: number) => {
   const config = {
     headers: {
       jtoken: token,
@@ -8,7 +8,7 @@ const GetClassEnrollment = async (token: string, id: number) => {
   };
   try {
     const { data, status } = await axios.get(
-      `${process.env.REACT_APP_HOST}user/classEnrollment/find/${id}`,
+      `${process.env.REACT_APP_HOST}user/attendance/find/${id}`,
       config,
     );
 
@@ -18,4 +18,4 @@ const GetClassEnrollment = async (token: string, id: number) => {
   }
 };
 
-export default GetClassEnrollment;
+export default GetAttandence;

@@ -11,7 +11,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
-
+// TOAST ******************************************************
+import * as toast from '../../ui/Toast';
 // MUi Icon **************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
@@ -64,6 +65,7 @@ const CourseLevelCatList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
   const [selectedCourseLevelId, setSelectedCourseLevelId] = React.useState(null);
@@ -93,6 +95,14 @@ const CourseLevelCatList = () => {
   // Get CourseLevel Categories List ********************************
   const getCourseLevelCatList = async () => {
     const list = await GetAllCourseLevelCatApi(token);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
@@ -105,31 +115,40 @@ const CourseLevelCatList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip title="لیست سطوح آموزشی" arrow>
-              <Link to={`/levels/${item.id}`}>
+            {permissions.find((p) => p.operationId === 'tenantListCourseLevel') ?
+              <Tooltip title="لیست سطوح آموزشی" arrow>
+                <Link to={`/levels/${item.id}`}>
+                  <span
+                    className="svg-container cursor-pointer"
+                  >
+                    <IconListCheck className="svg-menu-icon text-black" />
+                  </span>
+                </Link>
+              </Tooltip>
+              : null
+            }
+            {permissions.find((p) => p.operationId === 'tenantUpdateCourseLevelCategory') ?
+              <Tooltip className="mx-2" title="ویرایش" arrow>
                 <span
                   className="svg-container cursor-pointer"
+                  onClick={() => openEditModal(item.id)}
                 >
-                  <IconListCheck className="svg-menu-icon text-black" />
+                  <IconEdit className="svg-menu-icon" />
                 </span>
-              </Link>
-            </Tooltip>
-            <Tooltip className="mx-2" title="ویرایش" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openEditModal(item.id)}
-              >
-                <IconEdit className="svg-menu-icon" />
-              </span>
-            </Tooltip>
-            <Tooltip title="حذف" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openDeleteModal(item.id)}
-              >
-                <IconTrash className="svg-menu-icon text-danger" />
-              </span>
-            </Tooltip>
+              </Tooltip>
+              : null
+            }
+            {permissions.find((p) => p.operationId === 'tenantDeleteCourseLevelCategory') ?
+              <Tooltip title="حذف" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openDeleteModal(item.id)}
+                >
+                  <IconTrash className="svg-menu-icon text-danger" />
+                </span>
+              </Tooltip>
+              : null
+            }
           </>
         ),
       }));
@@ -159,19 +178,22 @@ const CourseLevelCatList = () => {
               <div className="row mb-4">
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دسته بندی سطوح آموزشی</h3></div>
                 <div className="col-6 text-left">
-                  <Button
-                    onClick={() => {
-                      setModal(true);
-                    }}
-                    sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
-                    color="success"
-                    variant="contained"
-                    disableElevation
-                    endIcon={<AddCircleOutlineIcon />}
-                  >
-                    ثبت دسته بندی جدید
-                  </Button>
-
+                  {
+                    permissions.find((p) => p.operationId === 'tenantCreateCourseLevelCategory') ?
+                      <Button
+                        onClick={() => {
+                          setModal(true);
+                        }}
+                        sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
+                        color="success"
+                        variant="contained"
+                        disableElevation
+                        endIcon={<AddCircleOutlineIcon />}
+                      >
+                        ثبت دسته بندی جدید
+                      </Button>
+                      : null
+                  }
                 </div>
                 <CreateCourseLevelCatModal
                   list={getCourseLevelCatList}

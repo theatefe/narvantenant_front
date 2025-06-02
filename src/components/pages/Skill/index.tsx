@@ -1,29 +1,27 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // REDUX SETTER *****************************************
 import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
-import GetAllClassApi from '../../api/Class/GetAll';
+import GetAllSkillApi from '../../api/Skill/GetAll';
 // MUI **************************************************
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
-// MUi Icon ***************************************************
+// TOAST ******************************************************
+import * as toast from '../../ui/Toast';
+// MUi Icon **************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
-import IconUserPlus from '../../ui/icon/IconUsersGroup';
-import IconCalendar from '../../ui/icon/IconCalendar';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
-import CreateClassModal from '../../ui/modals/class/CreateClassModal';
-import DeleteClassModal from '../../ui/modals/class/DeleteClassModal';
-// TOAST ******************************************************
-import * as toast from '../../ui/Toast';
+import CreateSkillModal from '../../ui/modals/skill/CreateSkillModal';
+import DeleteSkillModal from '../../ui/modals/skill/DeleteSkillModal';
 // OTHER *******************************************************
 import {
   jalaliDate,
@@ -31,8 +29,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID **************************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'عنوان کلاس', 'کد کلاس', 'مقطع آموزشی', 'مربی', 'روزهای تشکیل', 'شهریه کلاس', 'وضعیت',
-  'تاریخ ثبت'];
+const header = ['ردیف', 'نام دسته بندی', 'مجموعه', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -41,34 +38,9 @@ const columns = [
     size: 20,
   },
   {
-    accessorKey: 'name',
-    header: 'عنوان کلاس',
-    size: 60,
-  },
-  {
-    accessorKey: 'code',
-    header: 'کد کلاس',
-    size: 60,
-  },
-  {
-    accessorKey: 'courseLevel',
-    header: 'مقطع آموزشی',
-    size: 60,
-  },
-  {
-    accessorKey: 'coach',
-    header: 'مربی',
-    size: 60,
-  },
-  {
-    accessorKey: 'days',
-    header: 'روزهای تشکیل',
-    size: 60,
-  },
-  {
-    accessorKey: 'status',
-    header: 'وضعیت',
-    size: 60,
+    accessorKey: 'title',
+    header: 'عنوان مهارت',
+    size: 280,
   },
   {
     accessorKey: 'date',
@@ -78,19 +50,19 @@ const columns = [
   {
     accessorKey: 'option',
     header: 'عملیات',
-    size: 50,
+    size: 60,
   },
 ];
 
 
-const ClassList = () => {
+const SkillList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
-  const [selectedClassId, setSelectedClassId] = React.useState(null);
+  const [selectedSkillId, setSelectedSkillId] = React.useState(null);
   const [data, setData] = React.useState([]);
   const [isLoaded, setIsloaded] = React.useState(false);
   // modal *********************************************************
@@ -100,23 +72,23 @@ const ClassList = () => {
   // ***************************************************************
   // open info modal ***********************************************
   const openDeleteModal = (id: number) => {
-    setSelectedClassId(id);
+    setSelectedSkillId(id);
     setDeleteModal(true);
   };
   // open edit modal ************************************************
   const openEditModal = (id: number) => {
-    setSelectedClassId(id);
+    setSelectedSkillId(id);
     setModal(true);
   };
   // close modal ****************************************************
   const closeModal = () => {
-    setSelectedClassId(null);
+    setSelectedSkillId(null);
     setDeleteModal(false);
     setModal(false);
   };
-  // Get ClASS List **************************************************
-  const getClassList = async () => {
-    const list = await GetAllClassApi(token);
+  // Get Skill List ********************************
+  const getSkillList = async () => {
+    const list = await GetAllSkillApi(token);
     if (list.status === 403) {
       setTimeout(() => {
         window.location.href = '/';
@@ -128,17 +100,7 @@ const ClassList = () => {
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
-        code: item?.code || '-',
-        name: item?.name,
-        courseLevel: item?.courseLevel?.title,
-        gender: item?.gender || '-',
-        coach: item.coach ? item?.coach?.user?.name + ' ' + item?.coach?.user?.lastName : '-',
-        days: item?.days || '-',
-        startTime: item?.startTime || '-',
-        endTime: item?.endTime || '-',
-        status: item?.status,
-        totalSessions: item?.totalSessions || '-',
-        tuitionFee: item?.tuitionFee || '-',
+        title: item.title,
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
             {jalaliDate(item.createdAt)}
@@ -146,31 +108,7 @@ const ClassList = () => {
         </Tooltip>,
         option: (
           <>
-            {permissions.find((p) => p.operationId === 'tenantListClassEnrollment') ?
-              <Tooltip className="mx-2" title="دانش آموزان" arrow>
-                <Link to={`/classEnrollments/${item.id}`}>
-                  <span
-                    className="svg-container cursor-pointer text-dark"
-                  >
-                    <IconUserPlus className="svg-menu-icon" />
-                  </span>
-                </Link>
-              </Tooltip>
-              : null
-            }
-            {permissions.find((p) => p.operationId === 'tenantListAttendances') ?
-              <Tooltip title="حضور و غیاب کلاسی" arrow>
-                <Link to={`/attendances/${item.id}`}>
-                  <span
-                    className="svg-container cursor-pointer text-dark"
-                  >
-                    <IconCalendar className="svg-menu-icon" />
-                  </span>
-                </Link>
-              </Tooltip>
-              : null
-            }
-            {permissions.find((p) => p.operationId === 'tenantUpdateClass') ?
+            {permissions.find((p) => p.operationId === 'tenantUpdateSkill') ?
               <Tooltip className="mx-2" title="ویرایش" arrow>
                 <span
                   className="svg-container cursor-pointer"
@@ -181,7 +119,7 @@ const ClassList = () => {
               </Tooltip>
               : null
             }
-            {permissions.find((p) => p.operationId === 'tenantDeleteClass') ?
+            {permissions.find((p) => p.operationId === 'tenantDeleteSkill') ?
               <Tooltip title="حذف" arrow>
                 <span
                   className="svg-container cursor-pointer"
@@ -189,7 +127,8 @@ const ClassList = () => {
                 >
                   <IconTrash className="svg-menu-icon text-danger" />
                 </span>
-              </Tooltip> : null
+              </Tooltip>
+              : null
             }
           </>
         ),
@@ -199,17 +138,17 @@ const ClassList = () => {
     dispatch(setIsLoading(false));
     setIsloaded(true)
   };
-  // USE EFFECT ***********************************************************
+  // USE EFFECT *****************************************************
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - مدیریت کلاس ها',
-        description: ' مدیریت کلاس های آموزشی',
+        title: 'نارون - مدیریت مهارت مسابقات',
+        description: ' مدیریت مهارت های مسابقات شنا',
       }),
     );
-    getClassList();
+    getSkillList();
   }, []);
-  // RETURN ****************************************************************
+  // RETURN **********************************************************
   return (
     <Box sx={{ flexGrow: 1 }}>
       <div className="flex flex-col h-full">
@@ -218,10 +157,10 @@ const ClassList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت کلاس های آموزشی</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت مهارت های مسابقات شنا</h3></div>
                 <div className="col-6 text-left">
                   {
-                    permissions.find((p) => p.operationId === 'tenantCreateClass') ?
+                    permissions.find((p) => p.operationId === 'tenantCreateSkill') ?
                       <Button
                         onClick={() => {
                           setModal(true);
@@ -232,23 +171,22 @@ const ClassList = () => {
                         disableElevation
                         endIcon={<AddCircleOutlineIcon />}
                       >
-                        ثبت کلاس جدید
+                        ثبت مهارت جدید
                       </Button>
                       : null
                   }
-
                 </div>
-                <CreateClassModal
-                  list={getClassList}
+                <CreateSkillModal
+                  list={getSkillList}
                   token={token}
-                  id={selectedClassId}
+                  id={selectedSkillId}
                   openModal={modal}
                   setOpenModal={closeModal}
                 />
-                <DeleteClassModal
-                  list={getClassList}
+                <DeleteSkillModal
+                  list={getSkillList}
                   token={token}
-                  id={selectedClassId}
+                  id={selectedSkillId}
                   openModal={deleteModal}
                   setOpenModal={closeModal}
                 />
@@ -298,9 +236,10 @@ const ClassList = () => {
                 </div>
               </div>
             </div>}
+
         </div>
       </div>
     </Box>
   );
 };
-export default ClassList;
+export default SkillList;

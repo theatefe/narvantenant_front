@@ -1,26 +1,29 @@
 import React from 'react';
 
 // API *************************************************
-import ClassEnrollmentCreateApi from '../../../api/ClassEnrollment/Add';
-import StudentListApi from '../../../api/Student/GetAll';
+import AddAttendanceApi from '../../../api/Attendance/Add';
+import ClassEnrollmentListApi from '../../../api/ClassEnrollment/GetAll';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
-import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import LoadingButton from '@mui/lab/LoadingButton';
-import TextField from '@mui/material/TextField';
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Checkbox from '@mui/material/Checkbox';
 // UI ********************************************************
+import { georgianDate, jalaliDate } from './../../../helpers/convertDate.helper';
+import { ToInt } from './../../../helpers/NumberTools';
 // MUi Icon **************************************************
-import CancelIcon from '@mui/icons-material/Cancel';
-import SendIcon from '@mui/icons-material/Send';
 // Formik & yup ************************************************
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 // Helpers *****************************************************
 // redux seters ************************************************
 
@@ -38,61 +41,39 @@ const style = {
 
 const CreateAttendanceModal = (props) => {
   const {
+    list,
     token,
     classId,
-    id,
     openModal,
     setOpenModal,
-    list
   } = props;
 
   // HOOKS FORM **************************************************
   const [students, setStudents] = React.useState([]);
-  const [sending, setSending] = React.useState(false);
-  // FORMIK *******************************************************
-  const formik = useFormik({
-    initialValues: {
-      studentId: "",
-      payment: "",
-    },
-    validationSchema: Yup.object({
-      studentId: Yup.string()
-        .required("انتخاب دانش آموز الزامی است"),
-      payment: Yup.string()
-        .required("تعیین وضعیت پرداخت الزامی است"),
-    }),
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      setSubmitting(true);
-      setSending(true);
-      submitForm(values);
-      resetForm();
-    },
-  });
+  const today = new Date();
   // SUBMIT **************************************************
-  const submitForm = async (values) => {
+  const handleAddAttendance = async (id, status) => {
     const body = {
+      "classEnrollmentId": Number(id),
       "classId": Number(classId),
-      "studentId": values.studentId,
-      "payment": values.payment,
+      "status": status,
     }
     // created
-    const created = await ClassEnrollmentCreateApi(token, body);
+    const created = await AddAttendanceApi(token, body);
     if (created.status === 200) {
-      toast.SuccessNotify("دانش آموز با موفقیت به کلاس اضافه شد");
+      toast.SuccessNotify("وضعیت حضور دانش آموز ثبت شد");
       handleCancel();
-      setSending(false);
       list();
     } else {
       toast.ErrorNotify(created.data.error);
-      setSending(false);
     }
   }
   // GET STUDENT LIST ******************************************
-  const getStudents = async () => {
+  const getClassEnrollments = async () => {
     try {
-      const student = await StudentListApi(token);
-      if (student.status === 200) {
-        setStudents(student.data);
+      const classEnrollments = await ClassEnrollmentListApi(token, classId);
+      if (classEnrollments.status === 200) {
+        setStudents(classEnrollments.data);
       }
     } catch (error) {
       console.error("Error loading students:", error);
@@ -101,12 +82,11 @@ const CreateAttendanceModal = (props) => {
   }
   // HANDLE CLOSE ********************************************
   const handleCancel = () => {
-    formik.resetForm();
     setOpenModal(false);
   };
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getStudents();
+    getClassEnrollments();
   }, []);
   // RETURN **************************************************
   return (
@@ -115,110 +95,99 @@ const CreateAttendanceModal = (props) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style} justifyContent="center" alignItems="center">
-        <Grid item xs={12} md={12} alignItems="center">
-          <Typography variant="h5" gutterBottom>
-            {` افزودن دانش آموز به کلاس`}
-          </Typography>
-        </Grid>
-        <hr />
-        <form onSubmit={formik.handleSubmit}>
-          <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="انتخاب دانش‌آموز *"
-                variant="outlined"
-                name="studentId"
-                value={formik.values.studentId}
-                onChange={(e) => { formik.handleChange(e) }}
-                onBlur={formik.handleBlur}
-                error={formik.touched.studentId && Boolean(formik.errors.studentId)}
-                helperText={formik.touched.studentId && formik.errors.studentId}
-                size="small"
-              >
-                {students && students.map((item) => {
-                  return (
-                    <MenuItem key={item.id} value={item.id}>دانش آموز : {item?.user?.name + ' ' + item?.user?.lastName}</MenuItem>
-                  )
-                })}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="وضعیت پرداخت  *"
-                variant="outlined"
-                name="payment"
-                value={formik.values.payment}
-                onChange={(e) => { formik.handleChange(e) }}
-                onBlur={formik.handleBlur}
-                error={formik.touched.payment && Boolean(formik.errors.payment)}
-                helperText={formik.touched.payment && formik.errors.payment}
-                size="small"
-              >
-                <MenuItem value="PAID">پرداخت شده</MenuItem>
-                <MenuItem value="UNPAID">پرداخت نشده</MenuItem>
-                <MenuItem value="HALFPAID">پرداخت تکمیل نشده</MenuItem>
-              </TextField>
-            </Grid>
+      <Box sx={style}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} className='text-center'>
+            <Typography variant="h5" gutterBottom align="center">
+              ثبت حضور و غیاب دانش‌آموزان
+            </Typography>
+            <span> تاریخ: {jalaliDate(today)} </span>
           </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={12} sx={{ mx: 'auto', p: 1 }}>
-              <hr />
-            </Grid>
+          <Grid item xs={12}>
+            <hr />
           </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={6}>
-              <LoadingButton
-                size="medium"
-                color="success"
-                type="submit"
-                startIcon={<SendIcon />}
-                loading={sending}
-                loadingPosition="start"
-                variant="contained"
-                disabled={sending}
-              >
-                تایید
-              </LoadingButton>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="flex-end"
+          <Grid item xs={12}>
+            <Box sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <Typography>
+                          نام و نام خانوادگی دانش آموز
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography>
+                          حاضر
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography>
+                          غایب
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography>
+                          باتاخیر
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {students.map((student) => (
+                      <>
+                        <TableRow
+                          key={student.name}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell component="th" scope="row">
+                            <Typography>
+                              {student?.student?.user?.name + ' ' + student?.student?.user?.lastName}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="right">
+                            <Checkbox
+                              checked={student.status === 'PRESENT'}
+                              onChange={() => handleAddAttendance(student.id, 'PRESENT')}
+                              color="success"
+                            />
+                          </TableCell>
+                          <TableCell align="right">
+                            <Checkbox
+                              checked={student.status === 'ABSENT'}
+                              onChange={() => handleAddAttendance(student.id, 'ABSENT')}
+                              color="error"
+                            />
+                          </TableCell>
+                          <TableCell align="right">
+                            <Checkbox
+                              checked={student.status === 'WITHDELAY'}
+                              onChange={() => handleAddAttendance(student.id, 'WITHDELAY')}
+                              color="warning"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    )
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleCancel}
             >
-              <Button
-                className="float-left"
-                variant="contained"
-                endIcon={<CancelIcon />}
-                color="error"
-                onClick={() => {
-                  handleCancel();
-                  setSending(false);
-                }}
-              >
-                انصراف
-              </Button>
-            </Grid>
+              انصراف
+            </Button>
           </Grid>
-        </form>
+        </Grid>
       </Box>
-    </Modal >
+    </Modal>
   );
 };
 export default CreateAttendanceModal;

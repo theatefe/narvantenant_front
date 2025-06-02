@@ -135,6 +135,7 @@ const CreateCoachModal = (props) => {
         list()
       } else {
         toast.ErrorNotify(updated.data.error);
+        handleCancel();
         setSending(false);
       }
     } else {
@@ -147,6 +148,7 @@ const CreateCoachModal = (props) => {
         list();
       } else {
         toast.ErrorNotify(created.data.error);
+        handleCancel();
         setSending(false);
       }
     }
@@ -186,10 +188,12 @@ const CreateCoachModal = (props) => {
   // GET ROLE LIST *******************************************
   const getRoleList = async () => {
     const result = await GetRoleListApi(token);
-    const roles = result.data.filter((item) => item.isActive).map((item) => ({
-      value: item.id, label: item.name
-    }));
-    setRoleList(roles);
+    if (result.status === 200) {
+      const roles = result.data && result.data.filter((item) => item.isActive).map((item) => ({
+        value: item.id, label: item.name
+      }));
+      setRoleList(roles);
+    }
   }
   // HANDLE FILE CHANGE ***************************************
   const handleFileChange = async (label: string, event) => {

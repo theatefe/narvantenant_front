@@ -1,7 +1,7 @@
 import React from 'react';
 
 // API **************************************************
-import GetClassEnrolmentApi from '../../../api/ClassEnrollment/GetOne';
+import GetTenant from '../../../api/CourseLevelCat/GetOne';
 // TOAST *******************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
@@ -39,7 +39,7 @@ const DetailCourseLevelCatModal = (props) => {
   const getTenant = async () => {
     if (id) {
       try {
-        const tenant = await GetClassEnrolmentApi(token, id);
+        const tenant = await GetTenant(token, id);
         if (tenant.status === 200) {
           const info = {
             name: tenant.data.name || "",

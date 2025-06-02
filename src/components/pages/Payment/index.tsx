@@ -14,6 +14,8 @@ import Button from '@mui/material/Button';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 // MUI Icon ****************************************************
 import IconEdit from '../../ui/icon/IconEdit';
+// TOAST ******************************************************
+import * as toast from '../../ui/Toast';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
@@ -82,6 +84,7 @@ const PaymentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
   const [selectedPaymentId, setSelectedPaymentId] = React.useState(null);
@@ -103,6 +106,14 @@ const PaymentList = () => {
   // Get PAYMENT List *************************************************
   const getPaymentsList = async () => {
     const list = await GetAllPaymentsApi(token);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
@@ -131,14 +142,17 @@ const PaymentList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip className="mx-2" title="ویرایش" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openEditModal(item.id)}
-              >
-                <IconEdit className="svg-menu-icon" />
-              </span>
-            </Tooltip>
+            {permissions.find((p) => p.operationId === 'tenantUpdatePayment') ?
+              <Tooltip className="mx-2" title="ویرایش" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openEditModal(item.id)}
+                >
+                  <IconEdit className="svg-menu-icon" />
+                </span>
+              </Tooltip>
+              : null
+            }
           </>
         ),
       }));
@@ -168,18 +182,21 @@ const PaymentList = () => {
               <div className="row mb-4">
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">لیست پرداخت شهریه ها</h3></div>
                 <div className="col-6 text-left">
-                  <Button
-                    onClick={() => {
-                      setModal(true);
-                    }}
-                    sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
-                    color="success"
-                    variant="contained"
-                    disableElevation
-                    endIcon={<AddCircleOutlineIcon />}
-                  >
-                    ثبت پرداخت جدید
-                  </Button>
+                  {
+                    permissions.find((p) => p.operationId === 'tenantCreatePayment') ?
+                      <Button
+                        onClick={() => {
+                          setModal(true);
+                        }}
+                        sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
+                        color="success"
+                        variant="contained"
+                        disableElevation
+                        endIcon={<AddCircleOutlineIcon />}
+                      >
+                        ثبت پرداخت جدید
+                      </Button> : null
+                  }
 
                 </div>
                 <CreatePaymentModal

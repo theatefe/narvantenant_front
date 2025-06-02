@@ -107,6 +107,14 @@ const RoleList = () => {
   // Handle Change Status ******************************************
   const handleStatusChange = async (id: number) => {
     const response = await RoleChangeStatusApi(token, id);
+    if (response.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (response.data && response.status == 200) {
       toast.SuccessNotify('وضعیت نقش بروزرسانی شد')
     } else {
@@ -116,6 +124,14 @@ const RoleList = () => {
   // Get Role List *************************************************
   const getRoleList = async () => {
     const list = await RoleListApi(token);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,

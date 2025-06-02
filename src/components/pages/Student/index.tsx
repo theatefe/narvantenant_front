@@ -17,6 +17,8 @@ import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
+// TOAST ******************************************************
+import * as toast from '../../ui/Toast';
 // MODELS ******************************************************
 import CreateStudentModal from '../../ui/modals/student/CreateStudentModal';
 import DeleteStudentModal from '../../ui/modals/student/DeleteStudentModal';
@@ -72,6 +74,7 @@ const StudentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
   const [selectedStudentId, setSelectedStudentId] = React.useState(null);
@@ -101,10 +104,18 @@ const StudentList = () => {
   // Get STUDENT List ********************************
   const getStudentList = async () => {
     const list = await GetAllStudentApi(token);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
-        fullName: item?.user?.name +' '+ item?.user?.lastName,
+        fullName: item?.user?.name + ' ' + item?.user?.lastName,
         gender: item?.user?.genderText,
         nationalCode: item?.user?.nationalCode,
         mobile: item?.user?.mobile,
@@ -115,22 +126,26 @@ const StudentList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip className="mx-2" title="ویرایش" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openEditModal(item.id)}
-              >
-                <IconEdit className="svg-menu-icon" />
-              </span>
-            </Tooltip>
-            <Tooltip title="حذف" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openDeleteModal(item.id)}
-              >
-                <IconTrash className="svg-menu-icon text-danger" />
-              </span>
-            </Tooltip>
+            {permissions.find((p) => p.operationId === 'tenantUpdateStudent') ?
+              <Tooltip className="mx-2" title="ویرایش" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openEditModal(item.id)}
+                >
+                  <IconEdit className="svg-menu-icon" />
+                </span>
+              </Tooltip> : null
+            }
+            {permissions.find((p) => p.operationId === 'tenantDeleteStudent') ?
+              <Tooltip title="حذف" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openDeleteModal(item.id)}
+                >
+                  <IconTrash className="svg-menu-icon text-danger" />
+                </span>
+              </Tooltip> : null
+            }
           </>
         ),
       }));
@@ -160,18 +175,21 @@ const StudentList = () => {
               <div className="row mb-4">
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دانش آموزان</h3></div>
                 <div className="col-6 text-left">
-                  <Button
-                    onClick={() => {
-                      setModal(true);
-                    }}
-                    sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
-                    color="success"
-                    variant="contained"
-                    disableElevation
-                    endIcon={<AddCircleOutlineIcon />}
-                  >
-                    ثبت نام دانش آموز جدید
-                  </Button>
+                  {
+                    permissions.find((p) => p.operationId === 'tenantCreateStudent') ?
+                      <Button
+                        onClick={() => {
+                          setModal(true);
+                        }}
+                        sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
+                        color="success"
+                        variant="contained"
+                        disableElevation
+                        endIcon={<AddCircleOutlineIcon />}
+                      >
+                        ثبت نام دانش آموز جدید
+                      </Button> : null
+                  }
 
                 </div>
                 <CreateStudentModal

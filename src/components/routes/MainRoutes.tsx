@@ -35,6 +35,15 @@ const Payment = Loadable(
 const Role = Loadable(
   lazy(() => import('../pages/Role'))
 )
+const Skill = Loadable(
+  lazy(() => import('../pages/Skill'))
+)
+const SkillRange = Loadable(
+  lazy(() => import('../pages/SkillRange'))
+)
+const SkillRecord = Loadable(
+  lazy(() => import('../pages/SkillRecord'))
+)
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -83,6 +92,18 @@ const MainRoutes = {
         {
           path: '/payments',
           element: <Payment />,
+        },
+        {
+          path: '/skills',
+          element: <Skill />,
+        },
+        {
+          path: '/skillRanges',
+          element: <SkillRange />,
+        },
+        {
+          path: '/skillRecords',
+          element: <SkillRecord />,
         },
       ],
     },

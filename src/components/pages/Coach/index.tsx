@@ -6,6 +6,8 @@ import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
 import GetAllCoachApi from '../../api/Coach/GetAll';
+// TOAST ************************************************
+import * as toast from '../../ui/Toast';
 // MUI **************************************************
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -72,6 +74,7 @@ const CoachList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
   const [selectedCoachId, setSelectedCoachId] = React.useState(null);
@@ -98,13 +101,21 @@ const CoachList = () => {
     setDeleteModal(false);
     setModal(false);
   };
-  // Get CourseLevels List ********************************
+  // Get Coach List ********************************
   const getCoachList = async () => {
     const list = await GetAllCoachApi(token);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
-        fullName: item?.user?.name +' '+ item?.user?.lastName,
+        fullName: item?.user?.name + ' ' + item?.user?.lastName,
         gender: item?.user?.genderText,
         nationalCode: item?.user?.nationalCode,
         mobile: item?.user?.mobile,
@@ -115,22 +126,26 @@ const CoachList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip className="mx-2" title="ویرایش" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openEditModal(item.id)}
-              >
-                <IconEdit className="svg-menu-icon" />
-              </span>
-            </Tooltip>
-            <Tooltip title="حذف" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openDeleteModal(item.id)}
-              >
-                <IconTrash className="svg-menu-icon text-danger" />
-              </span>
-            </Tooltip>
+            {permissions.find((p) => p.operationId === 'tenantUpdateCoach') ?
+              <Tooltip className="mx-2" title="ویرایش" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openEditModal(item.id)}
+                >
+                  <IconEdit className="svg-menu-icon" />
+                </span>
+              </Tooltip> : null
+            }
+            {permissions.find((p) => p.operationId === 'tenantDeleteCoach') ?
+              <Tooltip title="حذف" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openDeleteModal(item.id)}
+                >
+                  <IconTrash className="svg-menu-icon text-danger" />
+                </span>
+              </Tooltip> : null
+            }
           </>
         ),
       }));
@@ -160,18 +175,22 @@ const CoachList = () => {
               <div className="row mb-4">
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت مربیان</h3></div>
                 <div className="col-6 text-left">
-                  <Button
-                    onClick={() => {
-                      setModal(true);
-                    }}
-                    sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
-                    color="success"
-                    variant="contained"
-                    disableElevation
-                    endIcon={<AddCircleOutlineIcon />}
-                  >
-                    ثبت نام مربی جدید
-                  </Button>
+                  {
+                    permissions.find((p) => p.operationId === 'tenantCreateCoach') ?
+                      <Button
+                        onClick={() => {
+                          setModal(true);
+                        }}
+                        sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
+                        color="success"
+                        variant="contained"
+                        disableElevation
+                        endIcon={<AddCircleOutlineIcon />}
+                      >
+                        ثبت نام مربی جدید
+                      </Button>
+                      : null
+                  }
 
                 </div>
                 <CreateCoachModal

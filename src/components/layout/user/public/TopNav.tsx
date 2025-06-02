@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // MUI ******************************************************************
-import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -12,21 +11,13 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 
 //**************************************************************************/
-import LogoutIcon from '@mui/icons-material/Logout';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import LoadingButton from "@mui/lab/LoadingButton";
-import SendIcon from "@mui/icons-material/Send";
-import CancelIcon from "@mui/icons-material/Cancel";
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CategoryIcon from '@mui/icons-material/Category';
+import PoolIcon from '@mui/icons-material/Pool';
 import SchoolIcon from '@mui/icons-material/School';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import PaidIcon from '@mui/icons-material/Paid';
-
-import IconSettings from '../../../ui/icon/IconSettings';
-import IconEdit from '../../../ui/icon/IconEdit';
-import IconLoader from '../../../ui/icon/IconLoader';
 
 
 // import Modals
@@ -44,14 +35,16 @@ function TopNav(props) {
   // redux hooks
   const { auth } = useSelector((state: RootState) => state.userAuth);
   const permissions = auth.userInfo.Role.Permissions;
-  console.log(permissions);
   const token = auth.token;
   const location = useLocation();
   const [openModal, setOpenModal] = React.useState(false);
   const [openUser, setOpenUser] = React.useState(false);
   const [openCompany, setOpenCompany] = React.useState(false);
+  const [openPoolRecord, setOpenPoolRecord] = React.useState(false);
   const [openClass, setOpenClass] = React.useState(false);
   const [openPayment, setOpenPayment] = React.useState(false);
+  const [UsersManagmentSetMenu, setUserManagmentSetMenu] = React.useState('none');
+  const [PoolRecordsSetMenu, setPoolRecordsSetMenu] = React.useState('none');
   const dispatch = useDispatch();
   const openMenu = props.Open;
   const styleList = !openMenu
@@ -64,6 +57,9 @@ function TopNav(props) {
   // Open Menu *************************************
   const handleClickCompany = () => {
     setOpenCompany(!openCompany);
+  }
+  const handleClickPoolRecord = () => {
+    setOpenPoolRecord(!openPoolRecord);
   }
   const handleClickClass = () => {
     setOpenClass(!openClass);
@@ -92,6 +88,12 @@ function TopNav(props) {
   // catch data **************************************************
 
   React.useEffect(() => {
+    if (permissions.find((p) => p.operationId === 'tenantListCoaches') ||
+      permissions.find((p) => p.operationId === 'tenantListStudents') ||
+      permissions.find((p) => p.operationId === 'tenantListRoles')) setUserManagmentSetMenu('');
+    if (permissions.find((p) => p.operationId === 'tenantListSkill') ||
+      permissions.find((p) => p.operationId === 'tenantListSkillRange') ||
+      permissions.find((p) => p.operationId === 'tenantListSkillRecord')) setPoolRecordsSetMenu('');
   }, []);
   return (
     <>
@@ -120,7 +122,7 @@ function TopNav(props) {
         >
           <span>{'خوش آمدید'}</span>
         </List>
-        <ListItemButton onClick={handleClickUser}>
+        <ListItemButton style={{ display: UsersManagmentSetMenu }} onClick={handleClickUser}>
           {openMenu ? (
             openUser ? <ExpandLessIcon /> : <ExpandMoreIcon />
           ) : (
@@ -178,99 +180,172 @@ function TopNav(props) {
             </List>
           </Collapse>
         )}
-        <ListItemButton onClick={handleClickCompany}>
-          {openMenu ? (
-            openCompany ? <ExpandLessIcon /> : <ExpandMoreIcon />
-          ) : (
-            ''
-          )}
-          {openMenu ? <ListItemText primary="مدیریت مقاطع آموزشی" /> : ''}
+        {/* ************************* courseLevelCategory ************************** */}
+        {permissions.find((p) => p.operationId === 'tenantListCourseLevelCategory') ?
+          <>
+            <ListItemButton onClick={handleClickCompany}>
+              {openMenu ? (
+                openCompany ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              ) : (
+                ''
+              )}
+              {openMenu ? <ListItemText primary="مدیریت مقاطع آموزشی" /> : ''}
 
-          <ListItemIcon style={styleList}>
-            <CategoryIcon className="ms-auto" />
-          </ListItemIcon>
-        </ListItemButton>
+              <ListItemIcon style={styleList}>
+                <CategoryIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
 
-        {openMenu && (
-          <Collapse in={openCompany} timeout="auto" unmountOnExit>
-            {/* سطوح آموزشی */}
-            <List component="div" disablePadding>
-              {permissions.find((p) => p.operationId === 'tenantListCourseLevelCategory') ?
-                <Link to="/levelCats" className="panel-link">
-                  <ListItemButton
-                    sx={{ pr: 4 }}
-                    className={selectedMenu('/levelCats')}
-                  >
-                    <ListItemText>
-                      <div className="sub-menu">دسته بندی مقاطع آموزشی</div>
-                    </ListItemText>
-                  </ListItemButton>
-                </Link> : null}
-            </List>
-          </Collapse>
-        )}
-        <ListItemButton onClick={handleClickClass}>
-          {openMenu ? (
-            openClass ? <ExpandLessIcon /> : <ExpandMoreIcon />
-          ) : (
-            ''
-          )}
-          {openMenu ? <ListItemText primary="مدیریت کلاس ها" /> : ''}
+            {openMenu && (
+              <Collapse in={openCompany} timeout="auto" unmountOnExit>
+                {/* سطوح آموزشی */}
+                <List component="div" disablePadding>
+                  <Link to="/levelCats" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/levelCats')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu">دسته بندی مقاطع آموزشی</div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+              </Collapse>
+            )}
+          </>
+          : null}
+        {/* ************************************** classes ********************************************** */}
+        {permissions.find((p) => p.operationId === 'tenantListClasses') ?
+          <>
+            <ListItemButton onClick={handleClickClass}>
+              {openMenu ? (
+                openClass ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              ) : (
+                ''
+              )}
+              {openMenu ? <ListItemText primary="مدیریت کلاس ها" /> : ''}
 
-          <ListItemIcon style={styleList}>
-            <SchoolIcon className="ms-auto" />
-          </ListItemIcon>
-        </ListItemButton>
+              <ListItemIcon style={styleList}>
+                <SchoolIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
 
-        {openMenu && (
-          <Collapse in={openClass} timeout="auto" unmountOnExit>
-            {/* تعریف کلاس ها */}
-            <List component="div" disablePadding>
-              {permissions.find((p) => p.operationId === 'tenantListClasses') ?
-                <Link to="/classes" className="panel-link">
-                  <ListItemButton
-                    sx={{ pr: 4 }}
-                    className={selectedMenu('/classes')}
-                  >
-                    <ListItemText>
-                      <div className="sub-menu">کلاس های آموزشی</div>
-                    </ListItemText>
-                  </ListItemButton>
-                </Link> : null}
-            </List>
-          </Collapse>
-        )}
+            {openMenu && (
+              <Collapse in={openClass} timeout="auto" unmountOnExit>
+                {/* تعریف کلاس ها */}
+                <List component="div" disablePadding>
+                  <Link to="/classes" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/classes')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu">کلاس های آموزشی</div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+              </Collapse>
+            )}
+          </>
+          : null}
+        {/* ********************************** payments ************************************* */}
+        {permissions.find((p) => p.operationId === 'tenantListPayments') ?
+          <>
+            <ListItemButton onClick={handleClickPayment}>
+              {openMenu ? (
+                openPayment ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              ) : (
+                ''
+              )}
+              {openMenu ? <ListItemText primary="مدیریت پرداخت ها" /> : ''}
 
-        <ListItemButton onClick={handleClickPayment}>
-          {openMenu ? (
-            openPayment ? <ExpandLessIcon /> : <ExpandMoreIcon />
-          ) : (
-            ''
-          )}
-          {openMenu ? <ListItemText primary="مدیریت پرداخت ها" /> : ''}
+              <ListItemIcon style={styleList}>
+                <PaidIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
 
-          <ListItemIcon style={styleList}>
-            <PaidIcon className="ms-auto" />
-          </ListItemIcon>
-        </ListItemButton>
+            {openMenu && (
+              <Collapse in={openPayment} timeout="auto" unmountOnExit>
+                {/* پرداخت شهریه ها */}
+                <List component="div" disablePadding>
+                  <Link to="/payments" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/payments')}>
+                      <ListItemText>
+                        <div className="sub-menu">پرداخت شهریه‌ها</div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+              </Collapse>
+            )}
+          </> : null}
+        {/* ************************* SkillRecord ************************** */}
+          <>
+          <ListItemButton onClick={handleClickPoolRecord} style={{ display: PoolRecordsSetMenu }}>
+              {openMenu ? (
+                openPoolRecord ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              ) : (
+                ''
+              )}
+              {openMenu ? <ListItemText primary="مدیریت مسابقات شنا" /> : ''}
 
-        {openMenu && (
-          <Collapse in={openPayment} timeout="auto" unmountOnExit>
-            {/* پرداخت شهریه ها */}
-            <List component="div" disablePadding>
-              {permissions.find((p) => p.operationId === 'tenantListPayments') ?
-              <Link to="/payments" className="panel-link">
-                <ListItemButton
-                  sx={{ pr: 4 }}
-                  className={selectedMenu('/payments')}>
-                  <ListItemText>
-                    <div className="sub-menu">پرداخت شهریه‌ها</div>
-                  </ListItemText>
-                </ListItemButton>
-                </Link> : null}
-            </List>
-          </Collapse>
-        )}
+              <ListItemIcon style={styleList}>
+                <PoolIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
+
+            {openMenu && (
+              <Collapse in={openPoolRecord} timeout="auto" unmountOnExit>
+              {/* تعریف مهارت ها */}
+              {permissions.find((p) => p.operationId === 'tenantListSkill') ?
+                <List component="div" disablePadding>
+                  <Link to="/skills" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/skills')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu">مدیریت مهارت ها</div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+                : null}
+              {permissions.find((p) => p.operationId === 'tenantListSkillRange') ?
+                <List component="div" disablePadding>
+                  <Link to="/skillRanges" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/skillRanges')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu">مدیریت محدوده مهارت </div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+                : null}
+              {permissions.find((p) => p.operationId === 'tenantListSkillRecord') ?
+                <List component="div" disablePadding>
+                  <Link to="/skillRecords" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/skillRecords')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu">مدیریت رکوردها </div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+                : null}
+              </Collapse>
+            )}
+          </>
       </List>
       <ChangePasswordModal token={token} openModal={openModal} setOpenModal={setOpenModal} />
     </>

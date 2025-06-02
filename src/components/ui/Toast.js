@@ -47,3 +47,5 @@ export function WarnNotify(notiff) {
     progress: undefined,
   });
 }
+
+export { toast };

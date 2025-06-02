@@ -74,7 +74,6 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
-
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -110,7 +109,6 @@ const ContainerMain = styled(Container, {
     marginLeft: drawerWidth,
   }),
 }));
-
 const theme = createTheme({
   direction: 'rtl', // Both here and <body dir="rtl">
 });
@@ -165,7 +163,7 @@ function PublicLayout() {
   const logOut = async () => {
     const result = await LogOutApi(auth.token);
     if (result.status === 200) {
-      Cookies.remove('admin');
+      Cookies.remove('user');
       dispatch(
         setAuth({
           token: null,
@@ -228,7 +226,10 @@ function PublicLayout() {
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1, textAlign: "left" }}>
                         <IconButton onClick={toggleDrawer} color='inherit'>
                           {open ? <ChevronRightIcon /> : <MenuIcon />}
-                        </IconButton>
+                          </IconButton>
+                          <Typography variant="body1"  sx={{ direction: "rtl", fontSize: "16px" }}>
+                            {userInfo?.tenant?.tenantType + " " + userInfo?.tenant?.name}
+                          </Typography>
                       </Box>
 
                       {/* لیست کشویی برای نام و سمت کاربر */}
@@ -259,10 +260,10 @@ function PublicLayout() {
                             horizontal: 'center',
                           }}
                         >
-                          <MenuItem onClick={handleOpenModal}>
+                          {/* <MenuItem onClick={handleOpenModal}>
                             <VpnKeyIcon sx={{ marginRight: 1 }} />
                             تغییر رمز عبور
-                          </MenuItem>
+                          </MenuItem> */}
                           <MenuItem onClick={logOut} sx={{ color: "red" }}>
                             <ExitToAppIcon sx={{ marginRight: 1 }} />
                             خروج

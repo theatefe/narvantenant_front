@@ -8,7 +8,7 @@ const LogOut = async (token) => {
   };
   try {
     const { data, status } = await axios.get(
-      `${process.env.REACT_APP_HOST}admin/logOut`,
+      `${process.env.REACT_APP_HOST}user/logOut`,
       config,
     );
     return { data, status };

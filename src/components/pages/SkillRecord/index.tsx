@@ -1,29 +1,27 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // REDUX SETTER *****************************************
 import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
-import GetAllClassApi from '../../api/Class/GetAll';
+import GetAllSkillRecordApi from '../../api/SkillRecord/GetAll';
 // MUI **************************************************
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
-// MUi Icon ***************************************************
+// TOAST ******************************************************
+import * as toast from '../../ui/Toast';
+// MUi Icon **************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
-import IconUserPlus from '../../ui/icon/IconUsersGroup';
-import IconCalendar from '../../ui/icon/IconCalendar';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
-import CreateClassModal from '../../ui/modals/class/CreateClassModal';
-import DeleteClassModal from '../../ui/modals/class/DeleteClassModal';
-// TOAST ******************************************************
-import * as toast from '../../ui/Toast';
+import CreateSkillRecordModal from '../../ui/modals/skillRecord/CreateSkillRecordModal';
+import DeleteSkillRecordModal from '../../ui/modals/skillRecord/DeleteSkillRecordModal';
 // OTHER *******************************************************
 import {
   jalaliDate,
@@ -31,8 +29,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID **************************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'عنوان کلاس', 'کد کلاس', 'مقطع آموزشی', 'مربی', 'روزهای تشکیل', 'شهریه کلاس', 'وضعیت',
-  'تاریخ ثبت'];
+const header = ['ردیف', 'نام دسته بندی', 'مجموعه', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -41,39 +38,39 @@ const columns = [
     size: 20,
   },
   {
-    accessorKey: 'name',
-    header: 'عنوان کلاس',
+    accessorKey: 'student',
+    header: 'دانش آموز',
+    size: 120,
+  },
+  {
+    accessorKey: 'skill',
+    header: 'مهارت شنا',
     size: 60,
   },
   {
-    accessorKey: 'code',
-    header: 'کد کلاس',
+    accessorKey: 'area',
+    header: 'متراژ',
     size: 60,
   },
   {
-    accessorKey: 'courseLevel',
-    header: 'مقطع آموزشی',
+    accessorKey: 'record',
+    header: 'رکورد ثبت شده',
     size: 60,
   },
   {
-    accessorKey: 'coach',
-    header: 'مربی',
+    accessorKey: 'range',
+    header: 'محدوده مهارت',
     size: 60,
   },
   {
-    accessorKey: 'days',
-    header: 'روزهای تشکیل',
-    size: 60,
-  },
-  {
-    accessorKey: 'status',
-    header: 'وضعیت',
-    size: 60,
+    accessorKey: 'user',
+    header: 'کاربر ثبت کننده رکورد',
+    size: 180,
   },
   {
     accessorKey: 'date',
     header: 'تاریخ ثبت',
-    size: 60,
+    size: 120,
   },
   {
     accessorKey: 'option',
@@ -83,14 +80,14 @@ const columns = [
 ];
 
 
-const ClassList = () => {
+const SkillRecordList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
-  const [selectedClassId, setSelectedClassId] = React.useState(null);
+  const [selectedCourseLevelId, setSelectedCourseLevelId] = React.useState(null);
   const [data, setData] = React.useState([]);
   const [isLoaded, setIsloaded] = React.useState(false);
   // modal *********************************************************
@@ -100,23 +97,23 @@ const ClassList = () => {
   // ***************************************************************
   // open info modal ***********************************************
   const openDeleteModal = (id: number) => {
-    setSelectedClassId(id);
+    setSelectedCourseLevelId(id);
     setDeleteModal(true);
   };
   // open edit modal ************************************************
   const openEditModal = (id: number) => {
-    setSelectedClassId(id);
+    setSelectedCourseLevelId(id);
     setModal(true);
   };
   // close modal ****************************************************
   const closeModal = () => {
-    setSelectedClassId(null);
+    setSelectedCourseLevelId(null);
     setDeleteModal(false);
     setModal(false);
   };
-  // Get ClASS List **************************************************
-  const getClassList = async () => {
-    const list = await GetAllClassApi(token);
+  // Get SkillRecord List ********************************
+  const getSkillRecordList = async () => {
+    const list = await GetAllSkillRecordApi(token);
     if (list.status === 403) {
       setTimeout(() => {
         window.location.href = '/';
@@ -128,17 +125,12 @@ const ClassList = () => {
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
-        code: item?.code || '-',
-        name: item?.name,
-        courseLevel: item?.courseLevel?.title,
-        gender: item?.gender || '-',
-        coach: item.coach ? item?.coach?.user?.name + ' ' + item?.coach?.user?.lastName : '-',
-        days: item?.days || '-',
-        startTime: item?.startTime || '-',
-        endTime: item?.endTime || '-',
-        status: item?.status,
-        totalSessions: item?.totalSessions || '-',
-        tuitionFee: item?.tuitionFee || '-',
+        student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
+        skill: item?.skill?.title,
+        range: item?.skillRange?.name || '-',
+        user: item?.user?.name + ' ' + item?.user?.lastName,
+        area: item?.area + ' متر ',
+        record: item?.record + ' ثانیه ',
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
             {jalaliDate(item.createdAt)}
@@ -146,31 +138,7 @@ const ClassList = () => {
         </Tooltip>,
         option: (
           <>
-            {permissions.find((p) => p.operationId === 'tenantListClassEnrollment') ?
-              <Tooltip className="mx-2" title="دانش آموزان" arrow>
-                <Link to={`/classEnrollments/${item.id}`}>
-                  <span
-                    className="svg-container cursor-pointer text-dark"
-                  >
-                    <IconUserPlus className="svg-menu-icon" />
-                  </span>
-                </Link>
-              </Tooltip>
-              : null
-            }
-            {permissions.find((p) => p.operationId === 'tenantListAttendances') ?
-              <Tooltip title="حضور و غیاب کلاسی" arrow>
-                <Link to={`/attendances/${item.id}`}>
-                  <span
-                    className="svg-container cursor-pointer text-dark"
-                  >
-                    <IconCalendar className="svg-menu-icon" />
-                  </span>
-                </Link>
-              </Tooltip>
-              : null
-            }
-            {permissions.find((p) => p.operationId === 'tenantUpdateClass') ?
+            {permissions.find((p) => p.operationId === 'tenantUpdateSkillRecord') ?
               <Tooltip className="mx-2" title="ویرایش" arrow>
                 <span
                   className="svg-container cursor-pointer"
@@ -181,7 +149,7 @@ const ClassList = () => {
               </Tooltip>
               : null
             }
-            {permissions.find((p) => p.operationId === 'tenantDeleteClass') ?
+            {permissions.find((p) => p.operationId === 'tenantDeleteSkillRecord') ?
               <Tooltip title="حذف" arrow>
                 <span
                   className="svg-container cursor-pointer"
@@ -189,7 +157,8 @@ const ClassList = () => {
                 >
                   <IconTrash className="svg-menu-icon text-danger" />
                 </span>
-              </Tooltip> : null
+              </Tooltip>
+              : null
             }
           </>
         ),
@@ -199,17 +168,17 @@ const ClassList = () => {
     dispatch(setIsLoading(false));
     setIsloaded(true)
   };
-  // USE EFFECT ***********************************************************
+  // USE EFFECT *****************************************************
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - مدیریت کلاس ها',
-        description: ' مدیریت کلاس های آموزشی',
+        title: 'نارون - مدیریت رکوردهای مسابقات شنا',
+        description: 'مدیریت رکوردهای مسابقات شنا',
       }),
     );
-    getClassList();
+    getSkillRecordList();
   }, []);
-  // RETURN ****************************************************************
+  // RETURN **********************************************************
   return (
     <Box sx={{ flexGrow: 1 }}>
       <div className="flex flex-col h-full">
@@ -218,10 +187,10 @@ const ClassList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت کلاس های آموزشی</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت رکوردهای مسابقات شنا</h3></div>
                 <div className="col-6 text-left">
                   {
-                    permissions.find((p) => p.operationId === 'tenantCreateClass') ?
+                    permissions.find((p) => p.operationId === 'tenantCreateSkillRecord') ?
                       <Button
                         onClick={() => {
                           setModal(true);
@@ -232,23 +201,22 @@ const ClassList = () => {
                         disableElevation
                         endIcon={<AddCircleOutlineIcon />}
                       >
-                        ثبت کلاس جدید
+                        ثبت رکورد جدید
                       </Button>
                       : null
                   }
-
                 </div>
-                <CreateClassModal
-                  list={getClassList}
+                <CreateSkillRecordModal
+                  list={getSkillRecordList}
                   token={token}
-                  id={selectedClassId}
+                  id={selectedCourseLevelId}
                   openModal={modal}
                   setOpenModal={closeModal}
                 />
-                <DeleteClassModal
-                  list={getClassList}
+                <DeleteSkillRecordModal
+                  list={getSkillRecordList}
                   token={token}
-                  id={selectedClassId}
+                  id={selectedCourseLevelId}
                   openModal={deleteModal}
                   setOpenModal={closeModal}
                 />
@@ -298,9 +266,10 @@ const ClassList = () => {
                 </div>
               </div>
             </div>}
+
         </div>
       </div>
     </Box>
   );
 };
-export default ClassList;
+export default SkillRecordList;

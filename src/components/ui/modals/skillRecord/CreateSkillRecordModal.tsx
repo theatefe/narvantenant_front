@@ -1,0 +1,352 @@
+import React from 'react';
+
+// API *************************************************
+import SkillRedordUpdateApi from '../../../api/SkillRecord/Update';
+import SkillRecordCreateApi from '../../../api/SkillRecord/Add';
+import GetSkillRecordApi from '../../../api/SkillRecord/GetOne';
+import GetAllStudentApi from '../../../api/Student/GetAll';
+import GetAllSkillApi from '../../../api/Skill/GetAll';
+import GetAllSkillRangeApi from '../../../api/SkillRange/GetAll';
+// TOAST ************************************************
+import * as toast from '../../../ui/Toast';
+// MUI **************************************************
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import LoadingButton from '@mui/lab/LoadingButton';
+import TextField from '@mui/material/TextField';
+
+// MUi Icon **************************************************
+import CancelIcon from '@mui/icons-material/Cancel';
+import SendIcon from '@mui/icons-material/Send';
+// Formik & yup ************************************************
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+// redux seters ************************************************
+
+// STYLE MODAL
+const style = {
+  position: 'absolute',
+  top: '40%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 2,
+};
+
+const CreateCourseLevelCatModal = (props) => {
+  const { token, id, openModal, setOpenModal, list } = props;
+  // HOOKS FORM **************************************************
+  const [sending, setSending] = React.useState(false);
+  const [data, setData] = React.useState(null);
+  const [skills, setSkills] = React.useState([]);
+  const [skillRanges, setSkillRanges] = React.useState([]);
+  const [students, setStudents] = React.useState([]);
+  // FORMIK *******************************************************
+  const formik = useFormik({
+    initialValues: {
+      studentId: "",
+      skillId: "",
+      skillRangeId: "",
+      area: "",
+      record: "",
+    },
+    validationSchema: Yup.object({
+      studentId: Yup.string()
+        .required("انتخاب دانش آموز الزامی است"),
+      skillId: Yup.string()
+        .required("انتخاب مهارت شنا الزامی است"),
+      area: Yup.string()
+        .required("انتخاب متراژ الزامی است"),
+      record: Yup.string()
+        .required("وارد کردن رکورد الزامی است"),
+    }),
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      setSubmitting(true);
+      setSending(true);
+      submitForm(values);
+      resetForm();
+    },
+  });
+  // SUBMIT *******************************************************
+  const submitForm = async (values) => {
+    if (id) {
+      //updated
+      const body = { ...values, id }
+      const updated = await SkillRedordUpdateApi(token, body);
+      if (updated.status === 200) {
+        toast.SuccessNotify('رکورد با موفقیت بروزرسانی شد');
+        handleCancel();
+        setSending(false);
+        list()
+      } else {
+        toast.ErrorNotify(updated.data.error);
+        setSending(false);
+      }
+    } else {
+      // created
+      const created = await SkillRecordCreateApi(token, values);
+      if (created.status === 200) {
+        toast.SuccessNotify("رکورد جدید با موفقیت ثبت شد");
+        handleCancel();
+        setSending(false);
+        list();
+      } else {
+        toast.ErrorNotify(created.data.error);
+        setSending(false);
+      }
+    }
+  };
+  // GET SkillRecord *********************************************
+  const getSkillRecord = async () => {
+    if (id) {
+      try {
+        const skillRecord = await GetSkillRecordApi(token, id);
+        if (skillRecord.status === 200) {
+          formik.setValues({
+            studentId: skillRecord.data.studentId || "",
+            skillId: skillRecord.data.skillId || "",
+            skillRangeId: skillRecord.data.skillRangeId || "",
+            area: skillRecord.data.area || "",
+            record: skillRecord.data.record || "",
+          });
+          setData(skillRecord.data);
+        } else {
+          toast.ErrorNotify(skillRecord.data.error);
+          setOpenModal(false);
+        }
+      } catch (error) {
+        console.error("Error loading skillRecord:", error);
+        setOpenModal(false);
+      }
+    } else {
+      formik.resetForm();
+    }
+  }
+  // GET Students ************************************************
+  const getStudents = async () => {
+    try {
+      const students = await GetAllStudentApi(token);
+      if (students.status === 200) {
+        setStudents(students.data);
+      } else {
+        toast.ErrorNotify(students.data.error);
+        setOpenModal(false);
+      }
+    } catch (error) {
+      console.error("Error loading students:", error);
+      setOpenModal(false);
+    }
+  }
+  // GET Skills **************************************************
+  const getSkills = async () => {
+    try {
+      const skills = await GetAllSkillApi(token);
+      if (skills.status === 200) {
+        setSkills(skills.data);
+      } else {
+        toast.ErrorNotify(skills.data.error);
+        setOpenModal(false);
+      }
+    } catch (error) {
+      console.error("Error loading skills:", error);
+      setOpenModal(false);
+    }
+  }
+  // GET Skills **************************************************
+  const getSkillRange = async () => {
+    try {
+      const skillRanges = await GetAllSkillRangeApi(token);
+      if (skillRanges.status === 200) {
+        setSkillRanges(skillRanges.data);
+      } else {
+        toast.ErrorNotify(skillRanges.data.error);
+        setOpenModal(false);
+      }
+    } catch (error) {
+      console.error("Error loading skillRanges:", error);
+      setOpenModal(false);
+    }
+  }
+  // HANDLE CLOSE ************************************************
+  const handleCancel = () => {
+    formik.resetForm();
+    setOpenModal(false);
+  };
+  // USE EFFECT **************************************************
+  React.useEffect(() => {
+    getStudents();
+    getSkillRange();
+    getSkills();
+    getSkillRecord();
+  }, [id]);
+  // RETURN ******************************************************
+  return (
+    <Modal
+      open={openModal}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style} justifyContent="center" alignItems="center">
+        <Grid item xs={12} md={12} alignItems="center">
+          <Typography variant="h5" gutterBottom>
+            {id ? `ویرایش رکورد ${data?.student?.user?.name + ' ' + data?.student?.user?.lastName}` : ` ثبت رکورد جدید`}
+          </Typography>
+        </Grid>
+        <hr />
+        <form onSubmit={formik.handleSubmit}>
+          <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
+              <TextField
+                fullWidth
+                select
+                label="انتخاب دانش‌آموز *"
+                variant="outlined"
+                name="studentId"
+                value={formik.values.studentId}
+                onChange={(e) => { formik.handleChange(e) }}
+                onBlur={formik.handleBlur}
+                error={formik.touched.studentId && Boolean(formik.errors.studentId)}
+                helperText={formik.touched.studentId && formik.errors.studentId}
+                size="small"
+              >
+                {students && students.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item.id}> {item?.user?.name + ' ' + item?.user?.lastName}</MenuItem>
+                  )
+                })}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
+              <TextField
+                fullWidth
+                select
+                label="انتخاب مهارت *"
+                variant="outlined"
+                name="skillId"
+                value={formik.values.skillId}
+                onChange={(e) => { formik.handleChange(e) }}
+                onBlur={formik.handleBlur}
+                error={formik.touched.skillId && Boolean(formik.errors.skillId)}
+                helperText={formik.touched.skillId && formik.errors.skillId}
+                size="small"
+              >
+                {skills && skills.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item.id}> {item?.title}</MenuItem>
+                  )
+                })}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
+              <TextField
+                fullWidth
+                select
+                label="انتخاب محدوده مهارت *"
+                variant="outlined"
+                name="skillRangeId"
+                value={formik.values.skillRangeId}
+                onChange={(e) => { formik.handleChange(e) }}
+                onBlur={formik.handleBlur}
+                error={formik.touched.skillRangeId && Boolean(formik.errors.skillRangeId)}
+                helperText={formik.touched.skillRangeId && formik.errors.skillRangeId}
+                size="small"
+              >
+                {skillRanges && skillRanges.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item.id}> {item?.name}</MenuItem>
+                  )
+                })}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                label={`متراژ *`}
+                variant="outlined"
+                name="area"
+                value={formik.values.area}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.area && Boolean(formik.errors.area)}
+                helperText={formik.touched.area && formik.errors.area}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                label={`رکورد *`}
+                variant="outlined"
+                name="record"
+                value={formik.values.record}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.record && Boolean(formik.errors.record)}
+                helperText={formik.touched.record && formik.errors.record}
+                size="small"
+              />
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Grid item xs={12} sx={{ mx: 'auto', p: 1 }}>
+              <hr />
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Grid item xs={6}>
+              <LoadingButton
+                size="medium"
+                color="success"
+                type="submit"
+                startIcon={<SendIcon />}
+                loading={sending}
+                loadingPosition="start"
+                variant="contained"
+                disabled={sending}
+              >
+                تایید
+              </LoadingButton>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+            >
+              <Button
+                className="float-left"
+                variant="contained"
+                endIcon={<CancelIcon />}
+                color="error"
+                onClick={() => {
+                  handleCancel();
+                  setSending(false);
+                }}
+              >
+                انصراف
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Box>
+    </Modal>
+  );
+};
+export default CreateCourseLevelCatModal;

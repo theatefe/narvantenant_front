@@ -1,22 +1,20 @@
 import axios from 'axios';
 
-const AddClassEnrollment = async (token, body) => {
+const GetAllSkill = async (token: string) => {
   const config = {
     headers: {
       jtoken: token,
     },
   };
   try {
-    const { data, status } = await axios.post(
-      `${process.env.REACT_APP_HOST}user/attendance`,
-      body,
+    const { data, status } = await axios.get(
+      `${process.env.REACT_APP_HOST}user/skill`,
       config,
     );
-
     return { data, status };
   } catch (error) {
     return (error as any).response;
   }
 };
 
-export default AddClassEnrollment;
+export default GetAllSkill;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const UpdateClass = async (token, body) => {
+const UpdateCommentAttendance = async (token, body) => {
   const config = {
     headers: {
       jtoken: token,
@@ -8,7 +8,7 @@ const UpdateClass = async (token, body) => {
   };
   try {
     const { data, status } = await axios.put(
-      `${process.env.REACT_APP_HOST}user/class`,
+      `${process.env.REACT_APP_HOST}user/attendance`,
       body,
       config,
     );
@@ -19,4 +19,4 @@ const UpdateClass = async (token, body) => {
   }
 };
 
-export default UpdateClass;
+export default UpdateCommentAttendance;

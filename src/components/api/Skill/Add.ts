@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const AddClassEnrollment = async (token, body) => {
+const AllSkill = async (token, body) => {
   const config = {
     headers: {
       jtoken: token,
@@ -8,7 +8,7 @@ const AddClassEnrollment = async (token, body) => {
   };
   try {
     const { data, status } = await axios.post(
-      `${process.env.REACT_APP_HOST}user/attendance`,
+      `${process.env.REACT_APP_HOST}user/skill`,
       body,
       config,
     );
@@ -19,4 +19,4 @@ const AddClassEnrollment = async (token, body) => {
   }
 };
 
-export default AddClassEnrollment;
+export default AllSkill;
