@@ -50,6 +50,9 @@ const ProductCat = Loadable(
 const Product = Loadable(
   lazy(() => import('../pages/Product'))
 )
+const Order = Loadable(
+  lazy(() => import('../pages/Order'))
+)
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -118,7 +121,11 @@ const MainRoutes = {
         {
           path: '/products/:catId',
           element: <Product />,
-        }
+        },
+        {
+          path: '/orders',
+          element: <Order />,
+        },
       ],
     },
   ],
