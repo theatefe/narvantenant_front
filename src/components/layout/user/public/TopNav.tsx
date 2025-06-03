@@ -14,6 +14,7 @@ import Collapse from '@mui/material/Collapse';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CategoryIcon from '@mui/icons-material/Category';
 import PoolIcon from '@mui/icons-material/Pool';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SchoolIcon from '@mui/icons-material/School';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
@@ -41,10 +42,12 @@ function TopNav(props) {
   const [openUser, setOpenUser] = React.useState(false);
   const [openCompany, setOpenCompany] = React.useState(false);
   const [openPoolRecord, setOpenPoolRecord] = React.useState(false);
+  const [openMarket, setOpenMarket] = React.useState(false);
   const [openClass, setOpenClass] = React.useState(false);
   const [openPayment, setOpenPayment] = React.useState(false);
   const [UsersManagmentSetMenu, setUserManagmentSetMenu] = React.useState('none');
   const [PoolRecordsSetMenu, setPoolRecordsSetMenu] = React.useState('none');
+  const [MarketSetMenu, setMarketSetMenu] = React.useState('none');
   const dispatch = useDispatch();
   const openMenu = props.Open;
   const styleList = !openMenu
@@ -60,6 +63,9 @@ function TopNav(props) {
   }
   const handleClickPoolRecord = () => {
     setOpenPoolRecord(!openPoolRecord);
+  }
+  const handleClickMarket = () => {
+    setOpenMarket(!openMarket);
   }
   const handleClickClass = () => {
     setOpenClass(!openClass);
@@ -94,6 +100,8 @@ function TopNav(props) {
     if (permissions.find((p) => p.operationId === 'tenantListSkill') ||
       permissions.find((p) => p.operationId === 'tenantListSkillRange') ||
       permissions.find((p) => p.operationId === 'tenantListSkillRecord')) setPoolRecordsSetMenu('');
+    if (permissions.find((p) => p.operationId === 'tenantListProductCategory') ||
+      permissions.find((p) => p.operationId === 'tenantListOrder')) setMarketSetMenu('');
   }, []);
   return (
     <>
@@ -284,22 +292,22 @@ function TopNav(props) {
             )}
           </> : null}
         {/* ************************* SkillRecord ************************** */}
-          <>
+        <>
           <ListItemButton onClick={handleClickPoolRecord} style={{ display: PoolRecordsSetMenu }}>
-              {openMenu ? (
-                openPoolRecord ? <ExpandLessIcon /> : <ExpandMoreIcon />
-              ) : (
-                ''
-              )}
-              {openMenu ? <ListItemText primary="مدیریت مسابقات شنا" /> : ''}
+            {openMenu ? (
+              openPoolRecord ? <ExpandLessIcon /> : <ExpandMoreIcon />
+            ) : (
+              ''
+            )}
+            {openMenu ? <ListItemText primary="مدیریت مسابقات شنا" /> : ''}
 
-              <ListItemIcon style={styleList}>
-                <PoolIcon className="ms-auto" />
-              </ListItemIcon>
-            </ListItemButton>
+            <ListItemIcon style={styleList}>
+              <PoolIcon className="ms-auto" />
+            </ListItemIcon>
+          </ListItemButton>
 
-            {openMenu && (
-              <Collapse in={openPoolRecord} timeout="auto" unmountOnExit>
+          {openMenu && (
+            <Collapse in={openPoolRecord} timeout="auto" unmountOnExit>
               {/* تعریف مهارت ها */}
               {permissions.find((p) => p.operationId === 'tenantListSkill') ?
                 <List component="div" disablePadding>
@@ -309,7 +317,7 @@ function TopNav(props) {
                       className={selectedMenu('/skills')}
                     >
                       <ListItemText>
-                        <div className="sub-menu">مدیریت مهارت ها</div>
+                        <div className="sub-menu"> مهارت ها</div>
                       </ListItemText>
                     </ListItemButton>
                   </Link>
@@ -323,7 +331,7 @@ function TopNav(props) {
                       className={selectedMenu('/skillRanges')}
                     >
                       <ListItemText>
-                        <div className="sub-menu">مدیریت محدوده مهارت </div>
+                        <div className="sub-menu"> محدوده مهارت </div>
                       </ListItemText>
                     </ListItemButton>
                   </Link>
@@ -343,9 +351,58 @@ function TopNav(props) {
                   </Link>
                 </List>
                 : null}
-              </Collapse>
+            </Collapse>
+          )}
+        </>
+        {/* ************************* Products and orders ************************** */}
+        <>
+          <ListItemButton onClick={handleClickMarket} style={{ display: MarketSetMenu }}>
+            {openMenu ? (
+              openMarket ? <ExpandLessIcon /> : <ExpandMoreIcon />
+            ) : (
+              ''
             )}
-          </>
+            {openMenu ? <ListItemText primary="مدیریت فروشگاه" /> : ''}
+
+            <ListItemIcon style={styleList}>
+              <ShoppingBasketIcon className="ms-auto" />
+            </ListItemIcon>
+          </ListItemButton>
+
+          {openMenu && (
+            <Collapse in={openMarket} timeout="auto" unmountOnExit>
+              {/* تعریف دسته بندی محصولات */}
+              {permissions.find((p) => p.operationId === 'tenantListProductCategory') ?
+                <List component="div" disablePadding>
+                  <Link to="/productCats" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/productCats')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu"> دسته بندی محصولات</div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+                : null}
+              {permissions.find((p) => p.operationId === 'tenantListOrder') ?
+                <List component="div" disablePadding>
+                  <Link to="/orders" className="panel-link">
+                    <ListItemButton
+                      sx={{ pr: 4 }}
+                      className={selectedMenu('/orders')}
+                    >
+                      <ListItemText>
+                        <div className="sub-menu"> سفارشات </div>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </List>
+                : null}
+            </Collapse>
+          )}
+        </>
       </List>
       <ChangePasswordModal token={token} openModal={openModal} setOpenModal={setOpenModal} />
     </>

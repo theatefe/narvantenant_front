@@ -44,6 +44,12 @@ const SkillRange = Loadable(
 const SkillRecord = Loadable(
   lazy(() => import('../pages/SkillRecord'))
 )
+const ProductCat = Loadable(
+  lazy(() => import('../pages/ProductCat'))
+)
+const Product = Loadable(
+  lazy(() => import('../pages/Product'))
+)
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -104,7 +110,15 @@ const MainRoutes = {
         {
           path: '/skillRecords',
           element: <SkillRecord />,
+        }, 
+        {
+          path: '/productCats',
+          element: <ProductCat />,
         },
+        {
+          path: '/products/:catId',
+          element: <Product />,
+        }
       ],
     },
   ],
