@@ -210,7 +210,7 @@ const CreateCoachModal = (props) => {
         setNationalCard(fileUploaded.data);
       }
       if (label === 'sportsInsuranceCard') {
-        setSportsInsuranceDard(formData.dist);
+        setSportsInsuranceDard(fileUploaded.data);
       }
     }
   };

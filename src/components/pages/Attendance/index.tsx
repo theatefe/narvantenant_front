@@ -112,6 +112,7 @@ const AttendanceList = () => {
     }
     if (response.status === 200) {
       toast.SuccessNotify('وضعیت حضور دانش آموز بروزرسانی شد')
+      getAttendanceList();
     } else {
       toast.ErrorNotify(response.data.error);
     }

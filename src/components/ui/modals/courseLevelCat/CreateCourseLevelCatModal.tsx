@@ -65,7 +65,6 @@ const CreateCourseLevelCatModal = (props) => {
         id,
       }
       const updated = await CourseLevelCatUpdateApi(token, body);
-      console.log(updated);
       if (updated.status === 200) {
         toast.SuccessNotify('دسته بندی سطح آموزشی با موفقیت بروزرسانی شد');
         handleCancel();
@@ -78,7 +77,6 @@ const CreateCourseLevelCatModal = (props) => {
     } else {
       // created
       const created = await CourseLevelCatCreateApi(token, values);
-      console.log(created);
       if (created.status === 200) {
         toast.SuccessNotify("دسته بندی جدید با موفقیت ثبت شد");
         handleCancel();

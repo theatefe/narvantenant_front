@@ -113,7 +113,7 @@ const CreateProductModal = (props) => {
       //updated
       const updated = await ProductUpdateApi(token, { ...body, id });
       if (updated.status === 200) {
-        toast.SuccessNotify('اطلاعات مربی با موفقیت بروزرسانی شد');
+        toast.SuccessNotify('اطلاعات محصول با موفقیت بروزرسانی شد');
         handleCancel();
         setSending(false);
         list()
@@ -126,7 +126,7 @@ const CreateProductModal = (props) => {
       // created
       const created = await ProductCreateApi(token, body);
       if (created.status === 200) {
-        toast.SuccessNotify("ثبت نام مربی با موفقیت انجام شد");
+        toast.SuccessNotify("ثبت محصول با موفقیت انجام شد");
         handleCancel();
         setSending(false);
         list();
@@ -156,17 +156,19 @@ const CreateProductModal = (props) => {
             categoryId: product.data.categoryId,
             title: product.data.title,
             description: product.data.description,
-            gender: product.data.gender == "دختر" ? "FEMALE" : product.data.gender == "پسر" ? "MALE" : "null",
+            gender: product.data.gender == "دختر" ? "FEMALE" : product.data.gender == "پسر" ? "MALE" : null,
             size: product.data.size,
             color: product.data.color,
             material: product.data.material,
             price: product.data.price,
           });
-          setSelectedProductMedias(product.data.ProductMedias.map((item) => ({
+          const medias = product?.data?.ProductMedias.length > 0 && product?.data?.ProductMedias.map((item) =>
+          ({
             id: item.id,
             mediaId: item.media.id,
             mediaUrl: item.media.mediaUrl,
-          })));
+          }));
+          setSelectedProductMedias(medias);
         } else {
           toast.ErrorNotify(product.data.error);
           setOpenModal(false);
@@ -355,7 +357,7 @@ const CreateProductModal = (props) => {
                 error={formik.touched.gender && Boolean(formik.errors.gender)}
                 size="small"
               >
-                <MenuItem value="null">بدون جنسیت</MenuItem>
+                <MenuItem value={null}>بدون جنسیت</MenuItem>
                 <MenuItem value="FEMALE">زنانه</MenuItem>
                 <MenuItem value="MALE">مردانه</MenuItem>
               </TextField>
@@ -390,7 +392,7 @@ const CreateProductModal = (props) => {
               </Button>
             </Grid>
             <Grid container spacing={2} className='mt-1 mx-2'>
-              {selectedProductMedia.map((item, index) => (
+              {selectedProductMedia && selectedProductMedia.length > 0 ? selectedProductMedia.map((item, index) => (
                 <Grid item xs={6} md={3} key={index}>
                   <div style={{
                     position: 'relative',
@@ -418,7 +420,7 @@ const CreateProductModal = (props) => {
                     </IconButton>
                   </div>
                 </Grid>
-              ))}
+              )) : (<></>)}
             </Grid>
           </Grid>
           <Grid

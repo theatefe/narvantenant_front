@@ -4,6 +4,7 @@ import React from 'react';
 import StudentUpdateApi from '../../../api/Student/Update';
 import StudentCreateApi from '../../../api/Student/Add';
 import GetStudentApi from '../../../api/Student/GetOne';
+import GetAllLevelCatsApi from '../../../api/CourseLevelCat/GetAll';
 import UploadFileApi from '../../../api/Common/UploadFile';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
@@ -46,7 +47,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '45%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 700,
@@ -58,10 +59,25 @@ const style = {
 const CreateStudentModal = (props) => {
   const { token, id, openModal, setOpenModal, list } = props;
   // HOOKS FORM **************************************************
+  const [levelCats, setLevelCats] = React.useState([]);
+  const [levels, setLevels] = React.useState([]);
   const [nationalCard, setNationalCard] = React.useState(null);
   const [sportsInsuranceCard, setSportsInsuranceDard] = React.useState(null);
   const [birthDate, setBirthDate] = React.useState(null);
   const [sending, setSending] = React.useState(false);
+  // GET COURSELEVELS CAT ****************************************
+  const getLevelCats = async () => {
+    const levelCats = await GetAllLevelCatsApi(token);
+    if (levelCats.status == 200) {
+      setLevelCats(levelCats.data);
+    }
+  }
+  // GET LEVEL LIST ***********************************************
+  const handleSetLevelList = (e) => {
+    const catId = e.target.value;
+    const levelCat = levelCats.find((cat) => cat.id == catId);
+    setLevels(levelCat.CourseLevels);
+  }
   // FORMIK *******************************************************
   const formik = useFormik({
     initialValues: {
@@ -72,6 +88,7 @@ const CreateStudentModal = (props) => {
       dateOfBirth: null,
       mobile: "",
       address: "",
+      levelCatId: "",
       levelId: "",
       fatherName: "",
       motherName: "",
@@ -84,20 +101,26 @@ const CreateStudentModal = (props) => {
     },
     validationSchema: Yup.object({
       name: Yup.string()
-        .required("نام مربی الزامی است")
-        .min(3, "نام مربی باید حداقل ۳ کاراکتر باشد"),
+        .required("نام دانش آموز الزامی است")
+        .min(3, "نام دانش آموز باید حداقل ۳ کاراکتر باشد"),
       lastName: Yup.string()
-        .required("نام خانوادگی مربی الزامی است")
-        .min(3, "نام خانوادگی مربی باید حداقل ۳ کاراکتر باشد"),
+        .required("نام خانوادگی دانش آموز الزامی است")
+        .min(3, "نام خانوادگی دانش آموز باید حداقل ۳ کاراکتر باشد"),
       gender: Yup.string()
-        .required("انتخاب جنسیت مربی الزامی است")
-        .min(1, "جنسیت مربی انتخاب نشده است"),
+        .required("انتخاب جنسیت دانش آموز الزامی است")
+        .min(1, "جنسیت دانش آموز انتخاب نشده است"),
       nationalCode: Yup.string()
-        .required("کدملی مربی الزامی است")
-        .min(3, "کد ملی مربی باید حداقل ۳ کاراکتر باشد"),
+        .required("کدملی دانش آموز الزامی است")
+        .min(3, "کد ملی دانش آموز باید حداقل ۳ کاراکتر باشد"),
       mobile: Yup.string()
-        .required("شماره همراه مربی الزامی است")
-        .min(3, "شماره همراه مربی به درستی وارد نشده است"),
+        .required("شماره همراه دانش آموز الزامی است")
+        .min(3, "شماره همراه دانش آموز به درستی وارد نشده است"),
+      levelCatId: Yup.string()
+        .required("انتخاب دسته بندی سطح آموزشی الزامی است")
+        .min(1, "دسته بندی سطح آموزشی انتخاب نشده است"),
+      levelId: Yup.string()
+        .required("انتخاب سطح دانش آموز الزامی است")
+        .min(1, "سطح آموزشی دانش آموز انتخاب نشده است"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -170,6 +193,7 @@ const CreateStudentModal = (props) => {
             dateOfBirth: jalaliDate(student.data.user.dateOfBirth) || null,
             mobile: student.data.user.mobile || "",
             address: student.data.user.address || "",
+            levelCatId: student.data.level.categoryId || null,
             levelId: student.data.levelId || null,
             fatherName: student.data.fatherName || null,
             motherName: student.data.motherName || null,
@@ -180,7 +204,7 @@ const CreateStudentModal = (props) => {
             fatherEducation: student.data.fatherEducation || null,
             motherEducation: student.data.motherEducation || null,
           });
-          setNationalCard(student.data.nationalCardImage);
+          setNationalCard(student.data.birthCertificateImage);
           setSportsInsuranceDard(student.data.sportsInsuranceImage);
         } else {
           toast.ErrorNotify(student.data.error);
@@ -220,6 +244,7 @@ const CreateStudentModal = (props) => {
   // USE EFFECT **********************************************
   React.useEffect(() => {
     getStudent();
+    getLevelCats();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -318,29 +343,36 @@ const CreateStudentModal = (props) => {
                 helperText={formik.touched.gender && formik.errors.gender}
                 size="small"
               >
-                <MenuItem value="FEMALE">زن</MenuItem>
-                <MenuItem value="MALE">مرد</MenuItem>
+                <MenuItem value="FEMALE">دختر</MenuItem>
+                <MenuItem value="MALE">پسر</MenuItem>
               </TextField>
             </Grid>
             <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
-                label={`آدرس `}
+                select
+                label=" دسته بندی سطح آموزشی*"
                 variant="outlined"
-                name="address"
-                value={formik.values.address}
-                onChange={formik.handleChange}
+                name="levelCatId"
+                value={formik.values.levelCatId}
+                onChange={(e) => { formik.handleChange(e), handleSetLevelList(e) }}
                 onBlur={formik.handleBlur}
-                error={formik.touched.address && Boolean(formik.errors.address)}
-                helperText={formik.touched.address && formik.errors.address}
+                error={formik.touched.levelCatId && Boolean(formik.errors.levelCatId)}
+                helperText={formik.touched.levelCatId && formik.errors.levelCatId}
                 size="small"
-              />
+              >
+                {levelCats && levelCats.length>0 ? levelCats.map((cat) => {
+                  return (
+                    <MenuItem value={cat.id}>{cat.title}</MenuItem>
+                  )
+                }) : (<MenuItem value={null}>دسته بندی برای نمایش وجود ندارد</MenuItem>)}
+              </TextField>
             </Grid>
             <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
-                label="سطح دانش آموز  *"
+                label="تعیین سطح دانش آموز  *"
                 variant="outlined"
                 name="levelId"
                 value={formik.values.levelId}
@@ -349,9 +381,13 @@ const CreateStudentModal = (props) => {
                 error={formik.touched.levelId && Boolean(formik.errors.levelId)}
                 helperText={formik.touched.levelId && formik.errors.levelId}
                 size="small"
+                disabled={!formik.values.levelCatId ? true : false}
               >
-                <MenuItem value="FEMALE">زن</MenuItem>
-                <MenuItem value="MALE">مرد</MenuItem>
+                {levels &&  levels.length > 0 ? levels.map((level) => {
+                  return (
+                    <MenuItem value={level.id}>{level.title}</MenuItem>
+                  )
+                }) : (<MenuItem value={null}>سطحی برای نمایش وجود ندارد</MenuItem>)}
               </TextField>
             </Grid>
             <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
@@ -463,6 +499,20 @@ const CreateStudentModal = (props) => {
                 onBlur={formik.handleBlur}
                 error={formik.touched.motherEducation && Boolean(formik.errors.motherEducation)}
                 helperText={formik.touched.motherEducation && formik.errors.motherEducation}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                label={`آدرس `}
+                variant="outlined"
+                name="address"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.address && Boolean(formik.errors.address)}
+                helperText={formik.touched.address && formik.errors.address}
                 size="small"
               />
             </Grid>
