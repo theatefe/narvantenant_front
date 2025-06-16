@@ -15,6 +15,7 @@ import Skeleton from '@mui/material/Skeleton';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
+import IconInfo from '../../ui/icon/IconInfoCircle';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // TOAST ******************************************************
@@ -22,6 +23,7 @@ import * as toast from '../../ui/Toast';
 // MODELS ******************************************************
 import CreateStudentModal from '../../ui/modals/student/CreateStudentModal';
 import DeleteStudentModal from '../../ui/modals/student/DeleteStudentModal';
+import DetailStudentModal from '../../ui/modals/student/DetailStudentModal';
 // OTHER *******************************************************
 import {
   jalaliDate,
@@ -83,9 +85,10 @@ const StudentList = () => {
   // modal *********************************************************
   const [modal, setModal] = React.useState(false);
   const [deleteModal, setDeleteModal] = React.useState(false);
+  const [infoModal, setInfoModal] = React.useState(false);
   // QUERY *********************************************************
   // ***************************************************************
-  // open info modal ***********************************************
+  // open delete modal ***********************************************
   const openDeleteModal = (id: number) => {
     setSelectedStudentId(id);
     setDeleteModal(true);
@@ -95,10 +98,16 @@ const StudentList = () => {
     setSelectedStudentId(id);
     setModal(true);
   };
+  // open info modal ***********************************************
+  const openInfoModal = (id: number) => {
+    setSelectedStudentId(id);
+    setInfoModal(true);
+  };
   // close modal ****************************************************
   const closeModal = () => {
     setSelectedStudentId(null);
     setDeleteModal(false);
+    setInfoModal(false);
     setModal(false);
   };
   // Get STUDENT List ********************************
@@ -126,6 +135,16 @@ const StudentList = () => {
         </Tooltip>,
         option: (
           <>
+            {permissions.find((p) => p.operationId === 'tenantGetStudent') ?
+              <Tooltip className="mx-2" title="مشاهده جزئیات" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openInfoModal(item.id)}
+                >
+                  <IconInfo className="svg-menu-icon" />
+                </span>
+              </Tooltip> : null
+            }
             {permissions.find((p) => p.operationId === 'tenantUpdateStudent') ?
               <Tooltip className="mx-2" title="ویرایش" arrow>
                 <span
@@ -204,6 +223,13 @@ const StudentList = () => {
                   token={token}
                   id={selectedStudentId}
                   openModal={deleteModal}
+                  setOpenModal={closeModal}
+                />
+                <DetailStudentModal
+                  list={getStudentList}
+                  token={token}
+                  id={selectedStudentId}
+                  openModal={infoModal}
                   setOpenModal={closeModal}
                 />
               </div>

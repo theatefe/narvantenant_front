@@ -1,7 +1,7 @@
 import React from 'react';
 
 // API **************************************************
-import GetTenant from '../../../api/CourseLevelCat/GetOne';
+import GetStudent from '../../../api/Student/GetOne';
 // TOAST *******************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
@@ -10,56 +10,50 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-
+import Divider from '@mui/material/Divider';
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
 // OTHER *******************************************************
 import {
-  jalaliDateWithTime,
+  jalaliDate,
 } from '../../../helpers/convertDate.helper';
 // redux seters ************************************************
 
 // STYLE MODAL
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '45%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: 700,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
 };
 
-const DetailCourseLevelCatModal = (props) => {
+const DetailStudentModal = (props) => {
   const { token, id, openModal, setOpenModal } = props;
   // HOOKS FORM **************************************************
   const [data, setData] = React.useState(null);
-  // GET Tenant ********************************************
-  const getTenant = async () => {
+  const [openImageModal, setOpenImageModal] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState('');
+  // GET Student ********************************************
+  const getStudent = async () => {
     if (id) {
       try {
-        const tenant = await GetTenant(token, id);
-        if (tenant.status === 200) {
-          const info = {
-            name: tenant.data.name || "",
-            packageId: tenant.data.packageId || "",
-            tenantType: tenant.data.tenantType || "",
-            logoId: null,
-            phoneNumber: tenant.data.phoneNumber || "",
-            address: tenant.data.address || "",
-            managerName: tenant.data.managerName || "",
-            instagramUrl: tenant.data.instagramUrl || "",
-            websiteUrl: tenant.data.websiteUrl || "",
-            createdAt: tenant.data.createdAt || "",
-          };
-          setData(info);
+        const student = await GetStudent(token, id);
+        if (student.status === 200) {
+          setData(student.data);
         } else {
-          toast.ErrorNotify(tenant.data.error);
+          toast.ErrorNotify(student.data.error);
           setOpenModal(false);
         }
       } catch (error) {
-        console.error("Error loading Tenant:", error);
+        console.error("Error loading student:", error);
         setOpenModal(false);
       }
     }
@@ -69,9 +63,17 @@ const DetailCourseLevelCatModal = (props) => {
     setData(null);
     setOpenModal(false);
   };
+  // OPEN IMAGE DIALOG ***************************************
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setOpenImageModal(true);
+  };
+  const handleCloseImageModal = () => {
+    setOpenImageModal(false);
+  };
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getTenant();
+    getStudent();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -80,129 +82,289 @@ const DetailCourseLevelCatModal = (props) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style} justifyContent="center" alignItems="center">
-        <Grid item xs={12} md={12} alignItems="center">
-          <Typography variant="h5" gutterBottom>
-            {id && `اطلاعات مجموعه: ${data?.tenantType} ${data?.name} `}
+      <React.Fragment>
+        <Box
+          sx={{
+            ...style,
+            maxWidth: 1000,
+            bgcolor: '#fafafa',
+            borderRadius: 3,
+            boxShadow: 4,
+            p: 4,
+            mx: 'auto',
+          }}
+        >
+          <Typography variant="h5" gutterBottom align="center">
+            {id && `اطلاعات دانش‌آموز`}
           </Typography>
-        </Grid>
-        <hr />
-        <form>
-          <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                نام مجموعه  : {"  "}
-              </span>
-              <span>
-                {`   ${data?.name}`}
-              </span>
+          <Divider sx={{ my: 2 }}>اطلاعات شخصی</Divider>
+
+          {/* اطلاعات شخصی */}
+          <Box mb={2}>
+            <Grid container spacing={3} className='text-end'>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"نام"} :{" "}<Typography component="span" fontWeight="bold">{data?.user?.name}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2" >
+                    {"نام‌خانوادگی"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.user?.lastName}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"جنسیت"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.user?.genderText}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"تاریخ تولد"} : {" "}
+                    <Typography component="span" fontWeight="bold"> {jalaliDate(data?.user?.dateOfBirth) || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"کدملی"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.user?.nationalCode}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"شماره همراه"}  : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.user?.mobile}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"آدرس"}  : {" "}
+                    <Typography component="span" fontWeight={data?.user?.address ? 'bold' : ''}>{data?.user?.address || "وارد نشده است."}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                نوع مجموعه  : {"  "}
-              </span>
-              <span>
-                {`${data?.tenantType}`}
-              </span>
+          </Box>
+          {/* اطلاعات والدین */}
+          <Box mb={2}>
+            <Divider sx={{ my: 2 }}>اطلاعات والدین</Divider>
+            <Grid container spacing={4} className='text-end'>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"نام پدر"} :{" "}<Typography component="span" fontWeight="bold">{data?.fatherName || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2" >
+                    {"تحصیلات پدر"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.fatherEducation || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"شغل پدر"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.fatherJob || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"همراه پدر"} : {" "}
+                    <Typography component="span" fontWeight="bold"> {data?.fatherPhone || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"نام مادر"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.motherName || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"تحصیلات مادر"}  : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.motherEducation || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"شغل مادر"}  : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.motherJob || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box>
+                  <Typography variant="body2">
+                    {"همراه مادر"}  : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.motherPhone || "-"}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                مدیریت مجموعه  : {" "}
-              </span>
-              <span>
-                {data?.managerName}
-              </span>
+          </Box>
+
+          {/* اطلاعات تکمیلی */}
+          <Box mb={2}>
+            <Divider sx={{ my: 2 }}>اطلاعات تکمیلی</Divider>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"سطح دانش آموز"} : {" "}
+                    <Typography component="span" fontWeight="bold">{data?.level?.title}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}></Grid>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Typography variant="body2">
+                    {"تاریخ ثبت نام"} : {" "}
+                    <Typography component="span" fontWeight="bold"> {jalaliDate(data?.createdAt) || '-'}</Typography>
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                شناسه پکیج : {" "}
-              </span>
-              <span>
-                {data?.packageId}
-              </span>
+          </Box>
+
+          {/* گالری تصاویر */}
+          <Box mb={3} mt={3}>
+            <Grid container spacing={2}>
+              {data?.birthCertificateImageId && (
+                <Grid item xs={12} sm={6}>
+                  <Divider sx={{ my: 2 }}>{"تصویر کارت ملی یا شناسنامه"}</Divider>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      paddingTop: '62%',
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      boxShadow: 3,
+                      cursor: 'pointer',
+                      transition: 'transform 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                    onClick={() => handleImageClick(data?.birthCertificateImage?.mediaUrl)}
+                  >
+                    <img
+                      src={data?.birthCertificateImage?.mediaUrl}
+                      alt={"خطا در نمایش تصویر کارت ملی یا شناسنامه"}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
+              {data?.sportsInsuranceImageId && (
+                <Grid item xs={12} sm={6}>
+                  <Divider sx={{ my: 2 }}>{"تصویر کارت بیمه ورزشی"}</Divider>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      paddingTop: '62%',
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      boxShadow: 3,
+                      cursor: 'pointer',
+                      transition: 'transform 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                    onClick={() => handleImageClick(data?.sportsInsuranceImage?.mediaUrl)}
+                  >
+                    <img
+                      src={data?.sportsInsuranceImage?.mediaUrl}
+                      alt={"خطا در نمایش تصویر کارت بیمه ورزشی"}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                شماره تماس : {" "}
-              </span>
-              <span>
-                {data?.phoneNumber || "وارد نشده است"}
-              </span>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                آیدی اینستاگرام : {" "}
-              </span>
-              <span>
-                {data?.instagramUrl || "وارد نشده است"}
-              </span>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                آدرس سایت : {" "}
-              </span>
-              <span>
-                {data?.websiteUrl || "وارد نشده است"}
-              </span>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                نشانی: {" "}
-              </span>
-              <span>
-                {data?.address || "وارد نشده است"}
-              </span>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                تاریخ ثبت مجموعه : {" "}
-              </span>
-              <span>
-                {jalaliDateWithTime(data?.createdAt)}
-              </span>
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+          <Box display="flex" justifyContent="flex-end">
+            <Button variant="contained" color="error" endIcon={<CancelIcon />} onClick={handleCancel}>
+              انصراف
+            </Button>
+          </Box>
+        </Box>
+        {/* اینجا Modal مربوط به نمایش بزرگ تصاویر */}
+        <Dialog open={openImageModal} onClose={handleCloseImageModal} maxWidth="md">
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseImageModal}
+            sx={{ position: 'absolute', right: 8, top: 8, color: '#555' }}
           >
-            <Grid item xs={12} sx={{ mx: 'auto' }}>
-              <hr />
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={6}>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="flex-end"
+            <CloseIcon />
+          </IconButton>
+          <DialogContent>
+            <Box
+              sx={{
+                width: 600,
+                height: 400,
+                mx: 'auto',
+                borderRadius: 2,
+                overflow: 'hidden',
+                backgroundColor: '#f0f0f0',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.3)',
+              }}
             >
-              <Button
-                className="float-left"
-                variant="contained"
-                endIcon={<CancelIcon />}
-                color="error"
-                onClick={() => {
-                  handleCancel();
-                }}
-              >
-                انصراف
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Box>
+              <img
+                src={selectedImage}
+                alt="تصویر"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </Box>
+          </DialogContent>
+        </Dialog>
+      </React.Fragment>
     </Modal>
   );
 };
-export default DetailCourseLevelCatModal;
+export default DetailStudentModal;

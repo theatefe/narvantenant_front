@@ -76,6 +76,7 @@ const CreateStudentModal = (props) => {
   const handleSetLevelList = (e) => {
     const catId = e.target.value;
     const levelCat = levelCats.find((cat) => cat.id == catId);
+    console.log(levelCat);
     setLevels(levelCat.CourseLevels);
   }
   // FORMIK *******************************************************
@@ -363,7 +364,7 @@ const CreateStudentModal = (props) => {
               >
                 {levelCats && levelCats.length>0 ? levelCats.map((cat) => {
                   return (
-                    <MenuItem value={cat.id}>{cat.title}</MenuItem>
+                    <MenuItem value={cat.id} key={cat.id}>{cat.title}</MenuItem>
                   )
                 }) : (<MenuItem value={null}>دسته بندی برای نمایش وجود ندارد</MenuItem>)}
               </TextField>
@@ -385,7 +386,7 @@ const CreateStudentModal = (props) => {
               >
                 {levels &&  levels.length > 0 ? levels.map((level) => {
                   return (
-                    <MenuItem value={level.id}>{level.title}</MenuItem>
+                    <MenuItem value={level.id} key={level.id}>{level.title}</MenuItem>
                   )
                 }) : (<MenuItem value={null}>سطحی برای نمایش وجود ندارد</MenuItem>)}
               </TextField>

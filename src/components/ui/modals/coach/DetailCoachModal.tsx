@@ -1,7 +1,7 @@
 import React from 'react';
 
 // API **************************************************
-import GetTenant from '../../../api/CourseLevelCat/GetOne';
+import GetCoach from '../../../api/Coach/GetOne';
 // TOAST *******************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
@@ -10,56 +10,50 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-
+import Divider from '@mui/material/Divider';
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
 // OTHER *******************************************************
 import {
-  jalaliDateWithTime,
+  jalaliDate,
 } from '../../../helpers/convertDate.helper';
 // redux seters ************************************************
 
 // STYLE MODAL
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '45%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: 700,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
 };
 
-const DetailCourseLevelCatModal = (props) => {
+const DetailCoachModal = (props) => {
   const { token, id, openModal, setOpenModal } = props;
   // HOOKS FORM **************************************************
   const [data, setData] = React.useState(null);
-  // GET Tenant ********************************************
-  const getTenant = async () => {
+  const [openImageModal, setOpenImageModal] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState('');
+  // GET Coach ********************************************
+  const getCoach = async () => {
     if (id) {
       try {
-        const tenant = await GetTenant(token, id);
-        if (tenant.status === 200) {
-          const info = {
-            name: tenant.data.name || "",
-            packageId: tenant.data.packageId || "",
-            tenantType: tenant.data.tenantType || "",
-            logoId: null,
-            phoneNumber: tenant.data.phoneNumber || "",
-            address: tenant.data.address || "",
-            managerName: tenant.data.managerName || "",
-            instagramUrl: tenant.data.instagramUrl || "",
-            websiteUrl: tenant.data.websiteUrl || "",
-            createdAt: tenant.data.createdAt || "",
-          };
-          setData(info);
+        const coach = await GetCoach(token, id);
+        if (coach.status === 200) {
+          setData(coach.data);
         } else {
-          toast.ErrorNotify(tenant.data.error);
+          toast.ErrorNotify(coach.data.error);
           setOpenModal(false);
         }
       } catch (error) {
-        console.error("Error loading Tenant:", error);
+        console.error("Error loading Coach:", error);
         setOpenModal(false);
       }
     }
@@ -69,9 +63,17 @@ const DetailCourseLevelCatModal = (props) => {
     setData(null);
     setOpenModal(false);
   };
+  // OPEN IMAGE DIALOG ***************************************
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setOpenImageModal(true);
+  };
+  const handleCloseImageModal = () => {
+    setOpenImageModal(false);
+  };
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getTenant();
+    getCoach();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -80,129 +82,235 @@ const DetailCourseLevelCatModal = (props) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style} justifyContent="center" alignItems="center">
-        <Grid item xs={12} md={12} alignItems="center">
-          <Typography variant="h5" gutterBottom>
-            {id && `اطلاعات مجموعه: ${data?.tenantType} ${data?.name} `}
+      <React.Fragment>
+        <Box
+          sx={{
+            ...style,
+            maxWidth: 900,
+            bgcolor: '#fff',
+            borderRadius: 4,
+            boxShadow: 24,
+            p: 4,
+            mx: 'auto',
+          }}
+        >
+          <Typography variant="h5" gutterBottom align="center">
+            {id && `اطلاعات مربی`}
           </Typography>
-        </Grid>
-        <hr />
-        <form>
-          <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                نام مجموعه  : {"  "}
-              </span>
-              <span>
-                {`   ${data?.name}`}
-              </span>
+
+          <Divider sx={{ my: 2 }}>اطلاعات شخصی</Divider>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">نام مربی:</Typography>
+              <Typography fontWeight="bold">{data?.user?.name}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                نوع مجموعه  : {"  "}
-              </span>
-              <span>
-                {`${data?.tenantType}`}
-              </span>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">نام خانوادگی مربی:</Typography>
+              <Typography fontWeight="bold">{data?.user?.lastName}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                مدیریت مجموعه  : {" "}
-              </span>
-              <span>
-                {data?.managerName}
-              </span>
+
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">جنسیت:</Typography>
+              <Typography fontWeight="bold">{data?.user?.genderText}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                شناسه پکیج : {" "}
-              </span>
-              <span>
-                {data?.packageId}
-              </span>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">تاریخ تولد:</Typography>
+              <Typography fontWeight="bold">{jalaliDate(data?.user?.dateOfBirth) || "-"}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                شماره تماس : {" "}
-              </span>
-              <span>
-                {data?.phoneNumber || "وارد نشده است"}
-              </span>
+
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">کد ملی:</Typography>
+              <Typography fontWeight="bold">{data?.user?.nationalCode}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                آیدی اینستاگرام : {" "}
-              </span>
-              <span>
-                {data?.instagramUrl || "وارد نشده است"}
-              </span>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">شماره همراه:</Typography>
+              <Typography fontWeight="bold">{data?.user?.mobile}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                آدرس سایت : {" "}
-              </span>
-              <span>
-                {data?.websiteUrl || "وارد نشده است"}
-              </span>
+
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">آدرس:</Typography>
+              <Typography fontWeight="bold">{data?.user?.address || "-"}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                نشانی: {" "}
-              </span>
-              <span>
-                {data?.address || "وارد نشده است"}
-              </span>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">وضعیت مربی:</Typography>
+              <Typography fontWeight="bold" color={data?.activeStatus === "فعال" ? 'success.main' : 'error.main'}>{data?.activeStatus}</Typography>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <span className={"text-secondary"}>
-                تاریخ ثبت مجموعه : {" "}
-              </span>
-              <span>
-                {jalaliDateWithTime(data?.createdAt)}
-              </span>
+
+
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }}>اطلاعات تکمیلی</Divider>
             </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <Typography color="text.secondary">تاریخ صدور کارت مربیگری:</Typography>
+              <Typography fontWeight="bold">
+                {jalaliDate(data?.coachingCardIssueDate) || '-'}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4} >
+              <Typography color="text.secondary">تاریخ ثبت نام:</Typography>
+              <Typography fontWeight="bold">{jalaliDate(data?.createdAt)}</Typography>
+            </Grid>
+
+            {/* تصاویر */}
+              <Grid container spacing={3} mt={2}>
+                {data?.coachingCardImageId && (
+                  <Grid item xs={12} sm={4}>
+                    <Typography mb={1}>تصویر کارت مربیگری</Typography>
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '100%',
+                        paddingTop: '62%',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: 3,
+                        cursor: 'pointer',
+                        transition: 'transform 0.3s',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                        },
+                      }}
+                      onClick={() => handleImageClick(data?.coachingCardImage?.mediaUrl)}
+                    >
+                      <img
+                        src={data?.coachingCardImage?.mediaUrl}
+                        alt="خطا در نمایش تصویر کارت مربیگری"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                )}
+
+                {data?.nationalCardImageId && (
+                  <Grid item xs={12} sm={4}>
+                    <Typography mb={1}>تصویر کارت ملی</Typography>
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '100%',
+                        paddingTop: '62%',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: 3,
+                        cursor: 'pointer',
+                        transition: 'transform 0.3s',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                        },
+                      }}
+                      onClick={() => handleImageClick(data?.nationalCardImage?.mediaUrl)}
+                    >
+                      <img
+                        src={data?.nationalCardImage?.mediaUrl}
+                        alt="خطا در نمایش تصویر کارت ملی"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                )}
+
+                {data?.sportsInsuranceImageId && (
+                  <Grid item xs={12} sm={4}>
+                    <Typography mb={1}>تصویر کارت بیمه ورزشی</Typography>
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '100%',
+                        paddingTop: '62%',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: 3,
+                        cursor: 'pointer',
+                        transition: 'transform 0.3s',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                        },
+                      }}
+                      onClick={() => handleImageClick(data?.sportsInsuranceImage?.mediaUrl)}
+                    >
+                      <img
+                        src={data?.sportsInsuranceImage?.mediaUrl}
+                        alt="خطا در نمایش کارت بیمه ورزشی"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                )}
+              </Grid>
           </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={12} sx={{ mx: 'auto' }}>
-              <hr />
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={6}>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="flex-end"
+
+          <Divider sx={{ my: 3 }} />
+
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              color="error"
+              endIcon={<CancelIcon />}
+              onClick={handleCancel}
             >
-              <Button
-                className="float-left"
-                variant="contained"
-                endIcon={<CancelIcon />}
-                color="error"
-                onClick={() => {
-                  handleCancel();
-                }}
-              >
-                انصراف
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Box>
+              انصراف
+            </Button>
+          </Box>
+        </Box>
+        {/* اینجا Modal مربوط به نمایش بزرگ تصاویر */}
+        <Dialog open={openImageModal} onClose={handleCloseImageModal} maxWidth="md">
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseImageModal}
+            sx={{ position: 'absolute', right: 8, top: 8, color: '#555' }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent>
+            <Box
+              sx={{
+                width: 600,
+                height: 400,
+                mx: 'auto',
+                borderRadius: 2,
+                overflow: 'hidden',
+                backgroundColor: '#f0f0f0',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.3)',
+              }}
+            >
+              <img
+                src={selectedImage}
+                alt="تصویر"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </Box>
+          </DialogContent>
+        </Dialog>
+      </React.Fragment>
     </Modal>
   );
 };
-export default DetailCourseLevelCatModal;
+export default DetailCoachModal;

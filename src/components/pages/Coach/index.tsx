@@ -17,11 +17,13 @@ import Skeleton from '@mui/material/Skeleton';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
+import IconInfoCircle from '../../ui/icon/IconInfoCircle';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
 import CreateCoachModal from '../../ui/modals/coach/CreateCoachModal';
 import DeleteCoachModal from '../../ui/modals/coach/DeleteCoachModal';
+import DetailCoachModal from '../../ui/modals/coach/DetailCoachModal';
 // OTHER *******************************************************
 import {
   jalaliDate,
@@ -83,9 +85,10 @@ const CoachList = () => {
   // modal *********************************************************
   const [modal, setModal] = React.useState(false);
   const [deleteModal, setDeleteModal] = React.useState(false);
+  const [detailModal, setDetailModal] = React.useState(false);
   // QUERY *********************************************************
   // ***************************************************************
-  // open info modal ***********************************************
+  // open delete modal ***********************************************
   const openDeleteModal = (id: number) => {
     setSelectedCoachId(id);
     setDeleteModal(true);
@@ -95,10 +98,16 @@ const CoachList = () => {
     setSelectedCoachId(id);
     setModal(true);
   };
+  // open info modal ************************************************
+  const openInfoModal = (id: number) => {
+    setSelectedCoachId(id);
+    setDetailModal(true);
+  };
   // close modal ****************************************************
   const closeModal = () => {
     setSelectedCoachId(null);
     setDeleteModal(false);
+    setDetailModal(false);
     setModal(false);
   };
   // Get Coach List ********************************
@@ -126,6 +135,16 @@ const CoachList = () => {
         </Tooltip>,
         option: (
           <>
+            {permissions.find((p) => p.operationId === 'tenantGetCoach') ?
+              <Tooltip title="مشاهده جزئیات" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openInfoModal(item.id)}
+                >
+                  <IconInfoCircle className="svg-menu-icon" />
+                </span>
+              </Tooltip> : null
+            }
             {permissions.find((p) => p.operationId === 'tenantUpdateCoach') ?
               <Tooltip className="mx-2" title="ویرایش" arrow>
                 <span
@@ -205,6 +224,13 @@ const CoachList = () => {
                   token={token}
                   id={selectedCoachId}
                   openModal={deleteModal}
+                  setOpenModal={closeModal}
+                />
+                <DetailCoachModal
+                  list={getCoachList}
+                  token={token}
+                  id={selectedCoachId}
+                  openModal={detailModal}
                   setOpenModal={closeModal}
                 />
               </div>
