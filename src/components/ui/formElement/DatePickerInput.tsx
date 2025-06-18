@@ -21,10 +21,15 @@ const DatePickerInput = (props: any) => {
   // passing the ref to a DOM element,
   // so that the parent has a reference to the DOM node
   const handleSelectDate = (date) => {
-    props.setSelectedDate(date.format?.('YYYY-MM-DD').toString());
+    date ?
+      props.setSelectedDate(date.format?.('YYYY-MM-DD').toString())
+      : props.setSelectedDate(null);
   };
+
+  const initialValue = new Date();
+  initialValue.setHours(0, 0, 0, 0);
   return (
-    <FormControl className="mt-3 w-100">
+    <FormControl className="mt-0 w-100">
       <InputLabel sx={{ style }} size="small">
         {props.label}
       </InputLabel>
@@ -58,16 +63,28 @@ const DatePickerInput = (props: any) => {
         }
         label={props.label}
       />
-
-      <DatePicker
-        onChange={(date) => {
-          handleSelectDate(date);
-        }}
-        ref={datepickerRef}
-        calendar={persian}
-        locale={persian_fa}
-        format="MM/DD/YYYY"
-      />
+      {props.selectedDate ? (
+        <DatePicker
+          onChange={(date) => {
+            handleSelectDate(date);
+          }}
+          ref={datepickerRef}
+          calendar={persian}
+          locale={persian_fa}
+          format="MM/DD/YYYY"
+        />
+      ): (
+          <DatePicker
+            value={initialValue}
+            onChange={(date) => {
+              handleSelectDate(date);
+            }}
+            ref={datepickerRef}
+            calendar={persian}
+            locale={persian_fa}
+            format="MM/DD/YYYY"
+          />
+    )}
     </FormControl>
   );
 };

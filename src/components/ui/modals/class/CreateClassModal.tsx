@@ -197,6 +197,15 @@ const CreateClassModal = (props) => {
     formik.resetForm();
     setOpenModal(false);
   };
+  // FORMAT AMOUNT *******************************************
+  const formatAmount = (value) => {
+    if (!value) return "";
+    const cleaned = value.toString().replace(/,/g, "");
+    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  const unformatAmount = (value) => {
+    return value.replace(/,/g, "");
+  };
   // USE EFFECT **********************************************
   React.useEffect(() => {
     getCourseLevels();
@@ -395,11 +404,16 @@ const CreateClassModal = (props) => {
             <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
-                label={`مبلغ شهریه کلاس *`}
+                label={`مبلغ شهریه (ریال) *`}
                 variant="outlined"
                 name="tuitionFee"
-                value={formik.values.tuitionFee}
-                onChange={formik.handleChange}
+                value={formatAmount(formik.values.tuitionFee)}
+                onChange={(e)=>{
+                  const rawValue = unformatAmount(e.target.value);
+                  if (/^\d*$/.test(rawValue)) {
+                    formik.setFieldValue("tuitionFee", rawValue);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.tuitionFee && Boolean(formik.errors.tuitionFee)}
                 helperText={formik.touched.tuitionFee && formik.errors.tuitionFee}

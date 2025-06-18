@@ -53,6 +53,9 @@ const Product = Loadable(
 const Order = Loadable(
   lazy(() => import('../pages/Order'))
 )
+const ClassEnrollmentPayList = Loadable(
+  lazy(() => import('../pages/ClassEnrollmentPay'))
+)
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -126,6 +129,10 @@ const MainRoutes = {
           path: '/orders',
           element: <Order />,
         },
+        {
+          path: '/classEnrollmentPays/:id',
+          element: <ClassEnrollmentPayList/>
+        }
       ],
     },
   ],

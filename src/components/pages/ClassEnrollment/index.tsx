@@ -14,6 +14,7 @@ import Skeleton from '@mui/material/Skeleton';
 // MUi Icon ***************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconTrash from '../../ui/icon/IconTrash';
+import IconDollarSign from '../../ui/icon/IconDollarSignCircle';
 // TOAST ******************************************************
 import * as toast from '../../ui/Toast';
 // component ***************************************************
@@ -117,7 +118,7 @@ const ClassEnrollmentList = () => {
         paymentStatus: (
           <>
             <span
-              className={item?.paymentStatus == 'پرداخت شده' ? "bg-success text-dark px-2 py-1 rounded" : item?.paymentStatus == 'پرداخت نشده' ? "bg-danger text-dark px-2 py-1 rounded" : "bg-warning text-dark px-2 py-1 rounded"}
+              className={item?.paymentStatus == 'پرداخت شده' ? "bg-success text-white px-2 py-1 rounded" : item?.paymentStatus == 'پرداخت نشده' ? "bg-danger text-white px-2 py-1 rounded" : "bg-warning text-dark px-2 py-1 rounded"}
             >
               {item?.paymentStatus}
             </span>
@@ -130,6 +131,18 @@ const ClassEnrollmentList = () => {
         </Tooltip>,
         option: (
           <>
+            {permissions.find((p) => p.operationId === 'tenantGetStudentPaymentList') ?
+              <Tooltip className="mx-1" title="لیست پرداختی‌ها" arrow>
+                <Link to={`/classEnrollmentPays/${item.id}`}>
+                <span
+                  className="svg-container cursor-pointer"
+                >
+                    <IconDollarSign className="svg-menu-icon text-dark" />
+                  </span>
+                </Link>
+              </Tooltip>
+              : null
+            }
             {permissions.find((p) => p.operationId === 'tenantDeleteClassEnrollment') ?
               <Tooltip title="حذف" arrow>
                 <span

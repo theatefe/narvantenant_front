@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // REDUX SETTER *****************************************
 import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
-import GetAllPaymentsApi from '../../api/Payment/GetAll';
+import GetAllStudentPayments from '../../api/Payment/GetAllStudentPayments';
 // MUI **************************************************
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -36,16 +37,6 @@ const columns = [
     accessorKey: 'id',
     header: 'ردیف',
     size: 20,
-  },
-  {
-    accessorKey: 'student',
-    header: ' دانش‌آموز',
-    size: 160,
-  },
-  {
-    accessorKey: 'class',
-    header: 'کلاس',
-    size: 160,
   },
   {
     accessorKey: 'amount',
@@ -80,7 +71,9 @@ const columns = [
 ];
 
 
-const PaymentList = () => {
+const ClassEnrollmentPayList = () => {
+  // PARAMS *******************************************************
+  const { id } = useParams();
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
@@ -89,6 +82,7 @@ const PaymentList = () => {
   // STATE *********************************************************
   const [selectedPaymentId, setSelectedPaymentId] = React.useState(null);
   const [data, setData] = React.useState([]);
+  const [payments, setPayments] = React.useState(0);
   const [isLoaded, setIsloaded] = React.useState(false);
   // modal **********************************************************
   const [modal, setModal] = React.useState(false);
@@ -105,7 +99,7 @@ const PaymentList = () => {
   };
   // Get PAYMENT List *************************************************
   const getPaymentsList = async () => {
-    const list = await GetAllPaymentsApi(token);
+    const list = await GetAllStudentPayments(token, Number(id));
     if (list.status === 403) {
       setTimeout(() => {
         window.location.href = '/';
@@ -115,47 +109,54 @@ const PaymentList = () => {
       return;
     }
     if (list.status === 200) {
-      const arr = list.data.map((item, index: number) => ({
-        id: index + 1,
-        student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
-        class: item?.class?.name,
-        amount: (
-          <Tooltip title='تراکنش موفق' arrow>
+      let sum = 0;
+      for (const i of list.data) {
+        sum += i.amount;
+      }
+      setPayments(sum);
+      const arr = list.data.map((item, index: number) => {
+        return {
+          id: index + 1,
+          student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
+          class: item?.class?.name,
+          amount: (
+            <Tooltip title='تراکنش موفق' arrow>
+              <span>
+                <span className='bg-success text-white rounded px-3 py-1'>{numberSpace(item?.amount)} ریال </span>
+              </span>
+            </Tooltip>
+          ),
+          paymentStatus: <span className={item?.class?.tuitionFee == payments ? 'text-success' : 'text-danger'}>
+            {item?.class?.tuitionFee == payments  ? 'پرداخت تکمیل شده است' : 'پرداخت تکمیل نشده است'}
+          </span>,
+          paymentDate: <Tooltip title={jalaliDateWithTime(item.paymentDate)} arrow>
             <span>
-              <span className='bg-success text-white rounded px-1'>{numberSpace(item?.amount)}</span>
+              {jalaliDate(item.paymentDate)}
             </span>
-          </Tooltip>
-        ),
-        paymentStatus: <span className={item?.class?.tuitionFee - item?.amount == 0 ? 'text-success' : 'text-danger'}>
-          {item?.class?.tuitionFee - item?.amount == 0 ? 'پرداخت تکمیل شده است' : 'پرداخت تکمیل نشده است'}
-        </span>,
-        paymentDate: <Tooltip title={jalaliDateWithTime(item.paymentDate)} arrow>
-          <span>
-            {jalaliDate(item.paymentDate)}
-          </span>
-        </Tooltip>,
-        paymentMethod: item?.paymentMethod,
-        date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
-          <span>
-            {jalaliDate(item.createdAt)}
-          </span>
-        </Tooltip>,
-        option: (
-          <>
-            {permissions.find((p) => p.operationId === 'tenantUpdatePayment') ?
-              <Tooltip className="mx-2" title="ویرایش" arrow>
-                <span
-                  className="svg-container cursor-pointer"
-                  onClick={() => openEditModal(item.id)}
-                >
-                  <IconEdit className="svg-menu-icon" />
-                </span>
-              </Tooltip>
-              : null
-            }
-          </>
-        ),
-      }));
+          </Tooltip>,
+          paymentMethod: item?.paymentMethod,
+          date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
+            <span>
+              {jalaliDate(item.createdAt)}
+            </span>
+          </Tooltip>,
+          option: (
+            <>
+              {permissions.find((p) => p.operationId === 'tenantUpdatePayment') ?
+                <Tooltip className="mx-2" title="ویرایش" arrow>
+                  <span
+                    className="svg-container cursor-pointer"
+                    onClick={() => openEditModal(item.id)}
+                  >
+                    <IconEdit className="svg-menu-icon" />
+                  </span>
+                </Tooltip>
+                : null
+              }
+            </>
+          ),
+        };
+      });
       setData(arr);
     }
     dispatch(setIsLoading(false));
@@ -165,8 +166,8 @@ const PaymentList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - پرداخت شهریه دانش آموزان',
-        description: ' لیست پرداخت شهریه های کل دانش آموزان',
+        title: 'نارون - پرداخت های دانش آموز',
+        description: ' لیست پرداخت های دانش آموز',
       }),
     );
     getPaymentsList();
@@ -180,7 +181,9 @@ const PaymentList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">لیست پرداخت شهریه ها</h3></div>
+                <div className="col-6 text-right"><h4 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">
+                  {`لیست پرداخت های ${data ? data[0]?.student : ''} دانش آموز کلاس ${data ? data[0]?.class : ''}`}
+                </h4></div>
                 <div className="col-6 text-left">
                   {/* {
                     permissions.find((p) => p.operationId === 'tenantCreatePayment') ?
@@ -257,4 +260,4 @@ const PaymentList = () => {
     </Box>
   );
 };
-export default PaymentList;
+export default ClassEnrollmentPayList;
