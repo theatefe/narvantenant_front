@@ -104,8 +104,7 @@ const ClassEnrollmentPayList = () => {
       setTimeout(() => {
         window.location.href = '/';
       }, 3400);
-      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
-
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید')
       return;
     }
     if (list.status === 200) {

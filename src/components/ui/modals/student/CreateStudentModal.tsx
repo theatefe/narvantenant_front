@@ -73,10 +73,9 @@ const CreateStudentModal = (props) => {
     }
   }
   // GET LEVEL LIST ***********************************************
-  const handleSetLevelList = (e) => {
-    const catId = e.target.value;
+  const handleSetLevelList = (categoryId) => {
+    const catId = categoryId;
     const levelCat = levelCats.find((cat) => cat.id == catId);
-    console.log(levelCat);
     setLevels(levelCat.CourseLevels);
   }
   // FORMIK *******************************************************
@@ -207,6 +206,7 @@ const CreateStudentModal = (props) => {
           });
           setNationalCard(student.data.birthCertificateImage);
           setSportsInsuranceDard(student.data.sportsInsuranceImage);
+          handleSetLevelList(student.data.level.categoryId);
         } else {
           toast.ErrorNotify(student.data.error);
           setOpenModal(false);
@@ -356,13 +356,13 @@ const CreateStudentModal = (props) => {
                 variant="outlined"
                 name="levelCatId"
                 value={formik.values.levelCatId}
-                onChange={(e) => { formik.handleChange(e), handleSetLevelList(e) }}
+                onChange={(e) => { formik.handleChange(e), handleSetLevelList(e.target.value) }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.levelCatId && Boolean(formik.errors.levelCatId)}
                 helperText={formik.touched.levelCatId && formik.errors.levelCatId}
                 size="small"
               >
-                {levelCats && levelCats.length>0 ? levelCats.map((cat) => {
+                {levelCats && levelCats.length > 0 ? levelCats.map((cat) => {
                   return (
                     <MenuItem value={cat.id} key={cat.id}>{cat.title}</MenuItem>
                   )
@@ -384,7 +384,7 @@ const CreateStudentModal = (props) => {
                 size="small"
                 disabled={!formik.values.levelCatId ? true : false}
               >
-                {levels &&  levels.length > 0 ? levels.map((level) => {
+                {levels && levels.length > 0 ? levels.map((level) => {
                   return (
                     <MenuItem value={level.id} key={level.id}>{level.title}</MenuItem>
                   )

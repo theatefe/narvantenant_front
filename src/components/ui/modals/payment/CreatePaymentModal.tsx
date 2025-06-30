@@ -18,7 +18,7 @@ import Modal from '@mui/material/Modal';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
 // UI ********************************************************
-import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
+import DatePickersInput from '../../formElement/DatePickerInput';
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
 import SendIcon from '@mui/icons-material/Send';
@@ -64,6 +64,7 @@ const CreatePaymentModal = (props) => {
       amount: "",
       paymentMethod: "",
       paymentDate: "",
+      paymentDateChanged: false,
     },
     validationSchema: Yup.object({
       classId: Yup.string()
@@ -106,7 +107,9 @@ const CreatePaymentModal = (props) => {
             amount: payment?.data?.amount || null,
             paymentMethod: payment?.data?.paymentMethod === "کارت به کارت" ? "CARDTOCARD" : payment?.data?.amount === 'دستگاه کارتخوان' ? "POS" : "CACH",
             paymentDate: jalaliDate(payment.data.paymentDate) || null,
+            paymentDateChanged: false,
           });
+          setPaymentDate(payment.data.paymentDate);
           getStudents(payment.data.classId);
         } else {
           toast.ErrorNotify(payment.data.error);
@@ -127,7 +130,7 @@ const CreatePaymentModal = (props) => {
       "studentId": values.studentId,
       "amount": values.amount,
       "paymentMethod": values.paymentMethod,
-      "paymentDate": georgianDate(ToInt(paymentDate)),
+      "paymentDate": values.paymentDateChanged ? georgianDate(ToInt(values.paymentDate)) : paymentDate,
     }
     if (id) {
       // updated
@@ -287,8 +290,11 @@ const CreatePaymentModal = (props) => {
               />
             </Grid>
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('paymentDate', date); setPaymentDate(date); }}
+              <DatePickersInput
+                setSelectedDate={(date: Date) => {
+                  formik.setFieldValue('paymentDate', date);
+                  formik.setFieldValue("paymentDateChanged", true);
+                }}
                 selectedDate={formik.values.paymentDate}
                 fullWidth
                 label={`تاریخ پرداخت `}

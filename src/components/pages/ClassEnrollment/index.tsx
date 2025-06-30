@@ -133,7 +133,7 @@ const ClassEnrollmentList = () => {
           <>
             {permissions.find((p) => p.operationId === 'tenantGetStudentPaymentList') ?
               <Tooltip className="mx-1" title="لیست پرداختی‌ها" arrow>
-                <Link to={`/classEnrollmentPays/${item.id}`}>
+                <Link to={`/classEnrollmentPays/${item?.id}`}>
                 <span
                   className="svg-container cursor-pointer"
                 >
@@ -147,7 +147,7 @@ const ClassEnrollmentList = () => {
               <Tooltip title="حذف" arrow>
                 <span
                   className="svg-container cursor-pointer"
-                  onClick={() => openDeleteModal(item.id)}
+                  onClick={() => openDeleteModal(item?.id)}
                 >
                   <IconTrash className="svg-menu-icon text-danger" />
                 </span>
