@@ -11,6 +11,7 @@ import * as toast from '../../../ui/Toast';
 // MUI **************************************************
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -24,6 +25,7 @@ import { styled } from '@mui/material/styles';
 // UI ********************************************************
 import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
 // MUi Icon **************************************************
+import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
 import SendIcon from '@mui/icons-material/Send';
 // Formik & yup ************************************************
@@ -48,10 +50,10 @@ const VisuallyHiddenInput = styled('input')({
 });
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: 900,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
@@ -63,6 +65,7 @@ const CreateCoachModal = (props) => {
   const [coachingCard, setCoachingCard] = React.useState(null);
   const [nationalCard, setNationalCard] = React.useState(null);
   const [sportsInsuranceCard, setSportsInsuranceDard] = React.useState(null);
+  const [lastRetrainingCard, setLastRetrainingCard] = React.useState(null);
   const [birthDate, setBirthDate] = React.useState(null);
   const [toDate, setTodDate] = React.useState(null);
   const [roleList, setRoleList] = React.useState([]);
@@ -124,6 +127,7 @@ const CreateCoachModal = (props) => {
       "coachingCardImageId": coachingCard ? coachingCard.id : null,
       "nationalCardImageId": nationalCard ? nationalCard.id : null,
       "sportsInsuranceImageId": sportsInsuranceCard ? sportsInsuranceCard.id : null,
+      "lastRetrainingCardImageId": lastRetrainingCard ? lastRetrainingCard.id : null,
     }
     if (id) {
       //updated
@@ -173,6 +177,7 @@ const CreateCoachModal = (props) => {
           setCoachingCard(coach.data.coachingCardImage);
           setNationalCard(coach.data.nationalCardImage);
           setSportsInsuranceDard(coach.data.sportsInsuranceImage);
+          setLastRetrainingCard(coach.lastRetrainingCardImage);
         } else {
           toast.ErrorNotify(coach.data.error);
           setOpenModal(false);
@@ -212,6 +217,28 @@ const CreateCoachModal = (props) => {
       if (label === 'sportsInsuranceCard') {
         setSportsInsuranceDard(fileUploaded.data);
       }
+      if (label === 'lastRetrainingCard') {
+        setLastRetrainingCard(fileUploaded.data);
+      }
+    }
+  };
+  // HANDLE REMOVE FILE ***********************************
+  const handleRemoveImage = (type: string) => {
+    switch (type) {
+      case 'coachingCard':
+        setCoachingCard(null);
+        break;
+      case 'nationalCard':
+        setNationalCard(null);
+        break;
+      case 'sportsInsuranceCard':
+        setSportsInsuranceDard(null);
+        break;
+      case 'lastRetrainingCard':
+        setLastRetrainingCard(null);
+        break;
+      default:
+        console.warn(`Unknown type: ${type}`);
     }
   };
   // HANDLE CLOSE *****************************************
@@ -220,6 +247,7 @@ const CreateCoachModal = (props) => {
     setCoachingCard(null);
     setNationalCard(null);
     setSportsInsuranceDard(null);
+    setLastRetrainingCard(null);
     setOpenModal(false);
   };
   // USE EFFECT **********************************************
@@ -379,51 +407,333 @@ const CreateCoachModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            {/* کارت ملی */}
+            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
-                startIcon={nationalCard !== null ? <CloudDoneIcon /> : <CloudUploadIcon />}
-                color={nationalCard !== null ? 'success' : 'primary'}
+                startIcon={nationalCard ? <CloudDoneIcon /> : <CloudUploadIcon />}
+                color={nationalCard ? 'success' : 'primary'}
                 fullWidth
+                sx={{ mb: 1 }}
               >
-                آپلود تصویر کارت ملی {nationalCard && ` :: ` + nationalCard.mediaUrl.split('/files/')[1]}
+                آپلود تصویر کارت ملی
                 <VisuallyHiddenInput
                   type="file"
+                  accept="image/*"
                   onChange={(e) => handleFileChange("nationalCard", e)}
                 />
               </Button>
+
+              {nationalCard && (
+                <Box
+                  sx={{
+                    width: 200, // عرض ثابت کارت
+                    height: 200, // ارتفاع ثابت کارت
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    p: 1,
+                    mt: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      overflow: 'hidden',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <img
+                      src={nationalCard.preview || nationalCard.mediaUrl}
+                      alt="کارت ملی"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
+                        borderRadius: 4,
+                        display: 'block',
+                      }}
+                    />
+                    <IconButton
+                      color="error"
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'rgba(255,255,255,0.7)'
+                      }}
+                      onClick={() => handleRemoveImage("nationalCard")}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="caption"
+                    sx={{
+                      mt: 1,
+                      textAlign: 'center',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {nationalCard.name || nationalCard.mediaUrl.split('/files/')[1]}
+                  </Typography>
+                </Box>
+              )}
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            {/* کارت مربیگری */}
+            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
-                startIcon={coachingCard !== null ? <CloudDoneIcon /> : <CloudUploadIcon />}
-                color={coachingCard !== null ? 'success' : 'primary'}
+                startIcon={coachingCard ? <CloudDoneIcon /> : <CloudUploadIcon />}
+                color={coachingCard ? 'success' : 'primary'}
                 fullWidth
+                sx={{ mb: 1 }}
               >
-                آپلود تصویر کارت مربیگری {coachingCard && ` :: ` + coachingCard.mediaUrl.split('/files/')[1]}
+                آپلود تصویر کارت مربیگری
                 <VisuallyHiddenInput
                   type="file"
+                  accept="image/*"
                   onChange={(e) => handleFileChange("coachingCard", e)}
                 />
               </Button>
-            </Grid>
 
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              {coachingCard && (
+                <Box
+                  sx={{
+                    width: 200, // عرض ثابت کارت
+                    height: 200, // ارتفاع ثابت کارت
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    p: 1,
+                    mt: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      overflow: 'hidden',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <img
+                      src={coachingCard.preview || coachingCard.mediaUrl}
+                      alt="کارت مربیگری"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
+                        borderRadius: 4,
+                        display: 'block',
+                      }}
+                    />
+                    <IconButton
+                      color="error"
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'rgba(255,255,255,0.7)',
+                      }}
+                      onClick={() => handleRemoveImage("coachingCard")}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="caption"
+                    sx={{
+                      mt: 1,
+                      textAlign: 'center',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {coachingCard.name || coachingCard.mediaUrl.split('/files/')[1]}
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+            {/* کارت بیمه ورزشی */}
+            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
-                startIcon={sportsInsuranceCard !== null ? <CloudDoneIcon /> : <CloudUploadIcon />}
-                color={sportsInsuranceCard !== null ? 'success' : 'primary'}
+                startIcon={sportsInsuranceCard ? <CloudDoneIcon /> : <CloudUploadIcon />}
+                color={sportsInsuranceCard ? 'success' : 'primary'}
                 fullWidth
+                sx={{ mb: 1 }}
               >
-                آپلود تصویر کارت بیمه ورزشی {sportsInsuranceCard && ` :: ` + sportsInsuranceCard.mediaUrl.split('/files/')[1]}
+                تصویر کارت بیمه ورزشی
                 <VisuallyHiddenInput
                   type="file"
+                  accept="image/*"
                   onChange={(e) => handleFileChange("sportsInsuranceCard", e)}
                 />
               </Button>
+
+              {sportsInsuranceCard && (
+                <Box
+                  sx={{
+                    width: 200, // عرض ثابت کارت
+                    height: 200, // ارتفاع ثابت کارت
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    p: 1,
+                    mt: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      overflow: 'hidden',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <img
+                      src={sportsInsuranceCard.preview || sportsInsuranceCard.mediaUrl}
+                      alt="کارت بیمه ورزشی"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
+                        borderRadius: 4,
+                        display: 'block',
+                      }}
+                    />
+                    <IconButton
+                      color="error"
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'rgba(255,255,255,0.7)',
+                      }}
+                      onClick={() => handleRemoveImage("sportsInsuranceCard")}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="caption"
+                    sx={{
+                      mt: 1,
+                      textAlign: 'center',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {sportsInsuranceCard.name || sportsInsuranceCard.mediaUrl.split('/files/')[1]}
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+            {/* گواهی آخرین بازآموزی */}
+            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+              <Button
+                component="label"
+                variant="outlined"
+                startIcon={lastRetrainingCard ? <CloudDoneIcon /> : <CloudUploadIcon />}
+                color={lastRetrainingCard ? 'success' : 'primary'}
+                fullWidth
+                sx={{ mb: 1 }}
+              >
+                تصویر گواهی آخرین بازآموزی
+                <VisuallyHiddenInput
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange("lastRetrainingCard", e)}
+                />
+              </Button>
+
+              {lastRetrainingCard && (
+                <Box
+                  sx={{
+                    width: 200, // عرض ثابت کارت
+                    height: 200, // ارتفاع ثابت کارت
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    p: 1,
+                    mt: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      overflow: 'hidden',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <img
+                      src={lastRetrainingCard.preview || lastRetrainingCard.mediaUrl}
+                      alt="گواهی آخرین بازآموزی"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
+                        borderRadius: 4,
+                        display: 'block',
+                      }}
+                    />
+                    <IconButton
+                      color="error"
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'rgba(255,255,255,0.7)',
+                      }}
+                      onClick={() => handleRemoveImage("lastRetrainingCard")}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="caption"
+                    sx={{
+                      mt: 1,
+                      textAlign: 'center',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {lastRetrainingCard.name || lastRetrainingCard.mediaUrl.split('/files/')[1]}
+                  </Typography>
+                </Box>
+              )}
             </Grid>
           </Grid>
           <Grid
