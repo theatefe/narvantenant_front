@@ -43,6 +43,7 @@ const CreateAttendanceModal = (props) => {
   const {
     list,
     token,
+    isPoolTenant,
     classId,
     openModal,
     setOpenModal,
@@ -61,7 +62,7 @@ const CreateAttendanceModal = (props) => {
     // created
     const created = await AddAttendanceApi(token, body);
     if (created.status === 200) {
-      toast.SuccessNotify("وضعیت حضور دانش آموز ثبت شد");
+      toast.SuccessNotify(`وضعیت حضور ${isPoolTenant ? 'شناگر' : 'دانش آموز'} ثبت شد`);
       handleCancel();
       list();
     } else {
@@ -99,7 +100,7 @@ const CreateAttendanceModal = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12} className='text-center'>
             <Typography variant="h5" gutterBottom align="center">
-              ثبت حضور و غیاب دانش‌آموزان
+              {`ثبت حضور و غیاب ${isPoolTenant ? 'شناگر' : 'دانش آموز'}`}
             </Typography>
             <span> تاریخ: {jalaliDate(today)} </span>
           </Grid>
@@ -114,7 +115,7 @@ const CreateAttendanceModal = (props) => {
                     <TableRow>
                       <TableCell>
                         <Typography>
-                          نام و نام خانوادگی دانش آموز
+                          نام و نام خانوادگی {isPoolTenant ? 'شناگر' : 'دانش آموز'}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">

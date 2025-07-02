@@ -39,7 +39,7 @@ const columns = [
   },
   {
     accessorKey: 'student',
-    header: 'دانش آموز',
+    header: 'شناگر',
     size: 120,
   },
   {

@@ -30,7 +30,9 @@ const style = {
 };
 
 const DeleteStudentModal = (props) => {
-  const { token, id, openModal, setOpenModal, list } = props;
+  const {
+ token,isPoolTenant, id, openModal, setOpenModal, list 
+} = props;
   // HOOKS FORM **************************************************
   const [student, setStudent] = React.useState(null);
   const [sending, setSending] = React.useState(false);
@@ -43,7 +45,7 @@ const DeleteStudentModal = (props) => {
       }
       const deleted = await DeleteStudentApi(token, body);
       if (deleted.status === 200) {
-        toast.SuccessNotify('دانش آموز با موفقیت از سیستم حذف شد');
+        toast.SuccessNotify('اطلاعات کاربر با موفقیت از سیستم حذف شد');
         handleCancel();
         setSending(false);
         list();
@@ -88,14 +90,14 @@ const DeleteStudentModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {`حذف دانش‌آموز`}
+            {`حذف ${isPoolTenant ? 'شناگر':'دانش آموز'}`}
           </Typography>
         </Grid>
         <hr />
         <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
           <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
             <Typography>
-              آیا برای حذف دانش آموز <span className='text-danger'>{student?.user?.name + ' ' + student?.user?.lastName}</span> اطمینان دارید؟
+              آیا برای حذف {isPoolTenant ? 'شناگر' : 'دانش آموز'} <span className='text-danger'>{student?.user?.name + ' ' + student?.user?.lastName}</span> اطمینان دارید؟
             </Typography>
           </Grid>
         </Grid>

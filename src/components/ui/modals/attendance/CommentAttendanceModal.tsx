@@ -37,7 +37,9 @@ const style = {
 };
 
 const CommentAttendanceModal = (props) => {
-  const { list, token, id, openModal, setOpenModal } = props;
+  const {
+ list,isPoolTenant, token, id, openModal, setOpenModal
+} = props;
   // HOOKS FORM **************************************************
   const [data, setData] = React.useState(null);
   const [score, setScore] = React.useState(0);
@@ -90,7 +92,7 @@ const CommentAttendanceModal = (props) => {
     }
     const commented = await CreateCommentAttendanceApi(token, body);
     if (commented.status === 200) {
-      toast.SuccessNotify('امتیاز دانش آموزبا موفقیت ثبت شد');
+      toast.SuccessNotify(`امتیاز ${isPoolTenant?'شناگر':'دانش آموز'} با موفقیت ثبت شد`);
       handleCancel();
       setSending(false);
       list()
@@ -128,7 +130,7 @@ const CommentAttendanceModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {` ثبت امتیاز و عملکرد دانش آموز ${data?.classEnrollment?.student?.user?.name + ' ' + data?.classEnrollment?.student?.user?.lastName}`}
+            {` ثبت امتیاز و عملکرد${isPoolTenant ? 'شناگر' : 'دانش آموز'} ${data?.classEnrollment?.student?.user?.name + ' ' + data?.classEnrollment?.student?.user?.lastName}`}
           </Typography>
         </Grid>
         <hr />
@@ -137,7 +139,7 @@ const CommentAttendanceModal = (props) => {
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
-                label={`توضیحاتی برای عملکرد دانش آموز بنویسید ... `}
+                label={`توضیحاتی برای عملکرد ${isPoolTenant ? 'شناگر' : 'دانش آموز'} بنویسید ... `}
                 variant="outlined"
                 name="description"
                 value={formik.values.description}

@@ -87,6 +87,7 @@ const ClassList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
@@ -147,7 +148,7 @@ const ClassList = () => {
         option: (
           <>
             {permissions.find((p) => p.operationId === 'tenantListClassEnrollment') ?
-              <Tooltip className="mx-2" title="دانش آموزان" arrow>
+              <Tooltip className="mx-2" title={isPoolTenant? 'شناگران':'دانش آموزان'} arrow>
                 <Link to={`/classEnrollments/${item.id}`}>
                   <span
                     className="svg-container cursor-pointer text-dark"

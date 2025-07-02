@@ -27,7 +27,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID *********************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام و نام خانوادگی دانش آموز', ' کلاس', 'مبلغ پرداختی', 'تاریخ پرداخت', 'نحوه پرداخت', 'تاریخ ثبت'];
+const header = ['ردیف', 'نام و نام خانوادگی', ' کلاس', 'مبلغ پرداختی', 'تاریخ پرداخت', 'نحوه پرداخت', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -37,7 +37,7 @@ const columns = [
   },
   {
     accessorKey: 'student',
-    header: ' دانش‌آموز',
+    header: ' نام و نام خانوادگی',
     size: 160,
   },
   {
@@ -82,6 +82,7 @@ const PaymentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
@@ -163,8 +164,8 @@ const PaymentList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - پرداخت شهریه دانش آموزان',
-        description: ' لیست پرداخت شهریه های کل دانش آموزان',
+        title: `نارون - پرداخت شهریه ${isPoolTenant?'شناگران':'دانش آموزان'}`,
+        description: ` لیست پرداخت شهریه ${isPoolTenant ? 'شناگران' : 'دانش آموزان'}`,
       }),
     );
     getPaymentsList();
@@ -200,6 +201,7 @@ const PaymentList = () => {
                 <CreatePaymentModal
                   list={getPaymentsList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   id={selectedPaymentId}
                   openModal={modal}
                   setOpenModal={closeModal}

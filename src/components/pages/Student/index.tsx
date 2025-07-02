@@ -76,6 +76,7 @@ const StudentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
@@ -177,8 +178,8 @@ const StudentList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - دانش آموزان',
-        description: ' مدیریت دانش آموزان',
+        title: isPoolTenant ? 'نارون - شناگران' : 'نارون - دانش آموزان',
+        description: isPoolTenant ? 'مدیریت شناگران' : ' مدیریت دانش آموزان',
       }),
     );
     getStudentList();
@@ -192,7 +193,9 @@ const StudentList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دانش آموزان</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">
+                {isPoolTenant ? 'مدیریت شناگران':'مدیریت دانش آموزان'}
+                </h3></div>
                 <div className="col-6 text-left">
                   {
                     permissions.find((p) => p.operationId === 'tenantCreateStudent') ?
@@ -206,7 +209,7 @@ const StudentList = () => {
                         disableElevation
                         endIcon={<AddCircleOutlineIcon />}
                       >
-                        ثبت نام دانش آموز جدید
+                        {isPoolTenant ? 'ثبت نام شناگر جدید' : 'ثبت نام دانش آموز جدید'}
                       </Button> : null
                   }
 
@@ -214,6 +217,7 @@ const StudentList = () => {
                 <CreateStudentModal
                   list={getStudentList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   id={selectedStudentId}
                   openModal={modal}
                   setOpenModal={closeModal}
@@ -221,6 +225,7 @@ const StudentList = () => {
                 <DeleteStudentModal
                   list={getStudentList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   id={selectedStudentId}
                   openModal={deleteModal}
                   setOpenModal={closeModal}
@@ -228,6 +233,7 @@ const StudentList = () => {
                 <DetailStudentModal
                   list={getStudentList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   id={selectedStudentId}
                   openModal={infoModal}
                   setOpenModal={closeModal}

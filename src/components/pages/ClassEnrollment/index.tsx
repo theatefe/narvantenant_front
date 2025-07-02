@@ -29,7 +29,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID **************************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام و نام خانوادگی دانش آموز', 'نام کلاس', 'وضعیت پرداخت شهریه', 'تعداد جلسات مانده', 'تاریخ ثبت'];
+const header = ['ردیف', 'نام و نام خانوادگی', 'نام کلاس', 'وضعیت پرداخت شهریه', 'تعداد جلسات مانده', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -39,7 +39,7 @@ const columns = [
   },
   {
     accessorKey: 'student',
-    header: 'نام و نام خانوادگی دانش‌آموز',
+    header: 'نام و نام خانوادگی ',
     size: 200,
   },
   {
@@ -76,6 +76,7 @@ const ClassEnrollmentList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
@@ -166,8 +167,8 @@ const ClassEnrollmentList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - مدیریت کلاس‌بندی دانش آموزان',
-        description: ' مدیریت کلاس‌بندی دانش آموزان',
+        title: `نارون - مدیریت کلاس بندی ${isPoolTenant?'شناگران':'دانش آموزان'}`,
+        description: `مدیریت کلاس بندی ${isPoolTenant ? 'شناگران' : 'دانش آموزان'}`,
       }),
     );
     getClassEnrollmentList();
@@ -181,7 +182,7 @@ const ClassEnrollmentList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت دانش آموزان کلاس {data && data[0]?.class}</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت {isPoolTenant?'شناگران':'دانش آموزان'} کلاس {data && data[0]?.class}</h3></div>
                 <div className="col-6 text-left">
                   {
                     permissions.find((p) => p.operationId === 'tenantCreateClassEnrollment') ?
@@ -195,7 +196,7 @@ const ClassEnrollmentList = () => {
                         disableElevation
                         endIcon={<AddCircleOutlineIcon />}
                       >
-                        افزودن دانش‌آموز جدید به کلاس
+                        {`افزودن ${isPoolTenant?'شناگر':'دانش آموز'} جدید به کلاس`}
                       </Button>
                       : null
                   }
@@ -203,6 +204,7 @@ const ClassEnrollmentList = () => {
                 <CreateClassEnrollmentModal
                   list={getClassEnrollmentList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   classId={classId}
                   id={selectedClassEnrollmentId}
                   openModal={modal}
@@ -211,6 +213,7 @@ const ClassEnrollmentList = () => {
                 <DeleteClassEnrollmentModal
                   list={getClassEnrollmentList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   classId={classId}
                   id={selectedClassEnrollmentId}
                   openModal={deleteModal}

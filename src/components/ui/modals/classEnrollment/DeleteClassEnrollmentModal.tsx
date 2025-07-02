@@ -29,7 +29,9 @@ const style = {
 };
 
 const DeleteClassEnrollmentModal = (props) => {
-  const { token, id, openModal, setOpenModal, list } = props;
+  const {
+    token, isPoolTenant, id, openModal, setOpenModal, list
+  } = props;
   // HOOKS FORM **************************************************
   const [classEnrollment, setClassEnrollment] = React.useState(null);
   const [sending, setSending] = React.useState(false);
@@ -42,7 +44,7 @@ const DeleteClassEnrollmentModal = (props) => {
       }
       const deleted = await DeleteClassEnrollmentApi(token, body);
       if (deleted.status === 200) {
-        toast.SuccessNotify('دانش آموز با موفقیت از کلاس مورد نظر حذف شد');
+        toast.SuccessNotify(` ${isPoolTenant ? 'شناگر' : 'دانش آموز'}با موفقیت از کلاس مورد نظر حذف شد`);
         handleCancel();
         setSending(false);
         list();
@@ -87,14 +89,16 @@ const DeleteClassEnrollmentModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {`حذف دانش آموز از کلاس`}
+            {`حذف ${isPoolTenant ? 'شناگر' : 'دانش آموز'} از کلاس`}
           </Typography>
         </Grid>
         <hr />
         <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
           <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
             <Typography>
-              آیا برای حذف دانش آموز<span className='text-danger'>{classEnrollment?.student?.user?.name + ' ' + classEnrollment?.student?.user?.lastName}</span>  از کلاس <span className='text-danger'>{classEnrollment?.class?.name }</span> اطمینان دارید؟
+              آیا برای حذف {isPoolTenant ? 'شناگر' : 'دانش آموز'}
+              <span className='text-danger'>{classEnrollment?.student?.user?.name + ' ' + classEnrollment?.student?.user?.lastName}</span>
+              از کلاس <span className='text-danger'>{classEnrollment?.class?.name}</span> اطمینان دارید؟
             </Typography>
           </Grid>
         </Grid>

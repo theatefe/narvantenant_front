@@ -58,7 +58,7 @@ const CreateCourseLevelCatModal = (props) => {
     },
     validationSchema: Yup.object({
       studentId: Yup.string()
-        .required("انتخاب دانش آموز الزامی است"),
+        .required("انتخاب شناگر الزامی است"),
       skillId: Yup.string()
         .required("انتخاب مهارت شنا الزامی است"),
       area: Yup.string()
@@ -205,7 +205,7 @@ const CreateCourseLevelCatModal = (props) => {
               <TextField
                 fullWidth
                 select
-                label="انتخاب دانش‌آموز *"
+                label="انتخاب شناگر *"
                 variant="outlined"
                 name="studentId"
                 value={formik.values.studentId}

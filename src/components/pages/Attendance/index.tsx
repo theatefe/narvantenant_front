@@ -29,7 +29,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID **************************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام و نام خانوادگی دانش آموز', 'مربی', 'وضعیت حضور', 'تاریخ ثبت'];
+const header = ['ردیف', 'نام و نام خانوادگی', 'مربی', 'وضعیت حضور', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 let columns = [
   {
@@ -39,7 +39,7 @@ let columns = [
   },
   {
     accessorKey: 'student',
-    header: 'نام و نام خانوادگی دانش‌آموز',
+    header: 'نام و نام خانوادگی',
     size: 200,
   },
   {
@@ -71,6 +71,7 @@ const AttendanceList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   if (!permissions.find((p) => p.operationId === 'tenantUpdateStatusAttendance')) {
     columns = columns.filter(i => i.accessorKey !== 'status')
@@ -111,7 +112,7 @@ const AttendanceList = () => {
       return;
     }
     if (response.status === 200) {
-      toast.SuccessNotify('وضعیت حضور دانش آموز بروزرسانی شد')
+      toast.SuccessNotify(`وضعیت حضور ${isPoolTenant? 'شناگر':'دانش آموز'} بروزرسانی شد`)
       getAttendanceList();
     } else {
       toast.ErrorNotify(response.data.error);
@@ -191,8 +192,8 @@ const AttendanceList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - حضور و غیاب دانش آموزان',
-        description: ' مدیریت حضور و غیاب دانش آموزان',
+        title: `نارون - حضور و غیاب ${isPoolTenant? 'شناگران':'اندانش آموز'}`,
+        description: ` مدیریت حضور و غیاب ${isPoolTenant ? 'شناگران' : 'اندانش آموز'}`,
       }),
     );
     getAttendanceList();
@@ -228,6 +229,7 @@ const AttendanceList = () => {
                 <CreateAttendanceModal
                   list={getAttendanceList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   classId={classId}
                   openModal={modal}
                   setOpenModal={closeModal}
@@ -235,6 +237,7 @@ const AttendanceList = () => {
                 <CommentAttendanceModal
                   list={getAttendanceList}
                   token={token}
+                  isPoolTenant={isPoolTenant}
                   id={selectedAttendanceId}
                   openModal={commentModal}
                   setOpenModal={closeModal}

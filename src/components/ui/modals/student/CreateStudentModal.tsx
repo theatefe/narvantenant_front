@@ -57,7 +57,9 @@ const style = {
 };
 
 const CreateStudentModal = (props) => {
-  const { token, id, openModal, setOpenModal, list } = props;
+  const {
+ token, isPoolTenant, id, openModal, setOpenModal, list 
+} = props;
   // HOOKS FORM **************************************************
   const [levelCats, setLevelCats] = React.useState([]);
   const [levels, setLevels] = React.useState([]);
@@ -101,26 +103,26 @@ const CreateStudentModal = (props) => {
     },
     validationSchema: Yup.object({
       name: Yup.string()
-        .required("نام دانش آموز الزامی است")
-        .min(3, "نام دانش آموز باید حداقل ۳ کاراکتر باشد"),
+        .required("نام الزامی است")
+        .min(3, "نام باید حداقل ۳ کاراکتر باشد"),
       lastName: Yup.string()
-        .required("نام خانوادگی دانش آموز الزامی است")
-        .min(3, "نام خانوادگی دانش آموز باید حداقل ۳ کاراکتر باشد"),
+        .required("نام خانوادگی الزامی است")
+        .min(3, "نام خانوادگی باید حداقل ۳ کاراکتر باشد"),
       gender: Yup.string()
-        .required("انتخاب جنسیت دانش آموز الزامی است")
-        .min(1, "جنسیت دانش آموز انتخاب نشده است"),
+        .required("انتخاب جنسیت الزامی است")
+        .min(1, "جنسیت انتخاب نشده است"),
       nationalCode: Yup.string()
-        .required("کدملی دانش آموز الزامی است")
-        .min(3, "کد ملی دانش آموز باید حداقل ۳ کاراکتر باشد"),
+        .required("کدملی الزامی است")
+        .min(3, "کد ملی باید حداقل ۳ کاراکتر باشد"),
       mobile: Yup.string()
-        .required("شماره همراه دانش آموز الزامی است")
-        .min(3, "شماره همراه دانش آموز به درستی وارد نشده است"),
+        .required("شماره همراه الزامی است")
+        .min(3, "شماره همراه به درستی وارد نشده است"),
       levelCatId: Yup.string()
         .required("انتخاب دسته بندی سطح آموزشی الزامی است")
         .min(1, "دسته بندی سطح آموزشی انتخاب نشده است"),
       levelId: Yup.string()
-        .required("انتخاب سطح دانش آموز الزامی است")
-        .min(1, "سطح آموزشی دانش آموز انتخاب نشده است"),
+        .required("انتخاب سطح الزامی است")
+        .min(1, "سطح آموزشی انتخاب نشده است"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -157,7 +159,7 @@ const CreateStudentModal = (props) => {
       //updated
       const updated = await StudentUpdateApi(token, { ...body, id });
       if (updated.status === 200) {
-        toast.SuccessNotify('اطلاعات دانش آموز با موفقیت بروزرسانی شد');
+        toast.SuccessNotify('اطلاعات با موفقیت بروزرسانی شد');
         handleCancel();
         setSending(false);
         list()
@@ -169,7 +171,7 @@ const CreateStudentModal = (props) => {
       // created
       const created = await StudentCreateApi(token, body);
       if (created.status === 200) {
-        toast.SuccessNotify("ثبت نام دانش آموز با موفقیت انجام شد");
+        toast.SuccessNotify("ثبت نام با موفقیت انجام شد");
         handleCancel();
         setSending(false);
         list();
@@ -257,7 +259,7 @@ const CreateStudentModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {id ? `ویرایش اطلاعات دانش آموز :  ${formik.values.name + ' ' + formik.values.lastName}` : ` ثبت نام دانش آموز جدید`}
+            {id ? `ویرایش اطلاعات ${isPoolTenant? 'شناگر':'دانش آموز'} :  ${formik.values.name + ' ' + formik.values.lastName}` : ` ثبت نام ${isPoolTenant?'شناگر' : 'دانش آموز'} جدید`}
           </Typography>
         </Grid>
         <hr />
@@ -373,7 +375,7 @@ const CreateStudentModal = (props) => {
               <TextField
                 fullWidth
                 select
-                label="تعیین سطح دانش آموز  *"
+                label="تعیین سطح  *"
                 variant="outlined"
                 name="levelId"
                 value={formik.values.levelId}

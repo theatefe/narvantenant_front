@@ -47,7 +47,7 @@ const DeleteCourseLevelCatModal = (props) => {
       }
       const deleted = await DeleteSkillRecordApi(token, body);
       if (deleted.status === 200) {
-        toast.SuccessNotify('رکورد دانش آموز با موفقیت حذف شد');
+        toast.SuccessNotify('رکورد شناگر با موفقیت حذف شد');
         handleCancel();
         setSending(false);
         list();
@@ -99,7 +99,7 @@ const DeleteCourseLevelCatModal = (props) => {
         <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
           <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
             <Typography>
-              آیا برای حذف رکورد شنای دانش آموز <span className='text-danger'>{record?.student?.user?.name + ' '+ record?.student?.user?.lastName}</span> اطمینان دارید؟
+              آیا برای حذف رکورد شنای  <span className='text-danger'>{record?.student?.user?.name + ' '+ record?.student?.user?.lastName}</span> اطمینان دارید؟
             </Typography>
           </Grid>
         </Grid>

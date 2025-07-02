@@ -24,7 +24,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID *********************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام دسته بندی', 'مجموعه', 'تاریخ ثبت'];
+const header = ['ردیف', 'نام و نام خانوادگی', 'شماره همراه', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -34,12 +34,12 @@ const columns = [
   },
   {
     accessorKey: 'title',
-    header: 'دانش آموز',
+    header: 'نام و نام خانوادگی',
     size: 120,
   },
   {
     accessorKey: 'tenant',
-    header: 'همراه دانش آموز',
+    header: 'شماره تماس',
     size: 60,
   },
   {

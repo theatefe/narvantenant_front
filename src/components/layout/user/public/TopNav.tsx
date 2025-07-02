@@ -36,6 +36,7 @@ function TopNav(props) {
   // redux hooks
   const { auth } = useSelector((state: RootState) => state.userAuth);
   const permissions = auth.userInfo.Role.Permissions;
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const token = auth.token;
   const location = useLocation();
   const [openModal, setOpenModal] = React.useState(false);
@@ -168,7 +169,7 @@ function TopNav(props) {
                     className={selectedMenu('/students')}
                   >
                     <ListItemText>
-                      <div className="sub-menu"> دانش آموزان</div>
+                      <div className="sub-menu">{isPoolTenant ? 'شناگران' : 'دانش آموزان'}</div>
                     </ListItemText>
                   </ListItemButton>
                 </Link> : null}
@@ -292,68 +293,70 @@ function TopNav(props) {
             )}
           </> : null}
         {/* ************************* SkillRecord ************************** */}
-        <>
-          <ListItemButton onClick={handleClickPoolRecord} style={{ display: PoolRecordsSetMenu }}>
-            {openMenu ? (
-              openPoolRecord ? <ExpandLessIcon /> : <ExpandMoreIcon />
-            ) : (
-              ''
+        {isPoolTenant ? (
+          <>
+            <ListItemButton onClick={handleClickPoolRecord} style={{ display: PoolRecordsSetMenu }}>
+              {openMenu ? (
+                openPoolRecord ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              ) : (
+                ''
+              )}
+              {openMenu ? <ListItemText primary='رکوردگیری و نتایج تست' /> : ''}
+
+              <ListItemIcon style={styleList}>
+                <PoolIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
+
+            {openMenu && (
+              <Collapse in={openPoolRecord} timeout="auto" unmountOnExit>
+                {/* تعریف مهارت ها */}
+                {permissions.find((p) => p.operationId === 'tenantListSkill') ?
+                  <List component="div" disablePadding>
+                    <Link to="/skills" className="panel-link">
+                      <ListItemButton
+                        sx={{ pr: 4 }}
+                        className={selectedMenu('/skills')}
+                      >
+                        <ListItemText>
+                          <div className="sub-menu"> {'ماده'}</div>
+                        </ListItemText>
+                      </ListItemButton>
+                    </Link>
+                  </List>
+                  : null}
+                {permissions.find((p) => p.operationId === 'tenantListSkillRange') ?
+                  <List component="div" disablePadding>
+                    <Link to="/skillRanges" className="panel-link">
+                      <ListItemButton
+                        sx={{ pr: 4 }}
+                        className={selectedMenu('/skillRanges')}
+                      >
+                        <ListItemText>
+                          <div className="sub-menu">{'متراژ ماده'}</div>
+                        </ListItemText>
+                      </ListItemButton>
+                    </Link>
+                  </List>
+                  : null}
+                {permissions.find((p) => p.operationId === 'tenantListSkillRecord') ?
+                  <List component="div" disablePadding>
+                    <Link to="/skillRecords" className="panel-link">
+                      <ListItemButton
+                        sx={{ pr: 4 }}
+                        className={selectedMenu('/skillRecords')}
+                      >
+                        <ListItemText>
+                          <div className="sub-menu">مدیریت رکوردها </div>
+                        </ListItemText>
+                      </ListItemButton>
+                    </Link>
+                  </List>
+                  : null}
+              </Collapse>
             )}
-            {openMenu ? <ListItemText primary="مدیریت مسابقات شنا" /> : ''}
-
-            <ListItemIcon style={styleList}>
-              <PoolIcon className="ms-auto" />
-            </ListItemIcon>
-          </ListItemButton>
-
-          {openMenu && (
-            <Collapse in={openPoolRecord} timeout="auto" unmountOnExit>
-              {/* تعریف مهارت ها */}
-              {permissions.find((p) => p.operationId === 'tenantListSkill') ?
-                <List component="div" disablePadding>
-                  <Link to="/skills" className="panel-link">
-                    <ListItemButton
-                      sx={{ pr: 4 }}
-                      className={selectedMenu('/skills')}
-                    >
-                      <ListItemText>
-                        <div className="sub-menu"> مهارت ها</div>
-                      </ListItemText>
-                    </ListItemButton>
-                  </Link>
-                </List>
-                : null}
-              {permissions.find((p) => p.operationId === 'tenantListSkillRange') ?
-                <List component="div" disablePadding>
-                  <Link to="/skillRanges" className="panel-link">
-                    <ListItemButton
-                      sx={{ pr: 4 }}
-                      className={selectedMenu('/skillRanges')}
-                    >
-                      <ListItemText>
-                        <div className="sub-menu"> محدوده مهارت </div>
-                      </ListItemText>
-                    </ListItemButton>
-                  </Link>
-                </List>
-                : null}
-              {permissions.find((p) => p.operationId === 'tenantListSkillRecord') ?
-                <List component="div" disablePadding>
-                  <Link to="/skillRecords" className="panel-link">
-                    <ListItemButton
-                      sx={{ pr: 4 }}
-                      className={selectedMenu('/skillRecords')}
-                    >
-                      <ListItemText>
-                        <div className="sub-menu">مدیریت رکوردها </div>
-                      </ListItemText>
-                    </ListItemButton>
-                  </Link>
-                </List>
-                : null}
-            </Collapse>
-          )}
-        </>
+          </>
+        ) : (<></>)}
         {/* ************************* Products and orders ************************** */}
         <>
           <ListItemButton onClick={handleClickMarket} style={{ display: MarketSetMenu }}>

@@ -36,7 +36,7 @@ const style = {
 };
 
 const DetailStudentModal = (props) => {
-  const { token, id, openModal, setOpenModal } = props;
+  const { token,isPoolTenant, id, openModal, setOpenModal } = props;
   // HOOKS FORM **************************************************
   const [data, setData] = React.useState(null);
   const [openImageModal, setOpenImageModal] = React.useState(false);
@@ -95,7 +95,7 @@ const DetailStudentModal = (props) => {
           }}
         >
           <Typography variant="h5" gutterBottom align="center">
-            {id && `اطلاعات دانش‌آموز`}
+            {id && isPoolTenant ? 'شناگر' : 'دانش آموز'}
           </Typography>
           <Divider sx={{ my: 2 }}>اطلاعات شخصی</Divider>
 
@@ -236,7 +236,7 @@ const DetailStudentModal = (props) => {
               <Grid item xs={12} sm={4}>
                 <Box>
                   <Typography variant="body2">
-                    {"سطح دانش آموز"} : {" "}
+                    {`سطح ${isPoolTenant ? 'شناگر' : 'دانش آموز'}`} : {" "}
                     <Typography component="span" fontWeight="bold">{data?.level?.title}</Typography>
                   </Typography>
                 </Box>

@@ -47,6 +47,7 @@ const style = {
 const CreateClassEnrollmentModal = (props) => {
   const {
     token,
+    isPoolTenant,
     classId,
     id,
     openModal,
@@ -69,7 +70,7 @@ const CreateClassEnrollmentModal = (props) => {
     },
     validationSchema: Yup.object({
       studentId: Yup.string()
-        .required("انتخاب دانش آموز الزامی است"),
+        .required(`انتخاب ${isPoolTenant ? 'شناگر' : 'دانش آموز'} الزامی است`),
       payment: Yup.string()
         .required("تعیین وضعیت پرداخت الزامی است"),
       amount: Yup.string()
@@ -103,19 +104,19 @@ const CreateClassEnrollmentModal = (props) => {
     // created
     const created = await ClassEnrollmentCreateApi(token, body);
     if (created.status === 200) {
-      toast.SuccessNotify("دانش آموز با موفقیت به کلاس اضافه شد");
+      toast.SuccessNotify(`${isPoolTenant ? 'شناگر' : 'دانش آموز'} با موفقیت به کلاس اضافه شد`);
       if (values.amount > 0) {
         const paymentBody = {
           "classId": Number(classId),
           "studentId": values.studentId,
           "amount": values.amount,
           "paymentMethod": values.paymentMethod || "POS",
-          "paymentDate": georgianDate(ToInt(values.paymentDate)) ,
+          "paymentDate": georgianDate(ToInt(values.paymentDate)),
         }
         // create payment
         const createPayment = await PaymentCreateApi(token, paymentBody);
         if (createPayment.status === 200) {
-          toast.SuccessNotify("پرداخت شهریه دانش آموز با موفقیت ثبت شد");
+          toast.SuccessNotify(`پرداخت شهریه ${isPoolTenant ? 'شناگر' : 'دانش آموز'} با موفقیت ثبت شد`);
         }
         else {
           toast.ErrorNotify(createPayment.data.error);
@@ -185,7 +186,7 @@ const CreateClassEnrollmentModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {classInfo ? ` افزودن دانش آموز به کلاس ${classInfo?.name}` : "افزودن دانش آموز به کلاس"}
+            {classInfo ? ` افزودن${isPoolTenant ? 'شناگر' : 'دانش آموز'} به کلاس ${classInfo?.name}` : `افزودن${isPoolTenant ? 'شناگر' : 'دانش آموز'} به کلاس`}
           </Typography>
         </Grid>
         <hr />
@@ -195,7 +196,7 @@ const CreateClassEnrollmentModal = (props) => {
               <TextField
                 fullWidth
                 select
-                label="انتخاب دانش‌آموز *"
+                label={`انتخاب ${isPoolTenant ? 'شناگر' : 'دانش آموز'} *`}
                 variant="outlined"
                 name="studentId"
                 value={formik.values.studentId}
@@ -207,7 +208,7 @@ const CreateClassEnrollmentModal = (props) => {
               >
                 {students && students.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item.id}>دانش آموز : {item?.user?.name + ' ' + item?.user?.lastName}</MenuItem>
+                    <MenuItem key={item.id} value={item.id}> {isPoolTenant ? 'شناگر' : 'دانش آموز'} : {item?.user?.name + ' ' + item?.user?.lastName}</MenuItem>
                   )
                 })}
               </TextField>

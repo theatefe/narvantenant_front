@@ -11,8 +11,6 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import Button from '@mui/material/Button';
-// MUi Icon ***************************************************
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 // MUI Icon ****************************************************
 import IconEdit from '../../ui/icon/IconEdit';
 // TOAST ******************************************************
@@ -30,7 +28,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID *********************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام و نام خانوادگی دانش آموز', ' کلاس', 'مبلغ پرداختی', 'تاریخ پرداخت', 'نحوه پرداخت', 'تاریخ ثبت'];
+const header = ['ردیف', 'مبلغ پرداختی', ' تاریخ پرداخت', 'نحوه پرداخت', 'وضعیت پرداخت شهریه', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -77,6 +75,7 @@ const ClassEnrollmentPayList = () => {
   // REDUX *********************************************************
   const dispatch = useDispatch();
   const { auth } = useSelector((state: RootState) => state.userAuth);
+  const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   // STATE *********************************************************
@@ -165,8 +164,8 @@ const ClassEnrollmentPayList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - پرداخت های دانش آموز',
-        description: ' لیست پرداخت های دانش آموز',
+        title: `نارون - پرداخت های ${isPoolTenant ? 'شناگر':'دانش آموز'}`,
+        description: `لیست پرداخت های ${isPoolTenant ? 'شناگر' : 'دانش آموز'}`,
       }),
     );
     getPaymentsList();
@@ -181,7 +180,7 @@ const ClassEnrollmentPayList = () => {
               {/* Header Section */}
               <div className="row mb-4">
                 <div className="col-6 text-right"><h4 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">
-                  {`لیست پرداخت های ${data ? data[0]?.student : ''} دانش آموز کلاس ${data ? data[0]?.class : ''}`}
+                  {`لیست پرداخت های ${data ? data[0]?.student : ''}${isPoolTenant ? 'شناگر' : 'دانش آموز'} کلاس ${data ? data[0]?.class : ''}`}
                 </h4></div>
                 <div className="col-6 text-left">
                   {/* {
