@@ -1,13 +1,15 @@
 import React from 'react';
 
 // API *************************************************
-import ProductCatUpdateApi from '../../../api/ProductCat/Update';
-import ProductCatCreateApi from '../../../api/ProductCat/Add';
-import GetProductCatApi from '../../../api/ProductCat/GetOne';
+import PlanUpdateApi from '../../../api/Plan/Update';
+import PlanCreateApi from '../../../api/Plan/Add';
+import GetPlanApi from '../../../api/Plan/GetOne';
+import GetAllStudent from '../../../api/Student/GetAll';
 import UploadFileApi from '../../../api/Common/UploadFile';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
+import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -51,20 +53,26 @@ const style = {
   p: 2,
 };
 
-const CreateProductCatModal = (props) => {
+const CreatePlanModal = (props) => {
   const { token, id, openModal, setOpenModal, list } = props;
   // HOOKS FORM **************************************************
   const [sending, setSending] = React.useState(false);
-  const [coverImage, setCoverImage] = React.useState(null);
+  const [attachFile, setAttachFile] = React.useState(null);
+  const [students, setStudents] = React.useState([]);
   // FORMIK *******************************************************
   const formik = useFormik({
     initialValues: {
       title: "",
+      description: "",
+      status: "",
+      studentId: null,
     },
     validationSchema: Yup.object({
       title: Yup.string()
-        .required("عنوان دسته بندی الزامی است")
-        .min(3, "عنوان دسته بندی باید حداقل ۳ کاراکتر باشد"),
+        .required("عنوان برنامه الزامی است")
+        .min(3, "عنوان برنامه باید حداقل ۳ کاراکتر باشد"),
+      status: Yup.string()
+        .required("نوع برنامه الزامی است")
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -75,16 +83,19 @@ const CreateProductCatModal = (props) => {
   });
   // SUBMIT **************************************************
   const submitForm = async (values) => {
+    const body = {
+      "title": values.title,
+      "description": values.description,
+      "status": values.status,
+      "attachFileId": attachFile ? attachFile.id : null,
+      "studentId": values.studentId || null,
+    }
     if (id) {
       //updated
-      const body = {
-        title: values.title,
-        mediaId: coverImage ? coverImage.id : null,
-        id,
-      }
-      const updated = await ProductCatUpdateApi(token, body);
+      const updateBody = {id, ...body}
+      const updated = await PlanUpdateApi(token, updateBody);
       if (updated.status === 200) {
-        toast.SuccessNotify('دسته بندی محصول با موفقیت بروزرسانی شد');
+        toast.SuccessNotify('برنامه غذایی با موفقیت بروزرسانی شد');
         handleCancel();
         setSending(false);
         list()
@@ -93,14 +104,10 @@ const CreateProductCatModal = (props) => {
         setSending(false);
       }
     } else {
-      const bodyForm = {
-        title: values.title,
-        mediaId: coverImage ? coverImage.id : null,
-      }
       // created
-      const created = await ProductCatCreateApi(token, bodyForm);
+      const created = await PlanCreateApi(token, body);
       if (created.status === 200) {
-        toast.SuccessNotify("دسته بندی جدید با موفقیت ثبت شد");
+        toast.SuccessNotify("برنامه غذایی جدید با موفقیت ثبت شد");
         handleCancel();
         setSending(false);
         list();
@@ -110,22 +117,25 @@ const CreateProductCatModal = (props) => {
       }
     }
   };
-  // GET productCat ********************************************
-  const getProductCat = async () => {
+  // GET plan ********************************************
+  const getPlan = async () => {
     if (id) {
       try {
-        const productCat = await GetProductCatApi(token, id);
-        if (productCat.status === 200) {
+        const plan = await GetPlanApi(token, id);
+        if (plan.status === 200) {
           formik.setValues({
-            title: productCat.data.title || "",
+            title: plan.data.title || "",
+            description: plan.data.description || "",
+            status: plan.data.status || "",
+            studentId: plan.data.studentId || null,
           });
-          setCoverImage(productCat.data.media);
+          setAttachFile(plan.data.media);
         } else {
-          toast.ErrorNotify(productCat.data.error);
+          toast.ErrorNotify(plan.data.error);
           setOpenModal(false);
         }
       } catch (error) {
-        console.error("Error loading productCat:", error);
+        console.error("Error loading plan:", error);
         setOpenModal(false);
       }
     } else {
@@ -136,7 +146,7 @@ const CreateProductCatModal = (props) => {
   const handleCancel = () => {
     formik.resetForm();
     setOpenModal(false);
-    setCoverImage(null);
+    setAttachFile(null);
   };
   // HANDLE FILE CHANGE **************************************
   const handleFileChange = async (event) => {
@@ -146,16 +156,24 @@ const CreateProductCatModal = (props) => {
     }
     const fileUploaded = await UploadFileApi(token, formData);
     if (fileUploaded && fileUploaded.data) {
-      setCoverImage(fileUploaded.data);
+      setAttachFile(fileUploaded.data);
     }
   }
   // HANDLE REMOVE FILE *************************************
   const handleRemoveImage = () => {
-    setCoverImage(null);
+    setAttachFile(null);
+  }
+  //GET ALL STUDENT ******************************************
+  const getAllStudents = async () => {
+    const result = await GetAllStudent(token);
+    if (result.status == 200 || result.status == 201) {
+      setStudents(result.data);
+    }
   }
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getProductCat();
+    getPlan();
+    getAllStudents();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -167,7 +185,7 @@ const CreateProductCatModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {id ? `ویرایش دسته بندی ${formik.values.title}` : ` ثبت دسته بندی جدید`}
+            {id ? `ویرایش برنامه غذایی ${formik.values.title}` : ` ثبت برنامه غذایی جدید`}
           </Typography>
         </Grid>
         <hr />
@@ -176,7 +194,7 @@ const CreateProductCatModal = (props) => {
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
-                label={`عنوان دسته بندی *`}
+                label={`عنوان *`}
                 variant="outlined"
                 name="title"
                 value={formik.values.title}
@@ -187,25 +205,78 @@ const CreateProductCatModal = (props) => {
                 size="small"
               />
             </Grid>
-            {/* تصویر کاور دسته بندی */}
+            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                label={`توضیحات `}
+                variant="outlined"
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.description && Boolean(formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                select
+                label="نوع عمومیت برنامه را انتخاب کنید  *"
+                variant="outlined"
+                name="status"
+                value={formik.values.status}
+                onChange={(e) => { formik.handleChange(e) }}
+                onBlur={formik.handleBlur}
+                error={formik.touched.status && Boolean(formik.errors.status)}
+                helperText={formik.touched.status && formik.errors.status}
+                size="small"
+              >
+                <MenuItem value="PUBLIC"> عمومی </MenuItem>
+                <MenuItem value="PRIVATE"> خصوصی </MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+              <TextField
+                fullWidth
+                select
+                label="انتخاب دانش آموز  *"
+                variant="outlined"
+                name="studentId"
+                value={formik.values.studentId}
+                onChange={(e) => { formik.handleChange(e) }}
+                onBlur={formik.handleBlur}
+                size="small"
+                disabled={formik.values.status !== 'PRIVATE'}
+              >
+                {students && students.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item?.id}>
+                      {item?.user?.name + ' ' + item?.user?.lastName}
+                    </MenuItem>
+                  )
+                })}
+              </TextField>
+            </Grid>
+            {/* ضمیمه */}
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
-                startIcon={coverImage ? <CloudDoneIcon /> : <CloudUploadIcon />}
-                color={coverImage ? 'success' : 'primary'}
+                startIcon={attachFile ? <CloudDoneIcon /> : <CloudUploadIcon />}
+                color={attachFile ? 'success' : 'primary'}
                 fullWidth
                 sx={{ mb: 1 }}
               >
-                آپلود تصویر دسته بندی
+                آپلود ضمیمه
                 <VisuallyHiddenInput
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleFileChange(e)}
                 />
               </Button>
-
-              {coverImage && (
+              {attachFile && (
                 <Box
                   sx={{
                     width: 570, // عرض ثابت کارت
@@ -231,8 +302,8 @@ const CreateProductCatModal = (props) => {
                     }}
                   >
                     <img
-                      src={coverImage.preview || coverImage.mediaUrl}
-                      alt="تصویر دسته بندی"
+                      src={attachFile.preview || attachFile.mediaUrl}
+                      alt="ضمیمه"
                       style={{
                         width: '100%',
                         height: '100%',
@@ -264,7 +335,7 @@ const CreateProductCatModal = (props) => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {coverImage.name || coverImage.mediaUrl.split('/files/')[1]}
+                    {attachFile.name || attachFile.mediaUrl.split('/files/')[1]}
                   </Typography>
                 </Box>
               )}
@@ -326,4 +397,4 @@ const CreateProductCatModal = (props) => {
     </Modal>
   );
 };
-export default CreateProductCatModal;
+export default CreatePlanModal;

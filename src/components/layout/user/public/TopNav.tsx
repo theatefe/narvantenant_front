@@ -15,6 +15,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CategoryIcon from '@mui/icons-material/Category';
 import PoolIcon from '@mui/icons-material/Pool';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SchoolIcon from '@mui/icons-material/School';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
@@ -358,53 +359,69 @@ function TopNav(props) {
           </>
         ) : (<></>)}
         {/* ************************* Products and orders ************************** */}
-        <>
-          <ListItemButton onClick={handleClickMarket} style={{ display: MarketSetMenu }}>
-            {openMenu ? (
-              openMarket ? <ExpandLessIcon /> : <ExpandMoreIcon />
-            ) : (
-              ''
+        {permissions.find((p) => p.operationId === 'tenantListProductCategory') ?
+          <>
+            <ListItemButton onClick={handleClickMarket} style={{ display: MarketSetMenu }}>
+              {openMenu ? (
+                openMarket ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              ) : (
+                ''
+              )}
+              {openMenu ? <ListItemText primary="مدیریت فروشگاه" /> : ''}
+
+              <ListItemIcon style={styleList}>
+                <ShoppingBasketIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
+
+            {openMenu && (
+              <Collapse in={openMarket} timeout="auto" unmountOnExit>
+                {/* تعریف دسته بندی محصولات */}
+                {permissions.find((p) => p.operationId === 'tenantListProductCategory') ?
+                  <List component="div" disablePadding>
+                    <Link to="/productCats" className="panel-link">
+                      <ListItemButton
+                        sx={{ pr: 4 }}
+                        className={selectedMenu('/productCats')}
+                      >
+                        <ListItemText>
+                          <div className="sub-menu"> دسته بندی محصولات</div>
+                        </ListItemText>
+                      </ListItemButton>
+                    </Link>
+                  </List>
+                  : null}
+                {permissions.find((p) => p.operationId === 'tenantListOrder') ?
+                  <List component="div" disablePadding>
+                    <Link to="/orders" className="panel-link">
+                      <ListItemButton
+                        sx={{ pr: 4 }}
+                        className={selectedMenu('/orders')}
+                      >
+                        <ListItemText>
+                          <div className="sub-menu"> سفارشات </div>
+                        </ListItemText>
+                      </ListItemButton>
+                    </Link>
+                  </List>
+                  : null}
+              </Collapse>
             )}
-            {openMenu ? <ListItemText primary="مدیریت فروشگاه" /> : ''}
+          </>
+          : null}
+        {/* ************************* Food Plans ************************** */}
+        <>
+          {permissions.find((p) => p.operationId === 'tenantListProductCategory') ?
+            <Link to="/plans" className="panel-link">
+              <ListItemButton>
+                {openMenu ? <ListItemText primary="رژیم و برنامه غذایی" /> : ''}
 
-            <ListItemIcon style={styleList}>
-              <ShoppingBasketIcon className="ms-auto" />
-            </ListItemIcon>
-          </ListItemButton>
-
-          {openMenu && (
-            <Collapse in={openMarket} timeout="auto" unmountOnExit>
-              {/* تعریف دسته بندی محصولات */}
-              {permissions.find((p) => p.operationId === 'tenantListProductCategory') ?
-                <List component="div" disablePadding>
-                  <Link to="/productCats" className="panel-link">
-                    <ListItemButton
-                      sx={{ pr: 4 }}
-                      className={selectedMenu('/productCats')}
-                    >
-                      <ListItemText>
-                        <div className="sub-menu"> دسته بندی محصولات</div>
-                      </ListItemText>
-                    </ListItemButton>
-                  </Link>
-                </List>
-                : null}
-              {permissions.find((p) => p.operationId === 'tenantListOrder') ?
-                <List component="div" disablePadding>
-                  <Link to="/orders" className="panel-link">
-                    <ListItemButton
-                      sx={{ pr: 4 }}
-                      className={selectedMenu('/orders')}
-                    >
-                      <ListItemText>
-                        <div className="sub-menu"> سفارشات </div>
-                      </ListItemText>
-                    </ListItemButton>
-                  </Link>
-                </List>
-                : null}
-            </Collapse>
-          )}
+                <ListItemIcon style={styleList}>
+                  <RestaurantIcon className="ms-auto" />
+                </ListItemIcon>
+              </ListItemButton>
+            </Link>
+            : null}
         </>
       </List>
       <ChangePasswordModal token={token} openModal={openModal} setOpenModal={setOpenModal} />
