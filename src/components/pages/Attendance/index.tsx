@@ -136,34 +136,34 @@ const AttendanceList = () => {
         class: item?.classs?.name,
         coach: item.coach ? item?.coach?.user?.name + ' ' + item?.coach?.user?.lastName : 'حضور توسط مدیر انجام شده است',
         status: (
-          <select
-            defaultValue={item.status === 'حاضر' ? 'PRESENT' : item.status === 'غایب' ? 'ABSENT' : 'WITHDELAY'}
-            className={item.status === 'حاضر' ? 'bg-success text-white rounded mx-3' : item.status === 'غایب' ? 'bg-danger text-white rounded mx-3' : 'bg-secondary text-white rounded mx-3'}
-            onChange={(e) => {
-              handleStatusChange(item.id, e.target.value);
-              if (e.target.value === 'PRESENT') {
-                `$(e.target).removeClass('bg-secondary bg-danger').addClass('bg-success')`;
-              } else if (e.target.value === 'ABSENT') {
-                `$(e.target).removeClass('bg-success bg-secondary').addClass('bg-danger')`;
-              }
-              else if (e.target.value === 'WITHDELAY') {
-                `$(e.target).removeClass('bg-success bg-danger').addClass('bg-secondary')`;
-              }
-            }}
-          >
-            <option
-              value="PRESENT" className='bg-white text-dark'>
-              حاضر
-            </option>
-            <option
-              value="ABSENT" className='bg-white text-dark'>
-              غایب
-            </option>
-            <option
-              value="WITHDELAY" className='bg-white text-dark'>
-              با تاخیر
-            </option>
-          </select>
+         <select
+  defaultValue={item.status === 'حاضر' ? 'PRESENT' : item.status === 'غایب' ? 'ABSENT' : 'WITHDELAY'}
+  className={item.status === 'حاضر' ? 'bg-success text-white rounded mx-3' : item.status === 'غایب' ? 'bg-danger text-white rounded mx-3' : 'bg-secondary text-white rounded mx-3'}
+  onChange={(e) => {
+    handleStatusChange(item.id, e.target.value);
+
+    // Remove all classes and then add the correct one
+    e.target.classList.remove('bg-success', 'bg-danger', 'bg-secondary');
+
+    if (e.target.value === 'PRESENT') {
+      e.target.classList.add('bg-success');
+    } else if (e.target.value === 'ABSENT') {
+      e.target.classList.add('bg-danger');
+    } else if (e.target.value === 'WITHDELAY') {
+      e.target.classList.add('bg-secondary');
+    }
+  }}
+>
+  <option value="PRESENT" className='bg-white text-dark'>
+    حاضر
+  </option>
+  <option value="ABSENT" className='bg-white text-dark'>
+    غایب
+  </option>
+  <option value="WITHDELAY" className='bg-white text-dark'>
+    با تاخیر
+  </option>
+</select>
         ),
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>

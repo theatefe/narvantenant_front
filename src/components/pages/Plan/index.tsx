@@ -17,7 +17,6 @@ import * as toast from '../../ui/Toast';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
-import IconListCheck from '../../ui/icon/IconListCheck';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
@@ -121,28 +120,28 @@ const ProductCatList = () => {
         </Tooltip>,
         option: (
           <>
-            {permissions.find((p) => p.operationId === 'tenantUpdatePlan') ?
-              <Tooltip className="mx-2" title="ویرایش" arrow>
-                <span
-                  className="svg-container cursor-pointer"
-                  onClick={() => openEditModal(item.id)}
-                >
-                  <IconEdit className="svg-menu-icon" />
-                </span>
-              </Tooltip>
-              : null
-            }
-            {permissions.find((p) => p.operationId === 'tenantDeletePlan') ?
-              <Tooltip title="حذف" arrow>
-                <span
-                  className="svg-container cursor-pointer"
-                  onClick={() => openDeleteModal(item.id)}
-                >
-                  <IconTrash className="svg-menu-icon text-danger" />
-                </span>
-              </Tooltip>
-              : null
-            }
+            {/* {permissions.find((p) => p.operationId === 'tenantUpdatePlan') ? */}
+            <Tooltip className="mx-2" title="ویرایش" arrow>
+              <span
+                className="svg-container cursor-pointer"
+                onClick={() => openEditModal(item.id)}
+              >
+                <IconEdit className="svg-menu-icon" />
+              </span>
+            </Tooltip>
+            {/*: null
+             }
+            {permissions.find((p) => p.operationId === 'tenantDeletePlan') ? */}
+            <Tooltip title="حذف" arrow>
+              <span
+                className="svg-container cursor-pointer"
+                onClick={() => openDeleteModal(item.id)}
+              >
+                <IconTrash className="svg-menu-icon text-danger" />
+              </span>
+            </Tooltip>
+            {/* : null
+            } */}
           </>
         ),
       }));

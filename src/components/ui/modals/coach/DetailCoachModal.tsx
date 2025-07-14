@@ -161,7 +161,7 @@ const DetailCoachModal = (props) => {
             {/* تصاویر */}
               <Grid container spacing={3} mt={2}>
                 {data?.coachingCardImageId && (
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <Typography mb={1}>تصویر کارت مربیگری</Typography>
                     <Box
                       sx={{
@@ -196,7 +196,7 @@ const DetailCoachModal = (props) => {
                 )}
 
                 {data?.nationalCardImageId && (
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <Typography mb={1}>تصویر کارت ملی</Typography>
                     <Box
                       sx={{
@@ -231,7 +231,7 @@ const DetailCoachModal = (props) => {
                 )}
 
                 {data?.sportsInsuranceImageId && (
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <Typography mb={1}>تصویر کارت بیمه ورزشی</Typography>
                     <Box
                       sx={{
@@ -252,6 +252,40 @@ const DetailCoachModal = (props) => {
                       <img
                         src={data?.sportsInsuranceImage?.mediaUrl}
                         alt="خطا در نمایش کارت بیمه ورزشی"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                )}
+                {data?.lastRetrainingCardImageId && (
+                  <Grid item xs={12} sm={3}>
+                    <Typography mb={1}>گواهی آخرین بازآموزی</Typography>
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '100%',
+                        paddingTop: '62%',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: 3,
+                        cursor: 'pointer',
+                        transition: 'transform 0.3s',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                        },
+                      }}
+                      onClick={() => handleImageClick(data?.lastRetrainingCardImag?.mediaUrl)}
+                    >
+                      <img
+                        src={data?.lastRetrainingCardImag?.mediaUrl}
+                        alt="خطا در نمایش گواهی آخرین بازآموزی"
                         style={{
                           position: 'absolute',
                           top: 0,

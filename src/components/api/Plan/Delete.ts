@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const DeleteProductCat = async (token: string, body) => {  const config = {
+const DeletePlan = async (token: string, body) => {  const config = {
   headers: {
     jtoken: token,
   },
 };
   try {
     const { data, status } = await axios.delete(
-      `${process.env.REACT_APP_HOST}user/productCat`,
+      `${process.env.REACT_APP_HOST}user/plan`,
       {
         ...config,
         data: body,
@@ -20,4 +20,4 @@ const DeleteProductCat = async (token: string, body) => {  const config = {
   }
 };
 
-export default DeleteProductCat;
+export default DeletePlan;

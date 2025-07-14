@@ -1,8 +1,8 @@
 import React from 'react';
 
 // API ****************************************************
-import DeleteProductCatApi from '../../../api/ProductCat/Delete';
-import GetProductCatApi from '../../../api/ProductCat/GetOne';
+import DeletePlanApi from '../../../api/Plan/Delete';
+import GetPlanApi from '../../../api/Plan/GetOne';
 // TOAST ***************************************************
 import * as toast from '../../../ui/Toast';
 // MUI *****************************************************
@@ -29,21 +29,21 @@ const style = {
   p: 2,
 };
 
-const DeleteCourseLevelCatModal = (props) => {
+const DeletePlanModal = (props) => {
   const { token, id, openModal, setOpenModal, list } = props;
   // HOOKS FORM **************************************************
-  const [productCat, setProductCat] = React.useState(null);
+  const [plan, setPlan] = React.useState(null);
   const [sending, setSending] = React.useState(false);
   // SUBMIT **************************************************
-  const handleDeleteCourseLevelCat = async () => {
+  const handleDeletePlan = async () => {
     if (id) {
       //updated
       const body = {
         id,
       }
-      const deleted = await DeleteProductCatApi(token, body);
+      const deleted = await DeletePlanApi(token, body);
       if (deleted.status === 200) {
-        toast.SuccessNotify('دسته بندی محصول با موفقیت حذف شد');
+        toast.SuccessNotify('برنامه غذایی با موفقیت حذف شد');
         handleCancel();
         setSending(false);
         list();
@@ -53,19 +53,19 @@ const DeleteCourseLevelCatModal = (props) => {
       }
     }
   };
-  // GET ProductCat ******************************************
-  const getProductCat = async () => {
+  // GET PLAN ******************************************
+  const getPlan = async () => {
     if (id) {
       try {
-        const productCat = await GetProductCatApi(token, id);
-        if (productCat.status === 200) {
-          setProductCat(productCat.data);
+        const plan = await GetPlanApi(token, id);
+        if (plan.status === 200) {
+          setPlan(plan.data);
         } else {
-          toast.ErrorNotify(productCat.data.error);
+          toast.ErrorNotify(plan.data.error);
           setOpenModal(false);
         }
       } catch (error) {
-        console.error("Error loading productCat:", error);
+        console.error("Error loading plan:", error);
         setOpenModal(false);
       }
     }
@@ -76,7 +76,7 @@ const DeleteCourseLevelCatModal = (props) => {
   };
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getProductCat();
+    getPlan();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -88,14 +88,14 @@ const DeleteCourseLevelCatModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {`حذف دسته بندی محصول`}
+            {`حذف برنامه غذایی`}
           </Typography>
         </Grid>
         <hr />
         <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
           <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
             <Typography>
-              آیا برای حذف دسته بندی محصول با عنوان <span className='text-danger'>{productCat?.title}</span> اطمینان دارید؟
+              آیا برای حذف برنامه غذایی با عنوان <span className='text-danger'>{plan?.title}</span> اطمینان دارید؟
             </Typography>
           </Grid>
         </Grid>
@@ -125,7 +125,7 @@ const DeleteCourseLevelCatModal = (props) => {
               loadingPosition="start"
               variant="contained"
               disabled={sending}
-              onClick={() => handleDeleteCourseLevelCat()}
+              onClick={() => handleDeletePlan()}
             >
               تایید
             </LoadingButton>
@@ -155,4 +155,4 @@ const DeleteCourseLevelCatModal = (props) => {
     </Modal>
   );
 };
-export default DeleteCourseLevelCatModal;
+export default DeletePlanModal;

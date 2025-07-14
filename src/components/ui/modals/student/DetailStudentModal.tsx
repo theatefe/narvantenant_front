@@ -257,7 +257,7 @@ const DetailStudentModal = (props) => {
           <Box mb={3} mt={3}>
             <Grid container spacing={2}>
               {data?.birthCertificateImageId && (
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={4}>
                   <Divider sx={{ my: 2 }}>{"تصویر کارت ملی یا شناسنامه"}</Divider>
                   <Box
                     sx={{
@@ -291,7 +291,7 @@ const DetailStudentModal = (props) => {
                 </Grid>
               )}
               {data?.sportsInsuranceImageId && (
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={4}>
                   <Divider sx={{ my: 2 }}>{"تصویر کارت بیمه ورزشی"}</Divider>
                   <Box
                     sx={{
@@ -311,6 +311,40 @@ const DetailStudentModal = (props) => {
                   >
                     <img
                       src={data?.sportsInsuranceImage?.mediaUrl}
+                      alt={"خطا در نمایش تصویر کارت بیمه ورزشی"}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
+               {data?.personalImageId && (
+                <Grid item xs={12} sm={4}>
+                  <Divider sx={{ my: 2 }}>{"تصویر کارت بیمه ورزشی"}</Divider>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      paddingTop: '62%',
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      boxShadow: 3,
+                      cursor: 'pointer',
+                      transition: 'transform 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                    onClick={() => handleImageClick(data?.personalImage?.mediaUrl)}
+                  >
+                    <img
+                      src={data?.personalImage?.mediaUrl}
                       alt={"خطا در نمایش تصویر کارت بیمه ورزشی"}
                       style={{
                         position: 'absolute',

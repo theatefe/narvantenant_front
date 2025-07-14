@@ -1,5 +1,4 @@
 import React from 'react';
-
 // API *************************************************
 import AddAttendanceApi from '../../../api/Attendance/Add';
 import ClassEnrollmentListApi from '../../../api/ClassEnrollment/GetAll';
@@ -24,13 +23,14 @@ import { georgianDate, jalaliDate } from './../../../helpers/convertDate.helper'
 import { ToInt } from './../../../helpers/NumberTools';
 // MUi Icon **************************************************
 // Formik & yup ************************************************
-// Helpers *****************************************************
+// UI     ******************************************************
+import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
 // redux seters ************************************************
 
 // STYLE MODAL
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 700,
@@ -52,12 +52,14 @@ const CreateAttendanceModal = (props) => {
   // HOOKS FORM **************************************************
   const [students, setStudents] = React.useState([]);
   const today = new Date();
-  // SUBMIT **************************************************
+  const [selectedDate, setSelectedDate] = React.useState<Date>();
+  // SUBMIT ******************************************************
   const handleAddAttendance = async (id, status) => {
     const body = {
       "classEnrollmentId": Number(id),
       "classId": Number(classId),
       "status": status,
+      "createdAt": selectedDate? georgianDate(ToInt(selectedDate)) : today,
     }
     // created
     const created = await AddAttendanceApi(token, body);
@@ -83,6 +85,7 @@ const CreateAttendanceModal = (props) => {
   }
   // HANDLE CLOSE ********************************************
   const handleCancel = () => {
+    setSelectedDate(null);
     setOpenModal(false);
   };
   // USE EFFECT **********************************************
@@ -105,6 +108,14 @@ const CreateAttendanceModal = (props) => {
             <span> تاریخ: {jalaliDate(today)} </span>
           </Grid>
           <Grid item xs={12}>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+              <DatePickersInputWithTime
+                setSelectedDate={(date: Date) => { setSelectedDate(date); }}
+                selectedDate={selectedDate}
+                fullWidth
+                label={`تغییر تاریخ کلاس`}
+              />
+            </Grid>
             <hr />
           </Grid>
           <Grid item xs={12}>

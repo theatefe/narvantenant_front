@@ -25,6 +25,7 @@ import SendIcon from '@mui/icons-material/Send';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 // Formik & yup ************************************************
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -129,7 +130,7 @@ const CreatePlanModal = (props) => {
             status: plan.data.status || "",
             studentId: plan.data.studentId || null,
           });
-          setAttachFile(plan.data.media);
+          setAttachFile(plan.data.attachFile);
         } else {
           toast.ErrorNotify(plan.data.error);
           setOpenModal(false);
@@ -159,6 +160,23 @@ const CreatePlanModal = (props) => {
       setAttachFile(fileUploaded.data);
     }
   }
+  const isImage = (file) => {
+    const imageTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif'];
+    const fileName = file.name || file.mediaUrl || '';
+    return (
+      imageTypes.includes(file.type) ||
+      /\.(jpg|jpeg|png|webp|gif)$/i.test(fileName)
+    );
+  };
+
+  // بررسی اینکه فایل PDF است یا نه
+  const isPdf = (file) => {
+    const fileName = file.name || file.mediaUrl || '';
+    return (
+      file.type === 'application/pdf' ||
+      /\.pdf$/i.test(fileName)
+    );
+  };
   // HANDLE REMOVE FILE *************************************
   const handleRemoveImage = () => {
     setAttachFile(null);
@@ -279,8 +297,8 @@ const CreatePlanModal = (props) => {
               {attachFile && (
                 <Box
                   sx={{
-                    width: 570, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: 570,
+                    height: 200,
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -296,36 +314,56 @@ const CreatePlanModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: 200,
                       overflow: 'hidden',
                       borderRadius: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#f5f5f5',
                     }}
                   >
-                    <img
-                      src={attachFile.preview || attachFile.mediaUrl}
-                      alt="ضمیمه"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
-                        borderRadius: 4,
-                        display: 'block',
-                      }}
-                    />
+                    {isImage(attachFile) ? (
+                      <img
+                        src={attachFile.preview || attachFile.mediaUrl}
+                        alt="ضمیمه تصویری"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: 4,
+                          display: 'block',
+                        }}
+                      />
+                    ) : isPdf(attachFile) ? (
+                      <>
+                        <PictureAsPdfIcon sx={{ fontSize: 60, color: '#d32f2f' }} />
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          فایل PDF انتخاب شده است
+                        </Typography>
+                      </>
+                    ) : (
+                      <Typography variant="body2">
+                        فرمت فایل پشتیبانی نمی‌شود
+                      </Typography>
+                    )}
+
                     <IconButton
                       color="error"
                       sx={{
                         position: 'absolute',
                         top: 0,
                         left: 0,
-                        backgroundColor: 'rgba(255,255,255,0.7)'
+                        backgroundColor: 'rgba(255,255,255,0.7)',
                       }}
                       onClick={() => handleRemoveImage()}
                     >
                       <DeleteIcon />
                     </IconButton>
                   </Box>
-                  <Typography variant="caption"
+
+                  <Typography
+                    variant="caption"
                     sx={{
                       mt: 1,
                       textAlign: 'center',
@@ -335,10 +373,11 @@ const CreatePlanModal = (props) => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {attachFile.name || attachFile.mediaUrl.split('/files/')[1]}
+                    {attachFile.name || attachFile.mediaUrl?.split('/files/')[1]}
                   </Typography>
                 </Box>
               )}
+
             </Grid>
           </Grid>
           <Grid
