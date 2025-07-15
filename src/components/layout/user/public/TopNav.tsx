@@ -326,20 +326,6 @@ function TopNav(props) {
                     </Link>
                   </List>
                   : null}
-                {permissions.find((p) => p.operationId === 'tenantListSkillRange') ?
-                  <List component="div" disablePadding>
-                    <Link to="/skillRanges" className="panel-link">
-                      <ListItemButton
-                        sx={{ pr: 4 }}
-                        className={selectedMenu('/skillRanges')}
-                      >
-                        <ListItemText>
-                          <div className="sub-menu">{'متراژ ماده'}</div>
-                        </ListItemText>
-                      </ListItemButton>
-                    </Link>
-                  </List>
-                  : null}
                 {permissions.find((p) => p.operationId === 'tenantListSkillRecord') ?
                   <List component="div" disablePadding>
                     <Link to="/skillRecords" className="panel-link">

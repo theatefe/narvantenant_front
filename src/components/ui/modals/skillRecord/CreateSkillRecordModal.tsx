@@ -6,7 +6,6 @@ import SkillRecordCreateApi from '../../../api/SkillRecord/Add';
 import GetSkillRecordApi from '../../../api/SkillRecord/GetOne';
 import GetAllStudentApi from '../../../api/Student/GetAll';
 import GetAllSkillApi from '../../../api/Skill/GetAll';
-import GetAllSkillRangeApi from '../../../api/SkillRange/GetAll';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
@@ -45,24 +44,19 @@ const CreateCourseLevelCatModal = (props) => {
   const [sending, setSending] = React.useState(false);
   const [data, setData] = React.useState(null);
   const [skills, setSkills] = React.useState([]);
-  const [skillRanges, setSkillRanges] = React.useState([]);
   const [students, setStudents] = React.useState([]);
   // FORMIK *******************************************************
   const formik = useFormik({
     initialValues: {
       studentId: "",
       skillId: "",
-      skillRangeId: "",
-      area: "",
       record: "",
     },
     validationSchema: Yup.object({
       studentId: Yup.string()
         .required("انتخاب شناگر الزامی است"),
       skillId: Yup.string()
-        .required("انتخاب مهارت شنا الزامی است"),
-      area: Yup.string()
-        .required("انتخاب متراژ الزامی است"),
+        .required("انتخاب ماده الزامی است"),
       record: Yup.string()
         .required("وارد کردن رکورد الزامی است"),
     }),
@@ -111,8 +105,6 @@ const CreateCourseLevelCatModal = (props) => {
           formik.setValues({
             studentId: skillRecord.data.studentId || "",
             skillId: skillRecord.data.skillId || "",
-            skillRangeId: skillRecord.data.skillRangeId || "",
-            area: skillRecord.data.area || "",
             record: skillRecord.data.record || "",
           });
           setData(skillRecord.data);
@@ -158,21 +150,6 @@ const CreateCourseLevelCatModal = (props) => {
       setOpenModal(false);
     }
   }
-  // GET Skills **************************************************
-  const getSkillRange = async () => {
-    try {
-      const skillRanges = await GetAllSkillRangeApi(token);
-      if (skillRanges.status === 200) {
-        setSkillRanges(skillRanges.data);
-      } else {
-        toast.ErrorNotify(skillRanges.data.error);
-        setOpenModal(false);
-      }
-    } catch (error) {
-      console.error("Error loading skillRanges:", error);
-      setOpenModal(false);
-    }
-  }
   // HANDLE CLOSE ************************************************
   const handleCancel = () => {
     formik.resetForm();
@@ -181,7 +158,6 @@ const CreateCourseLevelCatModal = (props) => {
   // USE EFFECT **************************************************
   React.useEffect(() => {
     getStudents();
-    getSkillRange();
     getSkills();
     getSkillRecord();
   }, [id]);
@@ -222,11 +198,11 @@ const CreateCourseLevelCatModal = (props) => {
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto', my: 'auto' }}>
               <TextField
                 fullWidth
                 select
-                label="انتخاب مهارت *"
+                label="انتخاب ماده *"
                 variant="outlined"
                 name="skillId"
                 value={formik.values.skillId}
@@ -238,47 +214,12 @@ const CreateCourseLevelCatModal = (props) => {
               >
                 {skills && skills.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item.id}> {item?.title}</MenuItem>
+                    <MenuItem key={item.id} value={item.id}> {item?.title +' - '+ item?.area+'متر'}</MenuItem>
                   )
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="انتخاب محدوده مهارت *"
-                variant="outlined"
-                name="skillRangeId"
-                value={formik.values.skillRangeId}
-                onChange={(e) => { formik.handleChange(e) }}
-                onBlur={formik.handleBlur}
-                error={formik.touched.skillRangeId && Boolean(formik.errors.skillRangeId)}
-                helperText={formik.touched.skillRangeId && formik.errors.skillRangeId}
-                size="small"
-              >
-                {skillRanges && skillRanges.map((item) => {
-                  return (
-                    <MenuItem key={item.id} value={item.id}> {item?.name}</MenuItem>
-                  )
-                })}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <TextField
-                fullWidth
-                label={`متراژ *`}
-                variant="outlined"
-                name="area"
-                value={formik.values.area}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.area && Boolean(formik.errors.area)}
-                helperText={formik.touched.area && formik.errors.area}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`رکورد *`}

@@ -29,7 +29,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID **************************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام دسته بندی', 'مجموعه', 'تاریخ ثبت'];
+const header = ['ردیف', 'عنوان مهارت', 'محدوده مهارت', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -41,6 +41,11 @@ const columns = [
     accessorKey: 'title',
     header: 'عنوان مهارت',
     size: 280,
+  },
+  {
+    accessorKey: 'area',
+    header: 'محدوده مهارت',
+    size: 160,
   },
   {
     accessorKey: 'date',
@@ -101,6 +106,7 @@ const SkillList = () => {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
         title: item.title,
+        area: `${item.area || ' --- '} متر`,
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
             {jalaliDate(item.createdAt)}
@@ -142,8 +148,8 @@ const SkillList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: 'نارون - مدیریت مهارت مسابقات',
-        description: ' مدیریت مهارت های مسابقات شنا',
+        title: 'نارون - ماده رکوردگیری',
+        description: ' مدیریت ماده رکوردگیری',
       }),
     );
     getSkillList();
@@ -157,7 +163,7 @@ const SkillList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت مهارت های مسابقات شنا</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت ماده رکوردگیری</h3></div>
                 <div className="col-6 text-left">
                   {
                     permissions.find((p) => p.operationId === 'tenantCreateSkill') ?
@@ -171,7 +177,7 @@ const SkillList = () => {
                         disableElevation
                         endIcon={<AddCircleOutlineIcon />}
                       >
-                        ثبت مهارت جدید
+                        ثبت ماده جدید
                       </Button>
                       : null
                   }

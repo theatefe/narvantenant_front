@@ -38,9 +38,6 @@ const Role = Loadable(
 const Skill = Loadable(
   lazy(() => import('../pages/Skill'))
 )
-const SkillRange = Loadable(
-  lazy(() => import('../pages/SkillRange'))
-)
 const SkillRecord = Loadable(
   lazy(() => import('../pages/SkillRecord'))
 )
@@ -111,10 +108,6 @@ const MainRoutes = {
         {
           path: '/skills',
           element: <Skill />,
-        },
-        {
-          path: '/skillRanges',
-          element: <SkillRange />,
         },
         {
           path: '/skillRecords',

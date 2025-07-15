@@ -44,13 +44,8 @@ const columns = [
   },
   {
     accessorKey: 'skill',
-    header: 'مهارت شنا',
-    size: 60,
-  },
-  {
-    accessorKey: 'area',
-    header: 'متراژ',
-    size: 60,
+    header: 'ماده',
+    size: 120,
   },
   {
     accessorKey: 'record',
@@ -58,24 +53,19 @@ const columns = [
     size: 60,
   },
   {
-    accessorKey: 'range',
-    header: 'محدوده مهارت',
-    size: 60,
-  },
-  {
     accessorKey: 'user',
     header: 'کاربر ثبت کننده رکورد',
-    size: 180,
+    size: 120,
   },
   {
     accessorKey: 'date',
     header: 'تاریخ ثبت',
-    size: 120,
+    size: 60,
   },
   {
     accessorKey: 'option',
     header: 'عملیات',
-    size: 50,
+    size: 60,
   },
 ];
 
@@ -126,8 +116,7 @@ const SkillRecordList = () => {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
         student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
-        skill: item?.skill?.title,
-        range: item?.skillRange?.name || '-',
+        skill: item?.skill?.title + ' - ' + item?.skill?.area+'متر',
         user: item?.user?.name + ' ' + item?.user?.lastName,
         area: item?.area + ' متر ',
         record: item?.record + ' ثانیه ',

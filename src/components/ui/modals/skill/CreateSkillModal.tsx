@@ -43,11 +43,14 @@ const CreateSkillModal = (props) => {
   const formik = useFormik({
     initialValues: {
       title: "",
+      area:"",
     },
     validationSchema: Yup.object({
       title: Yup.string()
-        .required("عنوان مهارت الزامی است")
-        .min(3, "عنوان مهارت باید حداقل ۳ کاراکتر باشد"),
+      .required("عنوان ماده الزامی است")
+      .min(3, "عنوان ماده باید حداقل ۳ کاراکتر باشد"),
+      area: Yup.string()
+      .required("متراژ ماده الزامی است")  
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -62,11 +65,12 @@ const CreateSkillModal = (props) => {
       //updated
       const body = {
         title: values.title,
+        area: values.area,
         id,
       }
       const updated = await SkillUpdateApi(token, body);
       if (updated.status === 200) {
-        toast.SuccessNotify('مهارت مسابقات با موفقیت بروزرسانی شد');
+        toast.SuccessNotify('ماده با موفقیت بروزرسانی شد');
         handleCancel();
         setSending(false);
         list()
@@ -78,7 +82,7 @@ const CreateSkillModal = (props) => {
       // created
       const created = await SkillCreateApi(token, values);
       if (created.status === 200) {
-        toast.SuccessNotify("مهارت جدید با موفقیت ثبت شد");
+        toast.SuccessNotify("ماده جدید با موفقیت ثبت شد");
         handleCancel();
         setSending(false);
         list();
@@ -96,6 +100,7 @@ const CreateSkillModal = (props) => {
         if (skill.status === 200) {
           formik.setValues({
             title: skill.data.title || "",
+            area: skill.data.area || "",
           });
         } else {
           toast.ErrorNotify(skill.data.error);
@@ -128,16 +133,16 @@ const CreateSkillModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {id ? `ویرایش مهارت ${formik.values.title}` : ` ثبت مهارت جدید`}
+            {id ? `ویرایش ماده ${formik.values.title}` : ` ثبت ماده جدید`}
           </Typography>
         </Grid>
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
-                label={`عنوان مهارت *`}
+                label={`عنوان ماده *`}
                 variant="outlined"
                 name="title"
                 value={formik.values.title}
@@ -145,6 +150,20 @@ const CreateSkillModal = (props) => {
                 onBlur={formik.handleBlur}
                 error={formik.touched.title && Boolean(formik.errors.title)}
                 helperText={formik.touched.title && formik.errors.title}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                label={`محدوده ماده  (متر)*`}
+                variant="outlined"
+                name="area"
+                value={formik.values.area}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.area && Boolean(formik.errors.area)}
+                helperText={formik.touched.area && formik.errors.area}
                 size="small"
               />
             </Grid>
