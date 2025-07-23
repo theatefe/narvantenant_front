@@ -17,11 +17,13 @@ import Skeleton from '@mui/material/Skeleton';
 // MUi Icon ***************************************************
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconStar from '../../ui/icon/IconStar';
+import IconTrash from '../../ui/icon/IconTrash';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // MODELS ******************************************************
 import CreateAttendanceModal from '../../ui/modals/attendance/CreateAttendanceModal';
 import CommentAttendanceModal from '../../ui/modals/attendance/CommentAttendanceModal';
+import DeleteAttendanceModal from '../../ui/modals/attendance/DeleteAttendanceModal';
 // OTHER *******************************************************
 import {
   jalaliDate,
@@ -54,7 +56,7 @@ let columns = [
   },
   {
     accessorKey: 'date',
-    header: 'تاریخ ثبت',
+    header: 'تاریخ کلاس',
     size: 60,
   },
   {
@@ -83,9 +85,15 @@ const AttendanceList = () => {
   const [isLoaded, setIsloaded] = React.useState(false);
   // modal *********************************************************
   const [modal, setModal] = React.useState(false);
+    const [deleteModal, setDeleteModal] = React.useState(false);
   const [commentModal, setCommentModal] = React.useState(false);
   // QUERY *********************************************************
   // ***************************************************************
+  // open delete modal ***********************************************
+  const openDeleteModal = (id: number) => {
+    setSelectedAttendanceId(id);
+    setDeleteModal(true);
+  };
   // open comment Modal ********************************************
   const openCommentModal = (id) => {
     setSelectedAttendanceId(id);
@@ -112,7 +120,7 @@ const AttendanceList = () => {
       return;
     }
     if (response.status === 200) {
-      toast.SuccessNotify(`وضعیت حضور ${isPoolTenant? 'شناگر':'دانش آموز'} بروزرسانی شد`)
+      toast.SuccessNotify(`وضعیت حضور ${isPoolTenant ? 'شناگر' : 'دانش آموز'} بروزرسانی شد`)
       getAttendanceList();
     } else {
       toast.ErrorNotify(response.data.error);
@@ -136,34 +144,34 @@ const AttendanceList = () => {
         class: item?.classs?.name,
         coach: item.coach ? item?.coach?.user?.name + ' ' + item?.coach?.user?.lastName : 'حضور توسط مدیر انجام شده است',
         status: (
-         <select
-  defaultValue={item.status === 'حاضر' ? 'PRESENT' : item.status === 'غایب' ? 'ABSENT' : 'WITHDELAY'}
-  className={item.status === 'حاضر' ? 'bg-success text-white rounded mx-3' : item.status === 'غایب' ? 'bg-danger text-white rounded mx-3' : 'bg-secondary text-white rounded mx-3'}
-  onChange={(e) => {
-    handleStatusChange(item.id, e.target.value);
+          <select
+            defaultValue={item.status === 'حاضر' ? 'PRESENT' : item.status === 'غایب' ? 'ABSENT' : 'WITHDELAY'}
+            className={item.status === 'حاضر' ? 'bg-success text-white rounded mx-3' : item.status === 'غایب' ? 'bg-danger text-white rounded mx-3' : 'bg-secondary text-white rounded mx-3'}
+            onChange={(e) => {
+              handleStatusChange(item.id, e.target.value);
 
-    // Remove all classes and then add the correct one
-    e.target.classList.remove('bg-success', 'bg-danger', 'bg-secondary');
+              // Remove all classes and then add the correct one
+              e.target.classList.remove('bg-success', 'bg-danger', 'bg-secondary');
 
-    if (e.target.value === 'PRESENT') {
-      e.target.classList.add('bg-success');
-    } else if (e.target.value === 'ABSENT') {
-      e.target.classList.add('bg-danger');
-    } else if (e.target.value === 'WITHDELAY') {
-      e.target.classList.add('bg-secondary');
-    }
-  }}
->
-  <option value="PRESENT" className='bg-white text-dark'>
-    حاضر
-  </option>
-  <option value="ABSENT" className='bg-white text-dark'>
-    غایب
-  </option>
-  <option value="WITHDELAY" className='bg-white text-dark'>
-    با تاخیر
-  </option>
-</select>
+              if (e.target.value === 'PRESENT') {
+                e.target.classList.add('bg-success');
+              } else if (e.target.value === 'ABSENT') {
+                e.target.classList.add('bg-danger');
+              } else if (e.target.value === 'WITHDELAY') {
+                e.target.classList.add('bg-secondary');
+              }
+            }}
+          >
+            <option value="PRESENT" className='bg-white text-dark'>
+              حاضر
+            </option>
+            <option value="ABSENT" className='bg-white text-dark'>
+              غایب
+            </option>
+            <option value="WITHDELAY" className='bg-white text-dark'>
+              با تاخیر
+            </option>
+          </select>
         ),
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
@@ -172,14 +180,28 @@ const AttendanceList = () => {
         </Tooltip>,
         option: (
           <>
-            <Tooltip title="ثبت امتیاز و عملکرد" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openCommentModal(item.id)}
-              >
-                <IconStar className="svg-menu-icon text-warning" />
-              </span>
-            </Tooltip>
+            {permissions.find((p) => p.operationId === 'tenantUpdatePlan') ?
+              <Tooltip title="ثبت امتیاز و عملکرد" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openCommentModal(item.id)}
+                >
+                  <IconStar className="svg-menu-icon text-warning" />
+                </span>
+              </Tooltip>
+              : null
+            }
+            {permissions.find((p) => p.operationId === 'tenantDeletePlan') ?
+              <Tooltip title="حذف" arrow>
+                <span
+                  className="svg-container cursor-pointer mx-2"
+                  onClick={() => openDeleteModal(item.id)}
+                >
+                  <IconTrash className="svg-menu-icon text-danger" />
+                </span>
+              </Tooltip>
+              : null
+            }
           </>
         ),
       }));
@@ -192,7 +214,7 @@ const AttendanceList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: `نارون - حضور و غیاب ${isPoolTenant? 'شناگران':'اندانش آموز'}`,
+        title: `نارون - حضور و غیاب ${isPoolTenant ? 'شناگران' : 'اندانش آموز'}`,
         description: ` مدیریت حضور و غیاب ${isPoolTenant ? 'شناگران' : 'اندانش آموز'}`,
       }),
     );
@@ -241,6 +263,13 @@ const AttendanceList = () => {
                   id={selectedAttendanceId}
                   openModal={commentModal}
                   setOpenModal={closeModal}
+                />
+                <DeleteAttendanceModal
+                  token={token}
+                  id={selectedAttendanceId}
+                  openModal={deleteModal}
+                  setOpenModal={setDeleteModal}
+                  list={getAttendanceList}
                 />
               </div>
 

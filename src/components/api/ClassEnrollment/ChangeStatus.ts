@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const ChangeStatusUnit = async (token: string, unitId: number) => {
-  const body = {};
+const ChangePaymentStatus = async (token: string, body: any) => {
   const config = {
     headers: {
       jtoken: token,
@@ -9,7 +8,7 @@ const ChangeStatusUnit = async (token: string, unitId: number) => {
   };
   try {
     const { data, status } = await axios.patch(
-      `${process.env.REACT_APP_HOST}unituser/unit/${unitId}`,
+      `${process.env.REACT_APP_HOST}user/classEnrollment`,
       body,
       config,
     );
@@ -20,4 +19,4 @@ const ChangeStatusUnit = async (token: string, unitId: number) => {
   }
 };
 
-export default ChangeStatusUnit;
+export default ChangePaymentStatus;

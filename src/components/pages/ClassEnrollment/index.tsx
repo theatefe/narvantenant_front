@@ -6,6 +6,7 @@ import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
 import GetAllClassEnrollmentApi from '../../api/ClassEnrollment/GetAll';
+import ChangePaymentStatusApi from '../../api/ClassEnrollment/ChangeStatus';
 // MUI **************************************************
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -99,6 +100,28 @@ const ClassEnrollmentList = () => {
     setDeleteModal(false);
     setModal(false);
   };
+  // HANDLE STATUS CHANGE *******************************************************
+  const handleStatusChange = async (id: number, paymentStatus: string) => {
+    const body = {
+      id,
+      paymentStatus
+    }
+    const response = await ChangePaymentStatusApi(token, body);
+    if (response.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
+    if (response.status === 200) {
+      toast.SuccessNotify(`وضعیت پرداخت ${isPoolTenant ? 'شناگر' : 'دانش آموز'} بروزرسانی شد`)
+      getClassEnrollmentList();
+    } else {
+      toast.ErrorNotify(response.data.error);
+    }
+  }
   // Get ClASS ENROLLMENT List **************************************************
   const getClassEnrollmentList = async () => {
     const list = await GetAllClassEnrollmentApi(token, Number(classId));
@@ -117,13 +140,34 @@ const ClassEnrollmentList = () => {
         class: item?.class?.name,
         remainingSessions: item?.remainingSessions + ' جلسه ',
         paymentStatus: (
-          <>
-            <span
-              className={item?.paymentStatus == 'پرداخت شده' ? "bg-success text-white px-2 py-1 rounded" : item?.paymentStatus == 'پرداخت نشده' ? "bg-danger text-white px-2 py-1 rounded" : "bg-warning text-dark px-2 py-1 rounded"}
-            >
-              {item?.paymentStatus}
-            </span>
-          </>
+          <select
+            defaultValue={item.paymentStatus === 'پرداخت شده' ? 'PAID' : item.paymentStatus === 'پرداخت نشده' ? 'UNPAID' : 'HALFPAID'}
+            className={item.paymentStatus === 'پرداخت شده' ? 'bg-success text-center text-white rounded mx-3 p-1' : item.paymentStatus === 'پرداخت نشده' ? 'bg-danger text-center text-white rounded mx-3 p-1' : 'bg-warning text-center text-white rounded mx-3 p-1'}
+            onChange={(e) => {
+              handleStatusChange(item.id, e.target.value);
+
+              // Remove all classes and then add the correct one
+              e.target.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+
+              if (e.target.value === 'PAID') {
+                e.target.classList.add('bg-success');
+              } else if (e.target.value === 'UNPAID') {
+                e.target.classList.add('bg-danger');
+              } else if (e.target.value === 'HALFPAID') {
+                e.target.classList.add('bg-warning');
+              }
+            }}
+          >
+            <option value="PAID" className='bg-white text-dark'>
+              پرداخت شده
+            </option>
+            <option value="UNPAID" className='bg-white text-dark'>
+              پرداخت نشده
+            </option>
+            <option value="HALFPAID" className='bg-white text-dark'>
+              پرداخت تکمیل نشده
+            </option>
+          </select>
         ),
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
@@ -135,9 +179,9 @@ const ClassEnrollmentList = () => {
             {permissions.find((p) => p.operationId === 'tenantGetStudentPaymentList') ?
               <Tooltip className="mx-1" title="لیست پرداختی‌ها" arrow>
                 <Link to={`/classEnrollmentPays/${item?.id}`}>
-                <span
-                  className="svg-container cursor-pointer"
-                >
+                  <span
+                    className="svg-container cursor-pointer"
+                  >
                     <IconDollarSign className="svg-menu-icon text-dark" />
                   </span>
                 </Link>
@@ -167,7 +211,7 @@ const ClassEnrollmentList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: `نارون - مدیریت کلاس بندی ${isPoolTenant?'شناگران':'دانش آموزان'}`,
+        title: `نارون - مدیریت کلاس بندی ${isPoolTenant ? 'شناگران' : 'دانش آموزان'}`,
         description: `مدیریت کلاس بندی ${isPoolTenant ? 'شناگران' : 'دانش آموزان'}`,
       }),
     );
@@ -182,7 +226,7 @@ const ClassEnrollmentList = () => {
             <div className="p-4">
               {/* Header Section */}
               <div className="row mb-4">
-                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت {isPoolTenant?'شناگران':'دانش آموزان'} کلاس {data && data[0]?.class}</h3></div>
+                <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت {isPoolTenant ? 'شناگران' : 'دانش آموزان'} کلاس {data && data[0]?.class}</h3></div>
                 <div className="col-6 text-left">
                   {
                     permissions.find((p) => p.operationId === 'tenantCreateClassEnrollment') ?
@@ -196,7 +240,7 @@ const ClassEnrollmentList = () => {
                         disableElevation
                         endIcon={<AddCircleOutlineIcon />}
                       >
-                        {`افزودن ${isPoolTenant?'شناگر':'دانش آموز'} جدید به کلاس`}
+                        {`افزودن ${isPoolTenant ? 'شناگر' : 'دانش آموز'} جدید به کلاس`}
                       </Button>
                       : null
                   }

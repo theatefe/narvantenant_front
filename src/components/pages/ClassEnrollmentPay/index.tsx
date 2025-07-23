@@ -13,6 +13,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Button from '@mui/material/Button';
 // MUI Icon ****************************************************
 import IconEdit from '../../ui/icon/IconEdit';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 // TOAST ******************************************************
 import * as toast from '../../ui/Toast';
 // component ***************************************************
@@ -81,7 +82,6 @@ const ClassEnrollmentPayList = () => {
   // STATE *********************************************************
   const [selectedPaymentId, setSelectedPaymentId] = React.useState(null);
   const [data, setData] = React.useState([]);
-  const [payments, setPayments] = React.useState(0);
   const [isLoaded, setIsloaded] = React.useState(false);
   // modal **********************************************************
   const [modal, setModal] = React.useState(false);
@@ -106,12 +106,14 @@ const ClassEnrollmentPayList = () => {
       toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید')
       return;
     }
+    const sum: number[] = [];
+    let total = 0;
+    const reverseList = list.data;
+    for (let i = reverseList.length - 1; i >= 0; i--) {
+      total += reverseList[i].amount;
+      sum.push(total);
+    }
     if (list.status === 200) {
-      let sum = 0;
-      for (const i of list.data) {
-        sum += i.amount;
-      }
-      setPayments(sum);
       const arr = list.data.map((item, index: number) => {
         return {
           id: index + 1,
@@ -124,8 +126,8 @@ const ClassEnrollmentPayList = () => {
               </span>
             </Tooltip>
           ),
-          paymentStatus: <span className={item?.class?.tuitionFee == payments ? 'text-success' : 'text-danger'}>
-            {item?.class?.tuitionFee == payments  ? 'پرداخت تکمیل شده است' : 'پرداخت تکمیل نشده است'}
+          paymentStatus: <span className={item?.class?.tuitionFee == sum[index] ? 'text-success' : item?.class?.tuitionFee < sum[index]? 'text-danger' : 'text-warning'}>
+            {item?.class?.tuitionFee == sum[index] ? 'پرداخت تکمیل شده است' : item?.class?.tuitionFee < sum[index] ? 'پرداخت تکمیل نشده است' : 'مبلغ پرداختی بیش از مبلغ شهریه است'}
           </span>,
           paymentDate: <Tooltip title={jalaliDateWithTime(item.paymentDate)} arrow>
             <span>
@@ -164,7 +166,7 @@ const ClassEnrollmentPayList = () => {
   React.useEffect(() => {
     dispatch(
       setMetaData({
-        title: `نارون - پرداخت های ${isPoolTenant ? 'شناگر':'دانش آموز'}`,
+        title: `نارون - پرداخت های ${isPoolTenant ? 'شناگر' : 'دانش آموز'}`,
         description: `لیست پرداخت های ${isPoolTenant ? 'شناگر' : 'دانش آموز'}`,
       }),
     );
@@ -180,10 +182,10 @@ const ClassEnrollmentPayList = () => {
               {/* Header Section */}
               <div className="row mb-4">
                 <div className="col-6 text-right"><h4 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">
-                  {`لیست پرداخت های ${data ? data[0]?.student : ''}${isPoolTenant ? 'شناگر' : 'دانش آموز'} کلاس ${data ? data[0]?.class : ''}`}
+                  {`لیست پرداخت های ${data ? data[0]?.student : ''}${isPoolTenant ? ' شناگر ' : ' دانش آموز '} کلاس  ${data ? data[0]?.class : ''} `}
                 </h4></div>
                 <div className="col-6 text-left">
-                  {/* {
+                  {
                     permissions.find((p) => p.operationId === 'tenantCreatePayment') ?
                       <Button
                         onClick={() => {
@@ -197,7 +199,7 @@ const ClassEnrollmentPayList = () => {
                       >
                         ثبت پرداخت جدید
                       </Button> : null
-                  } */}
+                  }
 
                 </div>
                 <CreatePaymentModal

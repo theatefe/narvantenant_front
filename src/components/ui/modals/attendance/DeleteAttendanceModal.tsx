@@ -1,11 +1,10 @@
 import React from 'react';
 
-// API *************************************************
-import DeleteSkillRangeApi from '../../../api/SkillRange/Delete';
-import GetSkillRangeApi from '../../../api/SkillRange/GetOne';
-// TOAST ************************************************
+// API ****************************************************
+import DeleteAttendanceApi from '../../../api/Attendance/Delete';
+// TOAST ***************************************************
 import * as toast from '../../../ui/Toast';
-// MUI **************************************************
+// MUI *****************************************************
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -15,8 +14,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
-import SendIcon from '@mui/icons-material/Send';
-// redux seters ************************************************
+// redux seters ***********************************************
 
 // STYLE MODAL
 const style = {
@@ -30,21 +28,19 @@ const style = {
   p: 2,
 };
 
-const DeleteCourseLevelCatModal = (props) => {
+const DeleteAttendanceModal = (props) => {
   const { token, id, openModal, setOpenModal, list } = props;
   // HOOKS FORM **************************************************
-  const [skillRange, setSkillRange] = React.useState(null);
   const [sending, setSending] = React.useState(false);
   // SUBMIT **************************************************
-  const handleDeleteSkillRange = async () => {
+  const handleDeleteAttendance = async () => {
     if (id) {
-      //updated
       const body = {
         id,
       }
-      const deleted = await DeleteSkillRangeApi(token, body);
+      const deleted = await DeleteAttendanceApi(token, body);
       if (deleted.status === 200) {
-        toast.SuccessNotify('محدوده مهارت با موفقیت حذف شد');
+        toast.SuccessNotify('وضعیت حضور و غیاب شناگر با موفقیت حذف شد');
         handleCancel();
         setSending(false);
         list();
@@ -54,30 +50,12 @@ const DeleteCourseLevelCatModal = (props) => {
       }
     }
   };
-  // GET SkillRange ********************************************
-  const getSkillRange = async () => {
-    if (id) {
-      try {
-        const skillRange = await GetSkillRangeApi(token, id);
-        if (skillRange.status === 200) {
-          setSkillRange(skillRange.data);
-        } else {
-          toast.ErrorNotify(skillRange.data.error);
-          setOpenModal(false);
-        }
-      } catch (error) {
-        console.error("Error loading skillRange:", error);
-        setOpenModal(false);
-      }
-    }
-  }
-  // HANDLE CLOSE *****************************************
+  // HANDLE CLOSE ********************************************
   const handleCancel = () => {
     setOpenModal(false);
   };
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getSkillRange();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -89,14 +67,14 @@ const DeleteCourseLevelCatModal = (props) => {
       <Box sx={style} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={12} alignItems="center">
           <Typography variant="h5" gutterBottom>
-            {`حذف محدوده مهارت`}
+            {`حذف وضعیت حضور و غیاب شناگر`}
           </Typography>
         </Grid>
         <hr />
         <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
           <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
             <Typography>
-              آیا برای حذف محدوده مهارت با عنوان <span className='text-danger'>{skillRange?.name}</span> اطمینان دارید؟
+              آیا برای حذف وضعیت حضورغیاب شناگر اطمینان دارید؟
             </Typography>
           </Grid>
         </Grid>
@@ -126,7 +104,7 @@ const DeleteCourseLevelCatModal = (props) => {
               loadingPosition="start"
               variant="contained"
               disabled={sending}
-              onClick={() => handleDeleteSkillRange()}
+              onClick={() => handleDeleteAttendance()}
             >
               تایید
             </LoadingButton>
@@ -156,4 +134,4 @@ const DeleteCourseLevelCatModal = (props) => {
     </Modal>
   );
 };
-export default DeleteCourseLevelCatModal;
+export default DeleteAttendanceModal;

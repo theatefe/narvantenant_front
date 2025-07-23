@@ -93,7 +93,7 @@ const CreatePlanModal = (props) => {
     }
     if (id) {
       //updated
-      const updateBody = {id, ...body}
+      const updateBody = { id, ...body }
       const updated = await PlanUpdateApi(token, updateBody);
       if (updated.status === 200) {
         toast.SuccessNotify('برنامه غذایی با موفقیت بروزرسانی شد');
@@ -209,7 +209,7 @@ const CreatePlanModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`عنوان *`}
@@ -223,7 +223,7 @@ const CreatePlanModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`توضیحات `}
@@ -237,7 +237,7 @@ const CreatePlanModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -255,7 +255,7 @@ const CreatePlanModal = (props) => {
                 <MenuItem value="PRIVATE"> خصوصی </MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -294,11 +294,19 @@ const CreatePlanModal = (props) => {
                   onChange={(e) => handleFileChange(e)}
                 />
               </Button>
+
               {attachFile && (
                 <Box
                   sx={{
-                    width: 570,
-                    height: 200,
+                    width: {
+                      xs: '100%',
+                      sm: 570,
+                      md: 570,
+                    },
+                    height: {
+                      xs: 80,
+                      md: 200,
+                    },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -314,7 +322,10 @@ const CreatePlanModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200,
+                      height: {
+                        xs: 50,
+                        md: 200,
+                      },
                       overflow: 'hidden',
                       borderRadius: 1,
                       display: 'flex',
@@ -337,15 +348,13 @@ const CreatePlanModal = (props) => {
                       />
                     ) : isPdf(attachFile) ? (
                       <>
-                        <PictureAsPdfIcon sx={{ fontSize: 60, color: '#d32f2f' }} />
+                        <PictureAsPdfIcon sx={{ fontSize: { xs: 40, md: 60 }, color: '#d32f2f' }} />
                         <Typography variant="body2" sx={{ mt: 1 }}>
                           فایل PDF انتخاب شده است
                         </Typography>
                       </>
                     ) : (
-                      <Typography variant="body2">
-                        فرمت فایل پشتیبانی نمی‌شود
-                      </Typography>
+                      <Typography variant="body2">فرمت فایل پشتیبانی نمی‌شود</Typography>
                     )}
 
                     <IconButton
@@ -371,14 +380,18 @@ const CreatePlanModal = (props) => {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
+                      fontSize: {
+                        xs: '0.7rem',
+                        md: '0.75rem',
+                      },
                     }}
                   >
                     {attachFile.name || attachFile.mediaUrl?.split('/files/')[1]}
                   </Typography>
                 </Box>
               )}
-
             </Grid>
+
           </Grid>
           <Grid
             container

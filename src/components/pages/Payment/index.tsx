@@ -12,6 +12,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Button from '@mui/material/Button';
 // MUI Icon ****************************************************
 import IconEdit from '../../ui/icon/IconEdit';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 // TOAST ******************************************************
 import * as toast from '../../ui/Toast';
 // component ***************************************************
@@ -58,11 +59,6 @@ const columns = [
   {
     accessorKey: 'paymentMethod',
     header: 'نحوه پرداخت',
-    size: 60,
-  },
-  {
-    accessorKey: 'paymentStatus',
-    header: 'وضعیت پرداخت شهریه',
     size: 60,
   },
   {
@@ -125,9 +121,6 @@ const PaymentList = () => {
             </span>
           </Tooltip>
         ),
-        paymentStatus: <span className={item?.class?.tuitionFee - item?.amount == 0 ? 'text-success' : 'text-danger'}>
-          {item?.class?.tuitionFee - item?.amount == 0 ? 'پرداخت تکمیل شده است' : 'پرداخت تکمیل نشده است'}
-        </span>,
         paymentDate: <Tooltip title={jalaliDateWithTime(item.paymentDate)} arrow>
           <span>
             {jalaliDate(item.paymentDate)}
@@ -181,7 +174,7 @@ const PaymentList = () => {
               <div className="row mb-4">
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">لیست پرداخت شهریه ها</h3></div>
                 <div className="col-6 text-left">
-                  {/* {
+                  {
                     permissions.find((p) => p.operationId === 'tenantCreatePayment') ?
                       <Button
                         onClick={() => {
@@ -195,7 +188,7 @@ const PaymentList = () => {
                       >
                         ثبت پرداخت جدید
                       </Button> : null
-                  } */}
+                  }
 
                 </div>
                 <CreatePaymentModal
