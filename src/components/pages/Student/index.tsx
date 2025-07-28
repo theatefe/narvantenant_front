@@ -6,6 +6,7 @@ import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
 // API **************************************************
 import GetAllStudentApi from '../../api/Student/GetAll';
+import AddStudentByExcel from '../../api/Student/AddByExcel';
 // MUI **************************************************
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -83,6 +84,8 @@ const StudentList = () => {
   const [selectedStudentId, setSelectedStudentId] = React.useState(null);
   const [data, setData] = React.useState([]);
   const [isLoaded, setIsloaded] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = React.useState(false);
   // modal *********************************************************
   const [modal, setModal] = React.useState(false);
   const [deleteModal, setDeleteModal] = React.useState(false);
@@ -104,6 +107,29 @@ const StudentList = () => {
     setSelectedStudentId(id);
     setInfoModal(true);
   };
+  // handle file change *********************************************
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const result = await AddStudentByExcel(token, formData);
+    if (result.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+
+      return;
+    }
+    if (result.status === 200) {
+      getStudentList();
+      toast.SuccessNotify('اطلاعات دانش آموزان با موفقیت ثبت شد');
+      return;
+    }
+  }
   // close modal ****************************************************
   const closeModal = () => {
     setSelectedStudentId(null);
@@ -194,9 +220,28 @@ const StudentList = () => {
               {/* Header Section */}
               <div className="row mb-4">
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">
-                {isPoolTenant ? 'مدیریت شناگران':'مدیریت دانش آموزان'}
+                  {isPoolTenant ? 'مدیریت شناگران' : 'مدیریت دانش آموزان'}
                 </h3></div>
                 <div className="col-6 text-left">
+                  {
+                    permissions.find((p) => p.operationId === 'tenantCreateStudentsByExcel') ?
+                      <><input
+                        ref={fileInputRef}
+                        type='file'
+                        accept=".xlsx, .xls"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }} />
+                        <Button
+                          onClick={() => fileInputRef.current?.click()}
+                          sx={{ m: 1, mb: 0, backgroundColor: '#2eb360' }}
+                          color="success"
+                          variant="contained"
+                          disableElevation
+                          endIcon={<AddCircleOutlineIcon />}
+                        >
+                          {isPoolTenant ? 'ثبت نام شناگران با اکسل' : 'ثبت نام دانش آموزان با اکسل'}
+                        </Button></> : null
+                  }
                   {
                     permissions.find((p) => p.operationId === 'tenantCreateStudent') ?
                       <Button
