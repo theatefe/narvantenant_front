@@ -25,47 +25,6 @@ function Footer(props) {
   const [openSpeed, setOpenSpeed] = React.useState(false);
   const handleOpen = () => setOpenSpeed(!openSpeed);
   const handleClose = () => setOpenSpeed(!openSpeed);
-
-  const { logOut } = props;
-
-  const actions = [
-    {
-      icon: (
-        <Link to="/transport/loading/waiting">
-          <LabelIcon className="text-success" />
-        </Link>
-      ),
-      name: ' در پارکینگ جهت بارگیری ',
-      link: '/transport/loading/waiting',
-    },
-    {
-      icon: (
-        <Link to="/transport/loading/ontheway">
-          <LabelIcon className="text-success" />
-        </Link>
-      ),
-      name: ' در مسیر بارگیری ',
-      link: '/transport/loading/ontheway',
-    },
-    {
-      icon: (
-        <Link to="/transport/discharge/waiting">
-          <LabelIcon className="text-success" />
-        </Link>
-      ),
-      name: ' در پارکینگ جهت تخلیه ',
-      link: '/transport/discharge/waiting',
-    },
-    {
-      icon: (
-        <Link to="/transport/discharge/ontheway">
-          <LabelIcon className="text-success" />
-        </Link>
-      ),
-      name: ' در مسیر تخلیه ',
-      link: '/transport/discharge/ontheway',
-    },
-  ];
   const selectedMenu = (route) => {
     return location.pathname === route ? `text-danger` : 'text-dark';
   };

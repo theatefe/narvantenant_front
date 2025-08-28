@@ -88,7 +88,7 @@ const CommentAttendanceModal = (props) => {
     const body = {
       "id": id,
       "score": score,
-      "comment": values.desscription,
+      "comment": values.description,
     }
     const commented = await CreateCommentAttendanceApi(token, body);
     if (commented.status === 200) {

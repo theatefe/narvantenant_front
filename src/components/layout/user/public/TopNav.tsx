@@ -16,6 +16,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import PoolIcon from '@mui/icons-material/Pool';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import SchoolIcon from '@mui/icons-material/School';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
@@ -404,6 +405,20 @@ function TopNav(props) {
 
                 <ListItemIcon style={styleList}>
                   <RestaurantIcon className="ms-auto" />
+                </ListItemIcon>
+              </ListItemButton>
+            </Link>
+            : null}
+        </>
+        {/* ************************* Notifications ************************** */}
+        <>
+          {permissions.find((p) => p.operationId === 'tenantListNotification') ?
+            <Link to="/notifications" className="panel-link">
+              <ListItemButton>
+                {openMenu ? <ListItemText primary="مدیریت اعلانات" /> : ''}
+
+                <ListItemIcon style={styleList}>
+                  <NotificationsIcon className="ms-auto" />
                 </ListItemIcon>
               </ListItemButton>
             </Link>

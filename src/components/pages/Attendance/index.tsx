@@ -180,7 +180,7 @@ const AttendanceList = () => {
         </Tooltip>,
         option: (
           <>
-            {permissions.find((p) => p.operationId === 'tenantUpdatePlan') ?
+            {permissions.find((p) => p.operationId === 'tenantUpdateScoreAttendance') ?
               <Tooltip title="ثبت امتیاز و عملکرد" arrow>
                 <span
                   className="svg-container cursor-pointer"
@@ -191,7 +191,7 @@ const AttendanceList = () => {
               </Tooltip>
               : null
             }
-            {permissions.find((p) => p.operationId === 'tenantDeletePlan') ?
+            {permissions.find((p) => p.operationId === 'tenantDeleteAttendance') ?
               <Tooltip title="حذف" arrow>
                 <span
                   className="svg-container cursor-pointer mx-2"

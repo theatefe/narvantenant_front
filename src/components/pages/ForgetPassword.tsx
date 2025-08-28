@@ -114,7 +114,7 @@ const ForgetPassword = () => {
 
     if (result.status === 200) {
 
-      Cookies.set('transportCompanyUser', result.data.User.jwtToken, { expires: 7 });
+      Cookies.set('user', result.data.User.jwtToken, { expires: 7 });
       dispatch(
         setAuth({
           token: result.data.User.jwtToken,

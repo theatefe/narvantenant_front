@@ -50,11 +50,14 @@ const Product = Loadable(
 const Order = Loadable(
   lazy(() => import('../pages/Order'))
 )
-const ClassEnrollmentPayList = Loadable(
+const ClassEnrollmentPay = Loadable(
   lazy(() => import('../pages/ClassEnrollmentPay'))
 )
-const PlanList = Loadable(
+const Plan = Loadable(
   lazy(() => import('../pages/Plan'))
+)
+const Notification = Loadable(
+  lazy(() => import('../pages/Notification'))
 )
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -112,7 +115,7 @@ const MainRoutes = {
         {
           path: '/skillRecords',
           element: <SkillRecord />,
-        }, 
+        },
         {
           path: '/productCats',
           element: <ProductCat />,
@@ -127,11 +130,15 @@ const MainRoutes = {
         },
         {
           path: '/classEnrollmentPays/:id',
-          element: <ClassEnrollmentPayList/>
+          element: <ClassEnrollmentPay/>
         },
         {
           path: '/plans',
-          element: <PlanList />
+          element: <Plan />
+        },
+        {
+          path: '/notifications',
+          element: <Notification />,
         }
       ],
     },
