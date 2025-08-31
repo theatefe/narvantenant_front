@@ -29,7 +29,7 @@ import {
 } from '../../helpers/convertDate.helper';
 // COLUMNS FOR GRID **************************************************
 // GENERATE TABLE ***********************************************
-const header = ['ردیف', 'نام دسته بندی', 'مجموعه', 'تاریخ ثبت'];
+const header = ['ردیف', 'شناگر', 'ماده','رکورد ثبت شده','کاربر ثبت کننده رکورد', 'تاریخ ثبت رکورد'];
 // Generate fake data (e.g., 100 people)
 const columns = [
   {
@@ -59,7 +59,7 @@ const columns = [
   },
   {
     accessorKey: 'date',
-    header: 'تاریخ ثبت',
+    header: 'تاریخ ثبت رکورد',
     size: 60,
   },
   {

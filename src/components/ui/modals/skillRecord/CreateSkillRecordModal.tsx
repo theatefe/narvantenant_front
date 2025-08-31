@@ -17,10 +17,13 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
-
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
 import SendIcon from '@mui/icons-material/Send';
+// UI ********************************************************
+import { georgianDate, jalaliDate } from './../../../helpers/convertDate.helper';
+import { ToInt } from './../../../helpers/NumberTools';
+import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
 // Formik & yup ************************************************
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -45,6 +48,8 @@ const CreateCourseLevelCatModal = (props) => {
   const [data, setData] = React.useState(null);
   const [skills, setSkills] = React.useState([]);
   const [students, setStudents] = React.useState([]);
+  const today = new Date();
+  const [selectedDate, setSelectedDate] = React.useState<Date>();
   // FORMIK *******************************************************
   const formik = useFormik({
     initialValues: {
@@ -69,9 +74,13 @@ const CreateCourseLevelCatModal = (props) => {
   });
   // SUBMIT *******************************************************
   const submitForm = async (values) => {
+    if (!selectedDate) {
+      toast.ErrorNotify('انتخاب تاریخ ثبت رکورد الزامی است');
+      return;
+    }
     if (id) {
       //updated
-      const body = { ...values, id }
+      const body = { ...values, id, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
       const updated = await SkillRedordUpdateApi(token, body);
       if (updated.status === 200) {
         toast.SuccessNotify('رکورد با موفقیت بروزرسانی شد');
@@ -84,7 +93,8 @@ const CreateCourseLevelCatModal = (props) => {
       }
     } else {
       // created
-      const created = await SkillRecordCreateApi(token, values);
+      const body = { ...values, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
+      const created = await SkillRecordCreateApi(token, body);
       if (created.status === 200) {
         toast.SuccessNotify("رکورد جدید با موفقیت ثبت شد");
         handleCancel();
@@ -107,6 +117,7 @@ const CreateCourseLevelCatModal = (props) => {
             skillId: skillRecord.data.skillId || "",
             record: skillRecord.data.record || "",
           });
+          setSelectedDate(skillRecord.data.createdAt);
           setData(skillRecord.data);
         } else {
           toast.ErrorNotify(skillRecord.data.error);
@@ -177,7 +188,7 @@ const CreateCourseLevelCatModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto', my: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -214,7 +225,7 @@ const CreateCourseLevelCatModal = (props) => {
               >
                 {skills && skills.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item.id}> {item?.title +' - '+ item?.area+'متر'}</MenuItem>
+                    <MenuItem key={item.id} value={item.id}> {item?.title + ' - ' + item?.area + 'متر'}</MenuItem>
                   )
                 })}
               </TextField>
@@ -231,6 +242,14 @@ const CreateCourseLevelCatModal = (props) => {
                 error={formik.touched.record && Boolean(formik.errors.record)}
                 helperText={formik.touched.record && formik.errors.record}
                 size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+              <DatePickersInputWithTime
+                setSelectedDate={(date: Date) => { setSelectedDate(date); }}
+                selectedDate={selectedDate}
+                fullWidth
+                label={`تاریخ ثبت رکورد`}
               />
             </Grid>
           </Grid>
