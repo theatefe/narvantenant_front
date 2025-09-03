@@ -177,7 +177,7 @@ const CreateCoachModal = (props) => {
           setCoachingCard(coach.data.coachingCardImage);
           setNationalCard(coach.data.nationalCardImage);
           setSportsInsuranceDard(coach.data.sportsInsuranceImage);
-          setLastRetrainingCard(coach.lastRetrainingCardImage);
+          setLastRetrainingCard(coach.data.lastRetrainingCardImag);
         } else {
           toast.ErrorNotify(coach.data.error);
           setOpenModal(false);
@@ -202,6 +202,13 @@ const CreateCoachModal = (props) => {
   }
   // HANDLE FILE CHANGE ***************************************
   const handleFileChange = async (label: string, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.ErrorNotify("فقط آپلود تصویر مجاز است");
+      return;
+    }
+
     const formData = {
       file: event.target.files[0],
       dist: event.target.files[0].name,
@@ -306,7 +313,13 @@ const CreateCoachModal = (props) => {
                 variant="outlined"
                 name="nationalCode"
                 value={formik.values.nationalCode}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // just numbers and length 10
+                  if (/^\d{0,10}$/.test(val)) {
+                    formik.setFieldValue('nationalCode', val);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.nationalCode && Boolean(formik.errors.nationalCode)}
                 helperText={formik.touched.nationalCode && formik.errors.nationalCode}
@@ -357,7 +370,13 @@ const CreateCoachModal = (props) => {
                 variant="outlined"
                 name="mobile"
                 value={formik.values.mobile}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // just numbers and length 11
+                  if (/^\d{0,11}$/.test(val)) {
+                    formik.setFieldValue('mobile', val);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.mobile && Boolean(formik.errors.mobile)}
                 helperText={formik.touched.mobile && formik.errors.mobile}

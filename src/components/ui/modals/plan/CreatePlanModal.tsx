@@ -151,6 +151,12 @@ const CreatePlanModal = (props) => {
   };
   // HANDLE FILE CHANGE **************************************
   const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+          toast.ErrorNotify("فقط آپلود تصویر مجاز است");
+          return;
+        }
     const formData = {
       file: event.target.files[0],
       dist: event.target.files[0].name,

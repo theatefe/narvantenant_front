@@ -123,6 +123,18 @@ const CreateNotificationModal = (props) => {
     setSelectedRecivers(selectedRecivers.filter((s) => s.id !== id));
     toast.SuccessNotify(`"${student.name}" از لیست دریافت‌کنندگان حذف شد.`);
   };
+  // HANDLE CLOSE *****************************************
+  const handleCancel = () => {
+    formik.resetForm();
+    setMedia(null);
+    setAttachment(null);
+    setStartedDate(null);
+    setSendType('time');
+    setEndedDate([]);
+    setRecivers([]);
+    setSelectedRecivers([]);
+    setOpenModal(false);
+  };
   // SUBMIT **************************************************
   const submitForm = async (values) => {
     let receivers = [];
@@ -134,6 +146,8 @@ const CreateNotificationModal = (props) => {
       }
       receivers = selectedRecivers.map((s) => s.id);
     }
+    console.log(endedDate);
+    console.log(startedDate);
     const body = {
       "title": values.title,
       "text": values.text,
@@ -278,15 +292,6 @@ const CreateNotificationModal = (props) => {
         console.warn(`Unknown type: ${type}`);
     }
   }
-  // HANDLE CLOSE *****************************************
-  const handleCancel = () => {
-    formik.resetForm();
-    setMedia(null);
-    setAttachment(null);
-    setRecivers([]);
-    setSelectedRecivers([]);
-    setOpenModal(false);
-  };
   // USE EFFECT **********************************************
   React.useEffect(() => {
     getNotification();

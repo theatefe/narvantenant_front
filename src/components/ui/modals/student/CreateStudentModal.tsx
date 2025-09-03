@@ -80,9 +80,11 @@ const CreateStudentModal = (props) => {
   }
   // GET LEVEL LIST ***********************************************
   const handleSetLevelList = (categoryId) => {
-    const catId = categoryId;
-    const levelCat = levelCats.find((cat) => cat.id == catId);
-    setLevels(levelCat.CourseLevels);
+    if (categoryId) {
+      const catId = categoryId;
+      const levelCat = levelCats.find((cat) => cat.id == catId);
+      setLevels(levelCat.CourseLevels);
+    }
   }
   // FORMIK *******************************************************
   const formik = useFormik({
@@ -118,6 +120,8 @@ const CreateStudentModal = (props) => {
       nationalCode: Yup.string()
         .required("کدملی الزامی است")
         .min(3, "کد ملی باید حداقل ۳ کاراکتر باشد"),
+      dateOfBirth: Yup.string()
+        .required("تاریخ تولد الزامی است"),
       mobile: Yup.string()
         .required("شماره همراه الزامی است")
         .min(3, "شماره همراه به درستی وارد نشده است"),
@@ -193,28 +197,28 @@ const CreateStudentModal = (props) => {
         const student = await GetStudentApi(token, id);
         if (student.status === 200) {
           formik.setValues({
-            name: student.data.user.name || "",
-            lastName: student.data.user.lastName || "",
-            gender: student.data.user.gender || "",
-            nationalCode: student.data.user.nationalCode || "",
-            dateOfBirth: jalaliDate(student.data.user.dateOfBirth) || null,
-            mobile: student.data.user.mobile || "",
-            address: student.data.user.address || "",
-            levelCatId: student.data.level.categoryId || null,
-            levelId: student.data.levelId || null,
-            fatherName: student.data.fatherName || null,
-            motherName: student.data.motherName || null,
-            fatherJob: student.data.fatherJob || null,
-            motherJob: student.data.motherJob || null,
-            fatherPhone: student.data.fatherPhone || null,
-            motherPhone: student.data.motherPhone || null,
-            fatherEducation: student.data.fatherEducation || null,
-            motherEducation: student.data.motherEducation || null,
+            name: student.data?.user?.name || "",
+            lastName: student.data?.user?.lastName || "",
+            gender: student.data?.user?.gender || "",
+            nationalCode: student.data?.user?.nationalCode || "",
+            dateOfBirth: jalaliDate(student.data.user?.dateOfBirth) || null,
+            mobile: student.data?.user?.mobile || "",
+            address: student.data?.user?.address || "",
+            levelCatId: student.data?.level?.categoryId || null,
+            levelId: student.data?.levelId || null,
+            fatherName: student.data?.fatherName || null,
+            motherName: student.data?.motherName || null,
+            fatherJob: student.data?.fatherJob || null,
+            motherJob: student.data?.motherJob || null,
+            fatherPhone: student.data?.fatherPhone || null,
+            motherPhone: student.data?.motherPhone || null,
+            fatherEducation: student.data?.fatherEducation || null,
+            motherEducation: student.data?.motherEducation || null,
           });
-          setNationalCard(student.data.birthCertificateImage);
-          setSportsInsuranceDard(student.data.sportsInsuranceImage);
-          setPersonalImage(student.data.personalImage);
-          handleSetLevelList(student.data.level.categoryId);
+          setNationalCard(student.data?.birthCertificateImage);
+          setSportsInsuranceDard(student.data?.sportsInsuranceImage);
+          setPersonalImage(student.data?.personalImage);
+          handleSetLevelList(student.data?.level?.categoryId);
         } else {
           toast.ErrorNotify(student.data.error);
           setOpenModal(false);
@@ -229,6 +233,12 @@ const CreateStudentModal = (props) => {
   }
   // HANDLE FILE CHANGE ***************************************
   const handleFileChange = async (label: string, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.ErrorNotify("فقط آپلود تصویر مجاز است");
+      return;
+    }
     const formData = {
       file: event.target.files[0],
       dist: event.target.files[0].name,
@@ -268,6 +278,9 @@ const CreateStudentModal = (props) => {
     setNationalCard(null);
     setSportsInsuranceDard(null);
     setPersonalImage(null);
+    setBirthDate(null);
+    setLevelCats([]);
+    setLevels([]);
     setOpenModal(false);
   };
   // USE EFFECT **********************************************
@@ -326,7 +339,13 @@ const CreateStudentModal = (props) => {
                 variant="outlined"
                 name="nationalCode"
                 value={formik.values.nationalCode}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // just numbers and length 10
+                  if (/^\d{0,10}$/.test(val)) {
+                    formik.setFieldValue('nationalCode', val);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.nationalCode && Boolean(formik.errors.nationalCode)}
                 helperText={formik.touched.nationalCode && formik.errors.nationalCode}
@@ -351,7 +370,13 @@ const CreateStudentModal = (props) => {
                 variant="outlined"
                 name="mobile"
                 value={formik.values.mobile}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // just numbers and length 11
+                  if (/^\d{0,11}$/.test(val)) {
+                    formik.setFieldValue('mobile', val);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.mobile && Boolean(formik.errors.mobile)}
                 helperText={formik.touched.mobile && formik.errors.mobile}
@@ -471,7 +496,13 @@ const CreateStudentModal = (props) => {
                 variant="outlined"
                 name="fatherPhone"
                 value={formik.values.fatherPhone}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // just numbers and length 11
+                  if (/^\d{0,11}$/.test(val)) {
+                    formik.setFieldValue('fatherPhone', val);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.fatherPhone && Boolean(formik.errors.fatherPhone)}
                 helperText={formik.touched.fatherPhone && formik.errors.fatherPhone}
@@ -527,7 +558,13 @@ const CreateStudentModal = (props) => {
                 variant="outlined"
                 name="motherPhone"
                 value={formik.values.motherPhone}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // just numbers and length 11
+                  if (/^\d{0,11}$/.test(val)) {
+                    formik.setFieldValue('motherPhone', val);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.motherPhone && Boolean(formik.errors.motherPhone)}
                 helperText={formik.touched.motherPhone && formik.errors.motherPhone}

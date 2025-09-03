@@ -80,6 +80,12 @@ const CreateClassModal = (props) => {
       gender: Yup.string()
         .required("انتخاب جنسیت کلاس الزامی است")
         .min(1, "جنسیت کلاس انتخاب نشده است"),
+      startDate: Yup.string()
+        .required("انتخاب تاریخ شروع کلاس الزامی است"),
+      startTime: Yup.string()
+        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, "ساعت و دقیقه باید با فرمت HH:mm باشد"),
+      endTime: Yup.string()
+        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, "ساعت و دقیقه باید با فرمت HH:mm باشد"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
