@@ -48,13 +48,20 @@ const VisuallyHiddenInput = styled('input')({
 });
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 800,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreateProductModal = (props) => {
@@ -243,7 +250,7 @@ const CreateProductModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <Autocomplete
                 disablePortal
                 fullWidth
@@ -269,7 +276,7 @@ const CreateProductModal = (props) => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`عنوان محصول *`}
@@ -283,7 +290,7 @@ const CreateProductModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`جنس محصول *`}
@@ -297,7 +304,7 @@ const CreateProductModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`رنگ محصول *`}
@@ -311,7 +318,7 @@ const CreateProductModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`سایز محصول *`}
@@ -325,7 +332,7 @@ const CreateProductModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`قیمت محصول (ریال) *`}
@@ -344,7 +351,7 @@ const CreateProductModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -362,7 +369,7 @@ const CreateProductModal = (props) => {
                 <MenuItem value="MALE">مردانه</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`توضیحات محصول *`}
@@ -393,7 +400,7 @@ const CreateProductModal = (props) => {
             </Grid>
             <Grid container spacing={2} className='mt-1 mx-2'>
               {selectedProductMedia && selectedProductMedia.length > 0 ? selectedProductMedia.map((item, index) => (
-                <Grid item xs={6} md={3} key={index}>
+                <Grid item xs={3} md={3} key={index}>
                   <div style={{
                     position: 'relative',
                     width: '100%',

@@ -54,10 +54,17 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 900,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreateNotificationModal = (props) => {
@@ -312,7 +319,7 @@ const CreateNotificationModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`عنوان  *`}
@@ -326,7 +333,7 @@ const CreateNotificationModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`لینک `}
@@ -357,7 +364,7 @@ const CreateNotificationModal = (props) => {
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Divider>زمان ارسال</Divider>
             </Grid>
-            <Grid item xs={12} md={sendType === 'between' ? 4 : 6} sx={{ mx: 'auto' }}>
+            <Grid item xs={sendType === 'between' ? 4 : 6} md={sendType === 'between' ? 4 : 6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -371,7 +378,7 @@ const CreateNotificationModal = (props) => {
                 <MenuItem value="between">بازه زمانی ارسال</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={sendType === 'between' ? 4 : 6} sx={{ mx: 'auto' }}>
+            <Grid item xs={sendType === 'between' ? 4 : 6} md={sendType === 'between' ? 4 : 6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('startedAt', date); setStartedDate(date); }}
                 selectedDate={formik.values.startedAt}
@@ -382,7 +389,7 @@ const CreateNotificationModal = (props) => {
                 <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.startedAt}</div>
               )}
             </Grid>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto', display: sendType === 'between' ? 'block' : 'none' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto', display: sendType === 'between' ? 'block' : 'none' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('endedAt', date); setEndedDate(date); }}
                 selectedDate={formik.values.endedAt}
@@ -396,7 +403,7 @@ const CreateNotificationModal = (props) => {
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Divider>گیرندگان اعلان</Divider>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -415,7 +422,7 @@ const CreateNotificationModal = (props) => {
                 <MenuItem value="STUDENT">شناگران</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -464,7 +471,7 @@ const CreateNotificationModal = (props) => {
               <Divider> آپلود فایل </Divider>
             </Grid>
             {/* تصویر اعلان */}
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -484,8 +491,8 @@ const CreateNotificationModal = (props) => {
               {media && (
                 <Box
                   sx={{
-                    width: 420, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 280, md: 420 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -546,7 +553,7 @@ const CreateNotificationModal = (props) => {
               )}
             </Grid>
             {/* ضمیمه اعلان */}
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -566,8 +573,8 @@ const CreateNotificationModal = (props) => {
               {attachment && (
                 <Box
                   sx={{
-                    width: 420, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 280, md: 420 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -607,7 +614,7 @@ const CreateNotificationModal = (props) => {
                         left: 0,
                         backgroundColor: 'rgba(255,255,255,0.7)'
                       }}
-                      onClick={() => handleRemoveImage("nationalCard")}
+                      onClick={() => handleRemoveImage("attachment")}
                     >
                       <DeleteIcon />
                     </IconButton>

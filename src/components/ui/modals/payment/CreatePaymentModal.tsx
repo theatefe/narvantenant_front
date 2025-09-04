@@ -33,13 +33,20 @@ import { ToInt } from './../../../helpers/NumberTools';
 // STYLE MODAL
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreatePaymentModal = (props) => {
@@ -210,7 +217,7 @@ const CreatePaymentModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -231,7 +238,7 @@ const CreatePaymentModal = (props) => {
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -252,7 +259,7 @@ const CreatePaymentModal = (props) => {
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -271,7 +278,7 @@ const CreatePaymentModal = (props) => {
                 <MenuItem value="POS">دستگاه کارتخوان</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`مبلغ پرداختی شهریه (ریال) *`}

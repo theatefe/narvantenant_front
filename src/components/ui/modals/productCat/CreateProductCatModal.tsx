@@ -45,10 +45,17 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreateProductCatModal = (props) => {

@@ -27,13 +27,20 @@ import {
 // STYLE MODAL
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const DetailCourseLevelCatModal = (props) => {
@@ -93,7 +100,7 @@ const DetailCourseLevelCatModal = (props) => {
           <hr />
           <form>
             <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   نام محصول  : {"  "}
                 </span>
@@ -101,7 +108,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {`   ${data?.title}`}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   قیمت محصول  : {"  "}
                 </span>
@@ -109,7 +116,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {`  ${numberSpace(data?.price)} ریال `}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   دسته بندی : {"  "}
                 </span>
@@ -117,7 +124,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {`${data?.productCategory?.title}`}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   جنس محصول : {" "}
                 </span>
@@ -125,7 +132,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {data?.material || "-"}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   رنگ محصول: {" "}
                 </span>
@@ -133,7 +140,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {data?.color || "-"}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   سایز محصول: {" "}
                 </span>
@@ -141,7 +148,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {data?.size || "-"}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   جنسیت محصول: {" "}
                 </span>
@@ -149,7 +156,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {data?.gender || "-"}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   وضعیت محصول: {" "}
                 </span>
@@ -157,7 +164,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {data?.status || "-"}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   توضیحات: {" "}
                 </span>
@@ -165,7 +172,7 @@ const DetailCourseLevelCatModal = (props) => {
                   {data?.description || "-"}
                 </span>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
                 <span className={"text-secondary"}>
                   تاریخ ثبت : {" "}
                 </span>

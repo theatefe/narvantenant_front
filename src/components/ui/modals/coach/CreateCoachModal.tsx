@@ -53,10 +53,17 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 900,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreateCoachModal = (props) => {
@@ -278,7 +285,7 @@ const CreateCoachModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام  *`}
@@ -292,7 +299,7 @@ const CreateCoachModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام خانوادگی  *`}
@@ -306,7 +313,7 @@ const CreateCoachModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`کدملی *`}
@@ -314,7 +321,7 @@ const CreateCoachModal = (props) => {
                 name="nationalCode"
                 value={formik.values.nationalCode}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.currentTarget.value;
                   // just numbers and length 10
                   if (/^\d{0,10}$/.test(val)) {
                     formik.setFieldValue('nationalCode', val);
@@ -326,7 +333,7 @@ const CreateCoachModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <Autocomplete
                 disablePortal
                 fullWidth
@@ -352,7 +359,7 @@ const CreateCoachModal = (props) => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('dateOfBirth', date); setBirthDate(date); }}
                 selectedDate={formik.values.dateOfBirth}
@@ -363,7 +370,7 @@ const CreateCoachModal = (props) => {
                 <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.dateOfBirth}</div>
               )}
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`شماره تلفن همراه *`}
@@ -371,7 +378,7 @@ const CreateCoachModal = (props) => {
                 name="mobile"
                 value={formik.values.mobile}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.currentTarget.value;
                   // just numbers and length 11
                   if (/^\d{0,11}$/.test(val)) {
                     formik.setFieldValue('mobile', val);
@@ -383,7 +390,7 @@ const CreateCoachModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -401,7 +408,7 @@ const CreateCoachModal = (props) => {
                 <MenuItem value="MALE">مرد</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('coachingCardIssueDate', date); setTodDate(date); }}
                 selectedDate={formik.values.coachingCardIssueDate}
@@ -412,7 +419,7 @@ const CreateCoachModal = (props) => {
                 <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.coachingCardIssueDate}</div>
               )}
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`آدرس `}
@@ -427,7 +434,7 @@ const CreateCoachModal = (props) => {
               />
             </Grid>
             {/* کارت ملی */}
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={3} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -447,8 +454,8 @@ const CreateCoachModal = (props) => {
               {nationalCard && (
                 <Box
                   sx={{
-                    width: 200, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 130, md: 200 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -464,7 +471,7 @@ const CreateCoachModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 180, sm: 200, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}
@@ -475,7 +482,7 @@ const CreateCoachModal = (props) => {
                       style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
+                        objectFit: 'cover',
                         borderRadius: 4,
                         display: 'block',
                       }}
@@ -509,7 +516,7 @@ const CreateCoachModal = (props) => {
               )}
             </Grid>
             {/* کارت مربیگری */}
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={3} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -529,8 +536,8 @@ const CreateCoachModal = (props) => {
               {coachingCard && (
                 <Box
                   sx={{
-                    width: 200, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 130, md: 200 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -546,7 +553,7 @@ const CreateCoachModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 180, sm: 200, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}
@@ -557,7 +564,7 @@ const CreateCoachModal = (props) => {
                       style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover', // یا 'contain' برای دیدن کل عکس
+                        objectFit: 'cover',
                         borderRadius: 4,
                         display: 'block',
                       }}
@@ -591,7 +598,7 @@ const CreateCoachModal = (props) => {
               )}
             </Grid>
             {/* کارت بیمه ورزشی */}
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={3} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -611,8 +618,8 @@ const CreateCoachModal = (props) => {
               {sportsInsuranceCard && (
                 <Box
                   sx={{
-                    width: 200, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 130, md: 200 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -628,7 +635,7 @@ const CreateCoachModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 'auto', sm: 250, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}
@@ -673,7 +680,7 @@ const CreateCoachModal = (props) => {
               )}
             </Grid>
             {/* گواهی آخرین بازآموزی */}
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={3} md={3} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -693,8 +700,8 @@ const CreateCoachModal = (props) => {
               {lastRetrainingCard && (
                 <Box
                   sx={{
-                    width: 200, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 130, md: 200 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -710,7 +717,7 @@ const CreateCoachModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 180, sm: 200, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}

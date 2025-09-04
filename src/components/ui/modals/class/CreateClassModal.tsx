@@ -33,13 +33,20 @@ import { ToInt } from './../../../helpers/NumberTools';
 // STYLE MODAL
 const style = {
   position: 'absolute',
-  top: '40%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreateClassModal = (props) => {
@@ -234,7 +241,7 @@ const CreateClassModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام  *`}
@@ -248,7 +255,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`کد  *`}
@@ -262,7 +269,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -280,7 +287,7 @@ const CreateClassModal = (props) => {
                 <MenuItem value="MALE">آقایان</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -301,7 +308,7 @@ const CreateClassModal = (props) => {
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -327,7 +334,7 @@ const CreateClassModal = (props) => {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -351,7 +358,7 @@ const CreateClassModal = (props) => {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`روزهای تشکیل کلاس *`}
@@ -365,7 +372,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`ساعت شروع کلاس *`}
@@ -379,7 +386,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`ساعت پایان کلاس *`}
@@ -393,7 +400,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`تعداد جلسات کلاس *`}
@@ -407,7 +414,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`مبلغ شهریه (ریال) *`}
@@ -426,7 +433,7 @@ const CreateClassModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('startDate', date); setStartDate(date); }}
                 selectedDate={formik.values.startDate}

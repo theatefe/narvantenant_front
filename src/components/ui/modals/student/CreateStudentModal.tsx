@@ -53,10 +53,17 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 900,
+  width: {
+    xs: '90%',
+    sm: '70%',
+    md: 900,
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
+  borderRadius: 2,
 };
 
 const CreateStudentModal = (props) => {
@@ -304,7 +311,7 @@ const CreateStudentModal = (props) => {
         <hr />
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12 }}>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام  *`}
@@ -318,7 +325,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام خانوادگی  *`}
@@ -332,7 +339,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`کدملی *`}
@@ -340,7 +347,7 @@ const CreateStudentModal = (props) => {
                 name="nationalCode"
                 value={formik.values.nationalCode}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.currentTarget.value;
                   // just numbers and length 10
                   if (/^\d{0,10}$/.test(val)) {
                     formik.setFieldValue('nationalCode', val);
@@ -352,7 +359,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => { formik.setFieldValue('dateOfBirth', date); setBirthDate(date); }}
                 selectedDate={formik.values.dateOfBirth}
@@ -363,7 +370,7 @@ const CreateStudentModal = (props) => {
                 <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.dateOfBirth}</div>
               )}
             </Grid>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`شماره تلفن همراه *`}
@@ -371,7 +378,7 @@ const CreateStudentModal = (props) => {
                 name="mobile"
                 value={formik.values.mobile}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.currentTarget.value;
                   // just numbers and length 11
                   if (/^\d{0,11}$/.test(val)) {
                     formik.setFieldValue('mobile', val);
@@ -383,7 +390,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -401,7 +408,7 @@ const CreateStudentModal = (props) => {
                 <MenuItem value="MALE">پسر</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -422,7 +429,7 @@ const CreateStudentModal = (props) => {
                 }) : (<MenuItem value={null}>دسته بندی برای نمایش وجود ندارد</MenuItem>)}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -447,7 +454,7 @@ const CreateStudentModal = (props) => {
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Divider>اطلاعات والدین</Divider>
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام پدر `}
@@ -461,7 +468,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`تحصیلات پدر `}
@@ -475,7 +482,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`شغل پدر `}
@@ -489,7 +496,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`تلفن تماس پدر `}
@@ -497,7 +504,7 @@ const CreateStudentModal = (props) => {
                 name="fatherPhone"
                 value={formik.values.fatherPhone}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.currentTarget.value;
                   // just numbers and length 11
                   if (/^\d{0,11}$/.test(val)) {
                     formik.setFieldValue('fatherPhone', val);
@@ -509,7 +516,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`نام مادر `}
@@ -523,7 +530,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`تحصیلات مادر `}
@@ -537,7 +544,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`شغل مادر `}
@@ -551,7 +558,7 @@ const CreateStudentModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={3} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`تلفن تماس مادر `}
@@ -559,7 +566,7 @@ const CreateStudentModal = (props) => {
                 name="motherPhone"
                 value={formik.values.motherPhone}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.currentTarget.value;
                   // just numbers and length 11
                   if (/^\d{0,11}$/.test(val)) {
                     formik.setFieldValue('motherPhone', val);
@@ -589,7 +596,7 @@ const CreateStudentModal = (props) => {
               <Divider>مدارک تکمیلی</Divider>
             </Grid>
             {/* تصویر پرسنلی */}
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -609,8 +616,8 @@ const CreateStudentModal = (props) => {
               {personalImage && (
                 <Box
                   sx={{
-                    width: 280, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 180, md: 280 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -626,7 +633,7 @@ const CreateStudentModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 180, sm: 200, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}
@@ -671,7 +678,7 @@ const CreateStudentModal = (props) => {
               )}
             </Grid>
             {/* کارت ملی */}
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -680,7 +687,7 @@ const CreateStudentModal = (props) => {
                 fullWidth
                 sx={{ mb: 1 }}
               >
-                آپلود تصویر کارت ملی یا شناسنامه
+                آپلود تصویر کارت ملی
                 <VisuallyHiddenInput
                   type="file"
                   accept="image/*"
@@ -691,8 +698,8 @@ const CreateStudentModal = (props) => {
               {nationalCard && (
                 <Box
                   sx={{
-                    width: 280, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 180, md: 280 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -708,7 +715,7 @@ const CreateStudentModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 180, sm: 200, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}
@@ -753,7 +760,7 @@ const CreateStudentModal = (props) => {
               )}
             </Grid>
             {/* بیمه ورزشی */}
-            <Grid item xs={12} md={4} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -773,8 +780,8 @@ const CreateStudentModal = (props) => {
               {sportsInsuranceCard && (
                 <Box
                   sx={{
-                    width: 280, // عرض ثابت کارت
-                    height: 200, // ارتفاع ثابت کارت
+                    width: { xs: '90%', sm: 180, md: 280 },
+                    height: { xs: 'auto', sm: 100, md: 200 },
                     border: '1px solid #ddd',
                     borderRadius: 1,
                     p: 1,
@@ -790,7 +797,7 @@ const CreateStudentModal = (props) => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: 200, // ارتفاع ثابت برای بخش عکس
+                      height: { xs: 180, sm: 200, md: 200 },
                       overflow: 'hidden',
                       borderRadius: 1,
                     }}
