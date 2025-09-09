@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const UpdateProductCat = async (token, body) => {
+const UpdateOredrStatus = async (token, body) => {
   const config = {
     headers: {
       jtoken: token,
@@ -8,7 +8,7 @@ const UpdateProductCat = async (token, body) => {
   };
   try {
     const { data, status } = await axios.put(
-      `${process.env.REACT_APP_HOST}user/productCat`,
+      `${process.env.REACT_APP_HOST}user/order`,
       body,
       config,
     );
@@ -19,4 +19,4 @@ const UpdateProductCat = async (token, body) => {
   }
 };
 
-export default UpdateProductCat;
+export default UpdateOredrStatus;

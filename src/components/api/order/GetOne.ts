@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GetProductCat = async (token: string, id: number) => {
+const GetOredr = async (token: string, id: number) => {
   const config = {
     headers: {
       jtoken: token,
@@ -8,7 +8,7 @@ const GetProductCat = async (token: string, id: number) => {
   };
   try {
     const { data, status } = await axios.get(
-      `${process.env.REACT_APP_HOST}user/productCat/${id}`,
+      `${process.env.REACT_APP_HOST}user/order/${id}`,
       config,
     );
 
@@ -18,4 +18,4 @@ const GetProductCat = async (token: string, id: number) => {
   }
 };
 
-export default GetProductCat;
+export default GetOredr;

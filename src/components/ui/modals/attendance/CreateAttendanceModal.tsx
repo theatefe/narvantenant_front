@@ -33,10 +33,22 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: {
+    xs: '95%',
+    sm: 600,
+    md: 800,
+  },
+  height: 'auto',
+  maxHeight: '90vh',
+  overflowY: {
+    xs: 'auto',
+    sm: 'auto',
+    md: 'visible',
+  },
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 2,
+  p: 3,
+  borderRadius: 2,
 };
 
 const CreateAttendanceModal = (props) => {

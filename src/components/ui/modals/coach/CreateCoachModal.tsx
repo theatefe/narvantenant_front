@@ -54,15 +54,20 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: {
-    xs: '90%',
-    sm: '70%',
-    md: 900,
+    xs: '95%',
+    sm: 600,
+    md: 800,
   },
+  height: 'auto',
   maxHeight: '90vh',
-  overflowY: 'auto',
+  overflowY: {
+    xs: 'auto',
+    sm: 'auto',
+    md: 'visible',
+  },
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 2,
+  p: 3,
   borderRadius: 2,
 };
 

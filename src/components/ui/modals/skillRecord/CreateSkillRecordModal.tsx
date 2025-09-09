@@ -36,15 +36,20 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: {
-    xs: '90%',
-    sm: '70%',
-    md: 900,
+    xs: '95%',
+    sm: 600,
+    md: 800,
   },
+  height: 'auto',
   maxHeight: '90vh',
-  overflowY: 'auto',
+  overflowY: {
+    xs: 'visible',
+    sm: 'auto',
+    md: 'visible',
+  },
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 2,
+  p: 3,
   borderRadius: 2,
 };
 
@@ -70,7 +75,11 @@ const CreateCourseLevelCatModal = (props) => {
       skillId: Yup.string()
         .required("انتخاب ماده الزامی است"),
       record: Yup.string()
-        .required("وارد کردن رکورد الزامی است"),
+        .required("وارد کردن رکورد الزامی است")
+        .matches(
+          /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
+          "رکورد باید با فرمت 00:00:00 باشد"
+        ),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -243,6 +252,7 @@ const CreateCourseLevelCatModal = (props) => {
                 label={`رکورد *`}
                 variant="outlined"
                 name="record"
+                placeholder='00:00:00'
                 value={formik.values.record}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
