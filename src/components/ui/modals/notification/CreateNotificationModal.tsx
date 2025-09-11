@@ -407,25 +407,6 @@ const CreateNotificationModal = (props) => {
               <TextField
                 fullWidth
                 select
-                label="مخاطب اعلان *"
-                variant="outlined"
-                name="userType"
-                value={formik.values.userType}
-                onChange={(e) => { formik.handleChange(e) }}
-                onBlur={formik.handleBlur}
-                error={formik.touched.userType && Boolean(formik.errors.userType)}
-                helperText={formik.touched.userType && formik.errors.userType}
-                size="small"
-              >
-                <MenuItem value="ADMIN">مدیر</MenuItem>
-                <MenuItem value="COACH">مربیان</MenuItem>
-                <MenuItem value="STUDENT">شناگران</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
-              <TextField
-                fullWidth
-                select
                 label="نوع مخاطب *"
                 variant="outlined"
                 name="publicOrPrivate"
@@ -438,6 +419,24 @@ const CreateNotificationModal = (props) => {
               >
                 <MenuItem value="PUBLIC">همه افراد</MenuItem>
                 <MenuItem value="PRIVATE">افراد خاص</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                select
+                label="مخاطب اعلان *"
+                variant="outlined"
+                name="userType"
+                value={formik.values.userType}
+                onChange={(e) => { formik.handleChange(e) }}
+                onBlur={formik.handleBlur}
+                error={formik.touched.userType && Boolean(formik.errors.userType)}
+                helperText={formik.touched.userType && formik.errors.userType}
+                size="small"
+              >
+                <MenuItem value="COACH">مربیان</MenuItem>
+                <MenuItem value="STUDENT">شناگران</MenuItem>
               </TextField>
             </Grid>
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
