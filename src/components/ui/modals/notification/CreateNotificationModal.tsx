@@ -5,7 +5,8 @@ import UpdateNotificationApi from '../../../api/Notification/Update';
 import AddNotificationApi from '../../../api/Notification/Add';
 import GetNotificationApi from '../../../api/Notification/GetOne';
 import GetAllCoachApi from '../../../api/Coach/GetAll';
-import GetAllStudentApi from '../../../api/Student/GetAll';
+import GetAllClassEnrollmentApi from '../../../api/ClassEnrollment/GetAll';
+import GetAllClassApi from '../../../api/Class/GetAll';
 import UploadFileApi from '../../../api/Common/UploadFile';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
@@ -77,6 +78,7 @@ const CreateNotificationModal = (props) => {
   const [sendType, setSendType] = React.useState('time');
   const [startedDate, setStartedDate] = React.useState(null);
   const [endedDate, setEndedDate] = React.useState(null);
+  const [classList, setClassList] = React.useState([]);
   const [recivers, setRecivers] = React.useState([]);
   const [selectedRecivers, setSelectedRecivers] = React.useState([]);
   const [sending, setSending] = React.useState(false);
@@ -89,6 +91,7 @@ const CreateNotificationModal = (props) => {
       startedAt: null,
       endedAt: null,
       userType: "",
+      classes:"",
       publicOrPrivate: "",
     },
     validationSchema: Yup.object({
@@ -116,9 +119,8 @@ const CreateNotificationModal = (props) => {
       resetForm();
     },
   });
-  // HANDLE SELECT RECIVER ***********************************
-  const handleSelect = (event: any) => {
-    const id = event.target.value;
+  // HANDLE SELECT RECIVER ****************************************
+  const handleSelect = (id: any) => {
     const student = recivers.find((s) => s.id === id);
     if (student && !selectedRecivers.find((s) => s.id === id)) {
       setSelectedRecivers([...selectedRecivers, student]);
@@ -202,6 +204,7 @@ const CreateNotificationModal = (props) => {
             title: notification.data.title || "",
             text: notification.data.text || "",
             link: notification.data.link || "",
+            classes:"",
             startedAt: notification.data.startedAt ? jalaliDate(notification.data.startedAt) : null,
             endedAt: notification.data.endedAt ? jalaliDate(notification.data.endedAt) : null,
             userType: notification.data.userType === "مربی" ? 'COACH' : notification.data.userType === "شناگر" ? 'STUDENT' : 'ADMIN',
@@ -231,8 +234,9 @@ const CreateNotificationModal = (props) => {
       formik.resetForm();
     }
   }
-  // GET RECIVERS LIST ****************************************
-  const getReciverList = async (userType) => {
+  // GET COACH LIST ****************************************
+  const getCoachList = async (userType) => {
+    setRecivers([]);
     if (userType === "COACH") {
       const list = await GetAllCoachApi(token);
       if (list.status === 403) {
@@ -250,22 +254,42 @@ const CreateNotificationModal = (props) => {
         setRecivers(arr);
       }
     }
-    if (userType === "STUDENT") {
-      const list = await GetAllStudentApi(token);
-      if (list.status === 403) {
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 3400);
-        toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
-        return;
-      }
-      if (list.status === 200) {
-        const arr = list.data.map((item) => ({
-          id: item?.user?.id,
-          name: item?.user?.name + ' ' + item?.user?.lastName,
-        }));
-        setRecivers(arr);
-      }
+  }
+  // GET CLASS LIST ******************************************
+  const getClassList = async () => {
+    const list = await GetAllClassApi(token);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+      return;
+    }
+    if (list.status === 200) {
+      const arr = list.data.map((item) => ({
+        id: item?.id,
+        name: item?.name + '-' + item?.courseLevel?.title,
+      }));
+      setClassList(arr);
+    }
+  }
+  // GET CLASS ENROLLMENT LIST ********************************
+  const getClassEnrollmentList = async (classId) => {
+    setRecivers([]);
+    const list = await GetAllClassEnrollmentApi(token, classId);
+    if (list.status === 403) {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3400);
+      toast.ErrorNotify('خطای دسترسی ! شما مجوز ورود به این بخش را ندارید');
+      return;
+    }
+    if (list.status === 200) {
+      const arr = list.data.map((item) => ({
+        id: item?.student?.user?.id,
+        name: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
+      }));
+      setRecivers(arr);
     }
   }
   // HANDLE FILE CHANGE ***************************************
@@ -299,6 +323,7 @@ const CreateNotificationModal = (props) => {
   }
   // USE EFFECT **********************************************
   React.useEffect(() => {
+    setSelectedRecivers([]);
     getNotification();
   }, [id]);
   // RETURN **************************************************
@@ -431,7 +456,11 @@ const CreateNotificationModal = (props) => {
                   formik.handleChange(e);
                   setRecivers([]);
                   setSelectedRecivers([]);
-                  getReciverList(e.target.value);
+                  if (e.target.value === 'STUDENT') {
+                    getClassList();
+                  } else {
+                    getCoachList(e.target.value)
+                  }
                 }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.userType && Boolean(formik.errors.userType)}
@@ -447,11 +476,35 @@ const CreateNotificationModal = (props) => {
               <TextField
                 fullWidth
                 select
+                label="انتخاب کلاس آموزشی"
+                variant="outlined"
+                name="classes"
+                size="small"
+                value={formik.values.classes}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  setRecivers([]);
+                  setSelectedRecivers([]);
+                  getClassEnrollmentList(e.target.value)
+                }}
+                sx={{ display: formik.values.publicOrPrivate === "PRIVATE" && formik.values.userType === "STUDENT" ? 'block' : 'none' }}
+              >
+                {classList.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
+              <TextField
+                fullWidth
+                select
                 label="انتخاب گیرندگان"
                 variant="outlined"
                 name="recivers"
                 size="small"
-                onChange={handleSelect}
+                onChange={(e)=> handleSelect(e.target.value)}
                 sx={{ display: formik.values.publicOrPrivate === "PRIVATE" ? 'block' : 'none' }}
               >
                 {recivers.map((item) => (

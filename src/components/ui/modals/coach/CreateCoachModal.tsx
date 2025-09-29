@@ -54,9 +54,9 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: {
-    xs: '95%',
-    sm: 600,
-    md: 800,
+    xs: '90%',
+    sm: '70%',
+    md: 900,
   },
   height: 'auto',
   maxHeight: '90vh',
@@ -108,6 +108,8 @@ const CreateCoachModal = (props) => {
       nationalCode: Yup.string()
         .required("کدملی مربی الزامی است")
         .min(3, "کد ملی مربی باید حداقل ۳ کاراکتر باشد"),
+      dateOfBirth: Yup.string()
+              .required("تاریخ تولد الزامی است"),
       mobile: Yup.string()
         .required("شماره همراه مربی الزامی است")
         .min(3, "شماره همراه مربی به درستی وارد نشده است"),
@@ -122,6 +124,15 @@ const CreateCoachModal = (props) => {
       resetForm();
     },
   });
+  // HANDLE CLOSE *****************************************
+  const handleCancel = () => {
+    formik.resetForm();
+    setCoachingCard(null);
+    setNationalCard(null);
+    setSportsInsuranceDard(null);
+    setLastRetrainingCard(null);
+    setOpenModal(false);
+  };
   // SUBMIT **************************************************
   const submitForm = async (values) => {
     const body = {
@@ -259,15 +270,6 @@ const CreateCoachModal = (props) => {
       default:
         console.warn(`Unknown type: ${type}`);
     }
-  };
-  // HANDLE CLOSE *****************************************
-  const handleCancel = () => {
-    formik.resetForm();
-    setCoachingCard(null);
-    setNationalCard(null);
-    setSportsInsuranceDard(null);
-    setLastRetrainingCard(null);
-    setOpenModal(false);
   };
   // USE EFFECT **********************************************
   React.useEffect(() => {

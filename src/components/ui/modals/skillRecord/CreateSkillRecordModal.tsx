@@ -61,13 +61,14 @@ const CreateCourseLevelCatModal = (props) => {
   const [skills, setSkills] = React.useState([]);
   const [students, setStudents] = React.useState([]);
   const today = new Date();
-  const [selectedDate, setSelectedDate] = React.useState<Date>();
+  const [selectedDate, setSelectedDate] = React.useState(null);
   // FORMIK *******************************************************
   const formik = useFormik({
     initialValues: {
       studentId: "",
       skillId: "",
       record: "",
+      selectedDate:"",
     },
     validationSchema: Yup.object({
       studentId: Yup.string()
@@ -79,7 +80,9 @@ const CreateCourseLevelCatModal = (props) => {
         .matches(
           /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
           "رکورد باید با فرمت 00:00:00 باشد"
-        ),
+      ),
+      selectedDate: Yup.string()
+              .required("انتخاب تاریخ الزامی است"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -94,9 +97,14 @@ const CreateCourseLevelCatModal = (props) => {
       toast.ErrorNotify('انتخاب تاریخ ثبت رکورد الزامی است');
       return;
     }
+    const bodyRequest = {
+      "studentId": values.studentId,
+      "skillId": values.skillId,
+      "record": values.record,
+    }
     if (id) {
       //updated
-      const body = { ...values, id, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
+      const body = { ...bodyRequest, id, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
       const updated = await SkillRedordUpdateApi(token, body);
       if (updated.status === 200) {
         toast.SuccessNotify('رکورد با موفقیت بروزرسانی شد');
@@ -109,7 +117,7 @@ const CreateCourseLevelCatModal = (props) => {
       }
     } else {
       // created
-      const body = { ...values, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
+      const body = { ...bodyRequest, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
       const created = await SkillRecordCreateApi(token, body);
       if (created.status === 200) {
         toast.SuccessNotify("رکورد جدید با موفقیت ثبت شد");
@@ -132,8 +140,8 @@ const CreateCourseLevelCatModal = (props) => {
             studentId: skillRecord.data.studentId || "",
             skillId: skillRecord.data.skillId || "",
             record: skillRecord.data.record || "",
+            selectedDate: jalaliDate(skillRecord.data.createdAt) || null,
           });
-          setSelectedDate(skillRecord.data.createdAt);
           setData(skillRecord.data);
         } else {
           toast.ErrorNotify(skillRecord.data.error);
@@ -263,11 +271,14 @@ const CreateCourseLevelCatModal = (props) => {
             </Grid>
             <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { setSelectedDate(date); }}
-                selectedDate={selectedDate}
+                setSelectedDate={(date: Date) => { formik.setFieldValue('selectedDate', date); setSelectedDate(date); }}
+                selectedDate={formik.values.selectedDate}
                 fullWidth
                 label={`تاریخ ثبت رکورد`}
               />
+              {formik.touched.selectedDate && typeof formik.errors.selectedDate === 'string' && (
+                <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.selectedDate}</div>
+              )}
             </Grid>
           </Grid>
           <Grid

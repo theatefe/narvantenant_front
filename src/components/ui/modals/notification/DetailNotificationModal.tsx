@@ -181,17 +181,6 @@ const DetailNotificationModal = (props) => {
                 </Box>
               </Grid>
             </Grid>
-            <Divider> گیرندگان اعلان</Divider>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto'}}>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-                {data?.recivers && data?.recivers.map((item) => (
-                  <Chip
-                    key={item.id}
-                    label={item.name + ' ' + item.lastName}
-                  />
-                ))}
-              </Box>
-            </Grid>
           </Box>
 
           {/* گالری تصاویر */}
