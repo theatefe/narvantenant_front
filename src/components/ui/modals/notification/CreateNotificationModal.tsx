@@ -153,8 +153,6 @@ const CreateNotificationModal = (props) => {
       }
       receivers = selectedRecivers.map((s) => s.id);
     }
-    console.log(endedDate);
-    console.log(startedDate);
     const body = {
       "title": values.title,
       "text": values.text,
@@ -234,8 +232,8 @@ const CreateNotificationModal = (props) => {
     }
   }
   // GET RECIVERS LIST ****************************************
-  const getReciverList = async () => {
-    if (formik.values.userType === "COACH") {
+  const getReciverList = async (userType) => {
+    if (userType === "COACH") {
       const list = await GetAllCoachApi(token);
       if (list.status === 403) {
         setTimeout(() => {
@@ -252,7 +250,7 @@ const CreateNotificationModal = (props) => {
         setRecivers(arr);
       }
     }
-    if (formik.values.userType === "STUDENT") {
+    if (userType === "STUDENT") {
       const list = await GetAllStudentApi(token);
       if (list.status === 403) {
         setTimeout(() => {
@@ -403,7 +401,7 @@ const CreateNotificationModal = (props) => {
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Divider>گیرندگان اعلان</Divider>
             </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={formik.values.publicOrPrivate === "PRIVATE" ? 6 : 12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -411,7 +409,7 @@ const CreateNotificationModal = (props) => {
                 variant="outlined"
                 name="publicOrPrivate"
                 value={formik.values.publicOrPrivate}
-                onChange={(e) => { formik.handleChange(e); getReciverList(); }}
+                onChange={(e) => { formik.handleChange(e); }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.publicOrPrivate && Boolean(formik.errors.publicOrPrivate)}
                 helperText={formik.touched.publicOrPrivate && formik.errors.publicOrPrivate}
@@ -429,11 +427,17 @@ const CreateNotificationModal = (props) => {
                 variant="outlined"
                 name="userType"
                 value={formik.values.userType}
-                onChange={(e) => { formik.handleChange(e) }}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  setRecivers([]);
+                  setSelectedRecivers([]);
+                  getReciverList(e.target.value);
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.touched.userType && Boolean(formik.errors.userType)}
                 helperText={formik.touched.userType && formik.errors.userType}
                 size="small"
+                sx={{ display: formik.values.publicOrPrivate === "PRIVATE" ? 'block' : 'none' }}
               >
                 <MenuItem value="COACH">مربیان</MenuItem>
                 <MenuItem value="STUDENT">شناگران</MenuItem>

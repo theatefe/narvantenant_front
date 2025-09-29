@@ -144,13 +144,14 @@ const NotificationList = () => {
       const body = { id };
       const result = await ChangeActiveApi(token, body);
       if (result.status === 200) {
+        getNotificationList();
         toast.SuccessNotify('وضعیت اعلان با موفقیت به روز رسانی شد');
         return;
       } else {
         toast.ErrorNotify(result.data.error);
       }
     } catch (e) {
-      console.error("خطا در تغییر وضعیت active", e);
+      console.error("خطا در تغییر وضعیت ", e);
     }
   }
   // Get NOTIFICATION List ********************************
@@ -174,7 +175,7 @@ const NotificationList = () => {
           <>
             {permissions.find((p) => p.operationId === "tenantChangeActiveNotification") ? (
               <Switch
-                checked={item.active}
+                checked={item.active === "غیرفعال" ? false : true}
                 color="success"
                 onChange={() => toggleActive(item.id)}
               />): item?.active}

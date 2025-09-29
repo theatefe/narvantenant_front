@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Divider from '@mui/material/Divider';
-import IconButton from "@mui/material/IconButton"
+import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
