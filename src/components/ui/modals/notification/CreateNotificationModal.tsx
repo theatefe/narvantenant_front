@@ -8,6 +8,8 @@ import GetAllCoachApi from '../../../api/Coach/GetAll';
 import GetAllClassEnrollmentApi from '../../../api/ClassEnrollment/GetAll';
 import GetAllClassApi from '../../../api/Class/GetAll';
 import UploadFileApi from '../../../api/Common/UploadFile';
+import RemoveReciverApi from '../../../api/Notification/RemoveReciver';
+import AddReciverApi from '../../../api/Notification/AddReciver';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
 // MUI **************************************************
@@ -91,7 +93,7 @@ const CreateNotificationModal = (props) => {
       startedAt: null,
       endedAt: null,
       userType: "",
-      classes:"",
+      classes: "",
       publicOrPrivate: "",
     },
     validationSchema: Yup.object({
@@ -102,12 +104,12 @@ const CreateNotificationModal = (props) => {
         .required("متن اعلان الزامی است")
         .min(3, "متن اعلان باید حداقل ۳ کاراکتر باشد"),
       link: Yup.string(),
-      userType: Yup.string()
-        .required("انتخاب مخاطب اعلان الزامی است")
-        .min(1, "مخاطب اعلان انتخاب نشده است"),
-      publicOrPrivate: Yup.string()
-        .required("انتخاب نوع مخاطب الزامی است")
-        .min(1, "نوع مخاطب انتخاب نشده است"),
+      // userType: Yup.string()
+      //   .required("انتخاب مخاطب اعلان الزامی است")
+      //   .min(1, "مخاطب اعلان انتخاب نشده است"),
+      // publicOrPrivate: Yup.string()
+      //   .required("انتخاب نوع مخاطب الزامی است")
+      //   .min(1, "نوع مخاطب انتخاب نشده است"),
       startedAt: Yup.string()
         .required("تاریخ و ساعت ارسال الزامی است")
         .nullable(),
@@ -120,16 +122,30 @@ const CreateNotificationModal = (props) => {
     },
   });
   // HANDLE SELECT RECIVER ****************************************
-  const handleSelect = (id: any) => {
-    const student = recivers.find((s) => s.id === id);
-    if (student && !selectedRecivers.find((s) => s.id === id)) {
+  const handleSelect = async (userId: any) => {
+    const student = recivers.find((s) => s.id === userId);
+    if (student && !selectedRecivers.find((s) => s.id === userId)) {
       setSelectedRecivers([...selectedRecivers, student]);
+      if (id) {
+        const body = {
+          notificationId: id,
+          userId: userId,
+        }
+        await AddReciverApi(token, body);
+      }
       toast.SuccessNotify(`"${student.name}" به لیست دریافت‌کنندگان اضافه شد.`);
     }
   };
-  const handleDelete = (id: string) => {
-    const student = selectedRecivers.find((s) => s.id === id);
-    setSelectedRecivers(selectedRecivers.filter((s) => s.id !== id));
+  const handleDelete = async (userId: string) => {
+    const student = selectedRecivers.find((s) => s.id === userId);
+    setSelectedRecivers(selectedRecivers.filter((s) => s.id !== userId));
+    if (id) {
+      const body = {
+        notificationId: id,
+        userId: userId,
+      }
+      await RemoveReciverApi(token, body);
+    }
     toast.SuccessNotify(`"${student.name}" از لیست دریافت‌کنندگان حذف شد.`);
   };
   // HANDLE CLOSE *****************************************
@@ -159,9 +175,10 @@ const CreateNotificationModal = (props) => {
       "title": values.title,
       "text": values.text,
       "link": values.link,
+      "classId": values.classes || null,
       "mediaId": media ? media.id : null,
       "attachmentId": attachment ? attachment.id : null,
-      "userType": values.userType,
+      "userType": values.userType || null,
       "active": 'ACTIVE',
       "type": values.publicOrPrivate,
       "startedAt": georgianDate(ToInt(startedDate)),
@@ -204,7 +221,7 @@ const CreateNotificationModal = (props) => {
             title: notification.data.title || "",
             text: notification.data.text || "",
             link: notification.data.link || "",
-            classes:"",
+            classes: notification.data.classId || "",
             startedAt: notification.data.startedAt ? jalaliDate(notification.data.startedAt) : null,
             endedAt: notification.data.endedAt ? jalaliDate(notification.data.endedAt) : null,
             userType: notification.data.userType === "مربی" ? 'COACH' : notification.data.userType === "شناگر" ? 'STUDENT' : 'ADMIN',
@@ -215,10 +232,11 @@ const CreateNotificationModal = (props) => {
           setMedia(notification.data.media || null);
           setAttachment(notification.data.attachment || null);
           const list = notification?.data?.recivers.map((item) => ({
-            id: item.id,
-            name: item?.name + ' ' + item?.lastName,
+            id: item?.user?.id,
+            name: item?.user?.name + ' ' + item?.user?.lastName,
           }));
-          setSelectedRecivers(list);
+          const uniqueList = [...new Map(list.map(item => [item.name, item])).values()];
+          setSelectedRecivers(uniqueList);
           if (notification.data.endedAt === null) {
             setSendType('time');
           } else { setSendType('between') }
@@ -324,7 +342,10 @@ const CreateNotificationModal = (props) => {
   // USE EFFECT **********************************************
   React.useEffect(() => {
     setSelectedRecivers([]);
-    getNotification();
+    if (id) {
+      getClassList();
+      getNotification();
+    }
   }, [id]);
   // RETURN **************************************************
   return (
@@ -504,7 +525,7 @@ const CreateNotificationModal = (props) => {
                 variant="outlined"
                 name="recivers"
                 size="small"
-                onChange={(e)=> handleSelect(e.target.value)}
+                onChange={(e) => handleSelect(e.target.value)}
                 sx={{ display: formik.values.publicOrPrivate === "PRIVATE" ? 'block' : 'none' }}
               >
                 {recivers.map((item) => (

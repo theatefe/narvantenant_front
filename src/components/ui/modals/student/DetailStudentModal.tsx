@@ -48,6 +48,11 @@ const DetailStudentModal = (props) => {
   const [data, setData] = React.useState(null);
   const [openImageModal, setOpenImageModal] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState('');
+  // HANDLE CLOSE *****************************************
+  const handleCancel = () => {
+    setData(null);
+    setOpenModal(false);
+  };
   // GET Student ********************************************
   const getStudent = async () => {
     if (id) {
@@ -65,11 +70,6 @@ const DetailStudentModal = (props) => {
       }
     }
   }
-  // HANDLE CLOSE *****************************************
-  const handleCancel = () => {
-    setData(null);
-    setOpenModal(false);
-  };
   // OPEN IMAGE DIALOG ***************************************
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);

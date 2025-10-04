@@ -146,6 +146,17 @@ const CreateStudentModal = (props) => {
       resetForm();
     },
   });
+  // HANDLE CLOSE *****************************************
+  const handleCancel = () => {
+    formik.resetForm();
+    setNationalCard(null);
+    setSportsInsuranceDard(null);
+    setPersonalImage(null);
+    setBirthDate(null);
+    setLevelCats([]);
+    setLevels([]);
+    setOpenModal(false);
+  };
   // SUBMIT **************************************************
   const submitForm = async (values) => {
     const body = {
@@ -279,17 +290,6 @@ const CreateStudentModal = (props) => {
         console.warn(`Unknown type: ${type}`);
     }
   }
-  // HANDLE CLOSE *****************************************
-  const handleCancel = () => {
-    formik.resetForm();
-    setNationalCard(null);
-    setSportsInsuranceDard(null);
-    setPersonalImage(null);
-    setBirthDate(null);
-    setLevelCats([]);
-    setLevels([]);
-    setOpenModal(false);
-  };
   // USE EFFECT **********************************************
   React.useEffect(() => {
     getStudent();

@@ -16,6 +16,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconEdit from '../../ui/icon/IconEdit';
 import IconTrash from '../../ui/icon/IconTrash';
 import IconInfo from '../../ui/icon/IconInfoCircle';
+import IconUsersGroup from '../../ui/icon/IconUsersGroup';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
 // TOAST ******************************************************
@@ -24,6 +25,7 @@ import * as toast from '../../ui/Toast';
 import CreateNotificationModal from '../../ui/modals/notification/CreateNotificationModal';
 import DeleteStudentModal from '../../ui/modals/notification/DeleteNotificationModal';
 import DetailStudentModal from '../../ui/modals/notification/DetailNotificationModal';
+import ReciversNotificationModal from '../../ui/modals/notification/ReciverNotificationModal';
 // OTHER *******************************************************
 import {
   jalaliDate,
@@ -43,42 +45,37 @@ const columns = [
   {
     accessorKey: 'title',
     header: 'عنوان',
-    size: 60,
-  },
-  {
-    accessorKey: 'userType',
-    header: 'مخاطب اعلان',
-    size: 60,
+    size: 50,
   },
   {
     accessorKey: 'type',
     header: 'گیرنده اعلان',
+    size: 50,
+  },
+  {
+    accessorKey: 'userType',
+    header: 'مخاطب اعلان',
+    size: 50,
+  },
+  {
+    accessorKey: 'classInfo',
+    header: 'کلاس آموزشی',
     size: 60,
   },
   {
     accessorKey: 'active',
     header: 'وضعیت',
-    size: 60,
-  },
-  {
-    accessorKey: 'startDate',
-    header: 'زمان ارسال ',
-    size: 60,
-  },
-  {
-    accessorKey: 'status',
-    header: 'وضعیت ارسال ',
-    size: 60,
+    size: 50,
   },
   {
     accessorKey: 'date',
     header: 'تاریخ ثبت',
-    size: 60,
+    size: 50,
   },
   {
     accessorKey: 'option',
     header: 'عملیات',
-    size: 50,
+    size: 120,
   },
 ];
 
@@ -97,6 +94,7 @@ const NotificationList = () => {
   const [modal, setModal] = React.useState(false);
   const [deleteModal, setDeleteModal] = React.useState(false);
   const [infoModal, setInfoModal] = React.useState(false);
+  const [reciversModal, setReciversModal] = React.useState(false);
   // QUERY *********************************************************
   // ***************************************************************
   // open delete modal ***********************************************
@@ -114,11 +112,17 @@ const NotificationList = () => {
     setSelectedNotifId(id);
     setInfoModal(true);
   };
+  // open reciver modal *********************************************
+  const openReciversModal = (id: number) => {
+    setSelectedNotifId(id);
+    setReciversModal(true);
+  }
   // close modal ****************************************************
   const closeModal = () => {
     setSelectedNotifId(null);
     setDeleteModal(false);
     setInfoModal(false);
+    setReciversModal(false);
     setModal(false);
   };
   // GET COLOR STATUS *************************************
@@ -169,7 +173,8 @@ const NotificationList = () => {
         id: index + 1,
         title: item.title,
         link: item?.link || "-",
-        userType: item?.userType,
+        classInfo: item.classId ? item?.classInfo?.name + '-' + item?.classInfo?.courseLevel?.title : '-',
+        userType: item?.userType || '-',
         type: item?.type,
         active: (
           <>
@@ -178,18 +183,8 @@ const NotificationList = () => {
                 checked={item.active === "غیرفعال" ? false : true}
                 color="success"
                 onChange={() => toggleActive(item.id)}
-              />): item?.active}
+              />) : item?.active}
           </>
-        ),
-        status: (
-          <Tooltip title={item.status} arrow>
-            <Chip
-              label={item.status}
-              color={getStatusColor(item.status)}
-              variant="outlined"
-              sx={{ fontWeight: "bold" }}
-            />
-          </Tooltip>
         ),
         startDate: (
           <Tooltip title={jalaliDateWithTime(item.startedAt)} arrow>
@@ -204,16 +199,6 @@ const NotificationList = () => {
 
         option: (
           <>
-            {permissions.find((p) => p.operationId === "tenantGetNotification") ? (
-              <Tooltip className="mx-1" title="مشاهده جزئیات" arrow>
-                <span
-                  className="svg-container cursor-pointer"
-                  onClick={() => openInfoModal(item.id)}
-                >
-                  <IconInfo className="svg-menu-icon" />
-                </span>
-              </Tooltip>
-            ) : null}
             {permissions.find((p) => p.operationId === "tenantUpdateNotification") ? (
               <Tooltip className="mx-1" title="ویرایش" arrow>
                 <span
@@ -224,6 +209,24 @@ const NotificationList = () => {
                 </span>
               </Tooltip>
             ) : null}
+            {permissions.find((p) => p.operationId === "tenantGetNotification") ? (
+              <Tooltip className="mx-1" title="مشاهده جزئیات" arrow>
+                <span
+                  className="svg-container cursor-pointer"
+                  onClick={() => openInfoModal(item.id)}
+                >
+                  <IconInfo className="svg-menu-icon" />
+                </span>
+              </Tooltip>
+            ) : null}
+            <Tooltip className="mx-1" title=" گیرندگان اعلان" arrow>
+              <span
+                className="svg-container cursor-pointer"
+                onClick={() => openReciversModal(item.id)}
+              >
+                <IconUsersGroup className="svg-menu-icon" />
+              </span>
+            </Tooltip>
             {permissions.find((p) => p.operationId === "tenantDeleteNotification") ? (
               <Tooltip title="حذف" arrow>
                 <span
@@ -301,6 +304,13 @@ const NotificationList = () => {
                   token={token}
                   id={selectedNotifId}
                   openModal={infoModal}
+                  setOpenModal={closeModal}
+                />
+                <ReciversNotificationModal
+                  list={getNotificationList}
+                  token={token}
+                  id={selectedNotifId}
+                  openModal={reciversModal}
                   setOpenModal={closeModal}
                 />
               </div>
