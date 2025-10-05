@@ -54,8 +54,8 @@ const columns = [
     size: 120,
   },
   {
-    accessorKey: 'remainingSessions',
-    header: 'تعداد جلسات مانده',
+    accessorKey: 'remainingFee',
+    header: 'مانده شهریه',
     size: 60,
   },
   {
@@ -138,7 +138,7 @@ const ClassEnrollmentList = () => {
         id: index + 1,
         student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
         class: item?.class?.name,
-        remainingSessions: item?.remainingSessions + ' جلسه ',
+        remainingFee: item?.remainingFee + ' ریال ',
         paymentStatus: (
           <select
             defaultValue={item.paymentStatus === 'پرداخت شده' ? 'PAID' : item.paymentStatus === 'پرداخت نشده' ? 'UNPAID' : 'HALFPAID'}
