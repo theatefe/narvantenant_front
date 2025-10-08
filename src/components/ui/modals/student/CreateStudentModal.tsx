@@ -153,8 +153,6 @@ const CreateStudentModal = (props) => {
     setSportsInsuranceDard(null);
     setPersonalImage(null);
     setBirthDate(null);
-    setLevelCats([]);
-    setLevels([]);
     setOpenModal(false);
   };
   // SUBMIT **************************************************
@@ -192,6 +190,7 @@ const CreateStudentModal = (props) => {
         list()
       } else {
         toast.ErrorNotify(updated.data.error);
+        handleCancel();
         setSending(false);
       }
     } else {
@@ -204,6 +203,7 @@ const CreateStudentModal = (props) => {
         list();
       } else {
         toast.ErrorNotify(created.data.error);
+        handleCancel();
         setSending(false);
       }
     }

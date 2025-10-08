@@ -65,20 +65,30 @@ const CreateAttendanceModal = (props) => {
   const [students, setStudents] = React.useState([]);
   const today = new Date();
   const [selectedDate, setSelectedDate] = React.useState<Date>();
+  // HANDLE CLOSE ********************************************
+  const handleCancel = () => {
+    setSelectedDate(null);
+    setOpenModal(false);
+    setStudents([]);
+    list();
+  };
   // SUBMIT ******************************************************
   const handleAddAttendance = async (id, status) => {
+    setStudents((prev) =>
+      prev.map((student) =>
+        student.id === id ? { ...student, status } : student
+      )
+    );
     const body = {
       "classEnrollmentId": Number(id),
       "classId": Number(classId),
       "status": status,
-      "createdAt": selectedDate? georgianDate(ToInt(selectedDate)) : today,
+      "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today,
     }
     // created
     const created = await AddAttendanceApi(token, body);
     if (created.status === 200) {
       toast.SuccessNotify(`وضعیت حضور ${isPoolTenant ? 'شناگر' : 'دانش آموز'} ثبت شد`);
-      handleCancel();
-      list();
     } else {
       toast.ErrorNotify(created.data.error);
     }
@@ -95,15 +105,10 @@ const CreateAttendanceModal = (props) => {
       setOpenModal(false);
     }
   }
-  // HANDLE CLOSE ********************************************
-  const handleCancel = () => {
-    setSelectedDate(null);
-    setOpenModal(false);
-  };
   // USE EFFECT **********************************************
   React.useEffect(() => {
     getClassEnrollments();
-  }, []);
+  }, [classId]);
   // RETURN **************************************************
   return (
     <Modal
@@ -206,7 +211,7 @@ const CreateAttendanceModal = (props) => {
               color="secondary"
               onClick={handleCancel}
             >
-              انصراف
+              بستن
             </Button>
           </Grid>
         </Grid>
