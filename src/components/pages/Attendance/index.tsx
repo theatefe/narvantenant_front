@@ -145,14 +145,23 @@ const AttendanceList = () => {
         coach: item.coach ? item?.coach?.user?.name + ' ' + item?.coach?.user?.lastName : 'حضور توسط مدیر انجام شده است',
         status: (
           <select
-            defaultValue={item.status === 'حاضر' ? 'PRESENT' : item.status === 'غایب' ? 'ABSENT' : 'WITHDELAY'}
-            className={item.status === 'حاضر' ? 'bg-success text-white rounded mx-3' : item.status === 'غایب' ? 'bg-danger text-white rounded mx-3' : 'bg-secondary text-white rounded mx-3'}
+            value={
+              item.status === 'حاضر'
+                ? 'PRESENT'
+                : item.status === 'غایب'
+                  ? 'ABSENT'
+                  : 'WITHDELAY'
+            }
+            className={
+              item.status === 'حاضر'
+                ? 'bg-success text-white rounded mx-3'
+                : item.status === 'غایب'
+                  ? 'bg-danger text-white rounded mx-3'
+                  : 'bg-secondary text-white rounded mx-3'
+            }
             onChange={(e) => {
               handleStatusChange(item.id, e.target.value);
-
-              // Remove all classes and then add the correct one
               e.target.classList.remove('bg-success', 'bg-danger', 'bg-secondary');
-
               if (e.target.value === 'PRESENT') {
                 e.target.classList.add('bg-success');
               } else if (e.target.value === 'ABSENT') {
@@ -162,16 +171,17 @@ const AttendanceList = () => {
               }
             }}
           >
-            <option value="PRESENT" className='bg-white text-dark'>
+            <option value="PRESENT" className="bg-white text-dark">
               حاضر
             </option>
-            <option value="ABSENT" className='bg-white text-dark'>
+            <option value="ABSENT" className="bg-white text-dark">
               غایب
             </option>
-            <option value="WITHDELAY" className='bg-white text-dark'>
+            <option value="WITHDELAY" className="bg-white text-dark">
               با تاخیر
             </option>
           </select>
+
         ),
         date: <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
           <span>
@@ -219,7 +229,7 @@ const AttendanceList = () => {
       }),
     );
     getAttendanceList();
-  }, []);
+  }, [setModal]);
   // RETURN ****************************************************************
   return (
     <Box sx={{ flexGrow: 1 }}>

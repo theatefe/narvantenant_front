@@ -233,6 +233,7 @@ const CreateStudentModal = (props) => {
             fatherEducation: student.data?.fatherEducation || null,
             motherEducation: student.data?.motherEducation || null,
           });
+          setBirthDate(student.data.user?.dateOfBirth);
           setNationalCard(student.data?.birthCertificateImage);
           setSportsInsuranceDard(student.data?.sportsInsuranceImage);
           setPersonalImage(student.data?.personalImage);

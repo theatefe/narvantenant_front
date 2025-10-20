@@ -197,6 +197,8 @@ const CreateCoachModal = (props) => {
             mobile: coach.data.user.mobile || "",
             address: coach.data.user.address || "",
           });
+          setBirthDate(coach.data.user.dateOfBirth);
+          setTodDate(coach.data.coachingCardIssueDate);
           setCoachingCard(coach.data.coachingCardImage);
           setNationalCard(coach.data.nationalCardImage);
           setSportsInsuranceDard(coach.data.sportsInsuranceImage);

@@ -412,7 +412,7 @@ function TopNav(props) {
         </>
         {/* ************************* Notifications ************************** */}
         <>
-          {permissions.find((p) => p.operationId === 'tenantListNotification') ?
+         
             <Link to="/notifications" className="panel-link">
               <ListItemButton>
                 {openMenu ? <ListItemText primary="مدیریت اعلانات" /> : ''}
@@ -422,7 +422,7 @@ function TopNav(props) {
                 </ListItemIcon>
               </ListItemButton>
             </Link>
-            : null}
+           
         </>
       </List>
       <ChangePasswordModal token={token} openModal={openModal} setOpenModal={setOpenModal} />

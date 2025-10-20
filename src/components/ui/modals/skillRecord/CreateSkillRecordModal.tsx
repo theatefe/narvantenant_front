@@ -68,7 +68,7 @@ const CreateCourseLevelCatModal = (props) => {
       studentId: "",
       skillId: "",
       record: "",
-      selectedDate:"",
+      selectedDate: "",
     },
     validationSchema: Yup.object({
       studentId: Yup.string()
@@ -78,11 +78,11 @@ const CreateCourseLevelCatModal = (props) => {
       record: Yup.string()
         .required("وارد کردن رکورد الزامی است")
         .matches(
-          /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
-          "رکورد باید با فرمت 00:00:00 باشد"
-      ),
+          /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-9]{2}$/,
+          "رکورد باید با فرمت 00:00:00 باشد (تا 99 ثانیه مجاز است)"
+        ),
       selectedDate: Yup.string()
-              .required("انتخاب تاریخ الزامی است"),
+        .required("انتخاب تاریخ الزامی است"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
