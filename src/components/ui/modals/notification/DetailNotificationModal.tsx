@@ -109,14 +109,14 @@ const DetailNotificationModal = (props) => {
 
           <Box mb={2}>
             <Grid container spacing={2} className='text-end'>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={3}>
                 <Box>
                   <Typography variant="body2" className='text-secondary'>
                     {"عنوان اعلان"} :{" "}<Typography component="span" className='text-dark'>{data?.title}</Typography>
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={3}>
                 <Box>
                   <Typography variant="body2" className='text-secondary'>
                     {"لینک اعلان"} : {" "}
@@ -124,31 +124,7 @@ const DetailNotificationModal = (props) => {
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box>
-                  <Typography variant="body2" className='text-secondary'>
-                    {"زمان ارسال"} : {" "}
-                    <Typography component="span" className='text-dark'> {jalaliDateWithTime(data?.startedAt) || "-"}</Typography>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box>
-                  <Typography variant="body2" className='text-secondary'>
-                    {"زمان پایان ارسال"} : {" "}
-                    <Typography component="span" className='text-dark'> {jalaliDateWithTime(data?.endedAt) || "ارسال بازه زمانی ندارد."}</Typography>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box>
-                  <Typography variant="body2" className='text-secondary'>
-                    {"مخاطب اعلان"} : {" "}
-                    <Typography component="span" className='text-dark'>{data?.userType}</Typography>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={3}>
                 <Box>
                   <Typography variant="body2" className='text-secondary'>
                     {"نوع مخاطب"}  : {" "}
@@ -156,19 +132,11 @@ const DetailNotificationModal = (props) => {
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={3}>
                 <Box>
                   <Typography variant="body2" className='text-secondary'>
                     {"وضعیت"} : {" "}
                     <Typography component="span" className='text-dark'>{data?.active}</Typography>
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box>
-                  <Typography variant="body2" className='text-secondary'>
-                    {"وضعیت ارسال"}  : {" "}
-                    <Typography component="span" className='text-dark'>{data?.status}</Typography>
                   </Typography>
                 </Box>
               </Grid>
@@ -184,7 +152,7 @@ const DetailNotificationModal = (props) => {
           </Box>
 
           {/* گالری تصاویر */}
-          <Box mb={3} mt={3}>
+          <Box mb={3} mt={1}>
             <Grid container spacing={2}>
               {data?.mediaId && (
                 <Grid item xs={12} sm={6}>

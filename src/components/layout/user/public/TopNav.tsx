@@ -398,7 +398,7 @@ function TopNav(props) {
           : null}
         {/* ************************* Food Plans ************************** */}
         <>
-          {permissions.find((p) => p.operationId === 'tenantListProductCategory') ?
+          {permissions.find((p) => p.operationId === 'tenantListPlans') ?
             <Link to="/plans" className="panel-link">
               <ListItemButton>
                 {openMenu ? <ListItemText primary="رژیم و برنامه غذایی" /> : ''}
@@ -412,17 +412,17 @@ function TopNav(props) {
         </>
         {/* ************************* Notifications ************************** */}
         <>
-         
-            <Link to="/notifications" className="panel-link">
-              <ListItemButton>
-                {openMenu ? <ListItemText primary="مدیریت اعلانات" /> : ''}
+          {permissions.find((p) => p.operationId === 'tenantListNotification') ?
+          <Link to="/notifications" className="panel-link">
+            <ListItemButton>
+              {openMenu ? <ListItemText primary="مدیریت اعلانات" /> : ''}
 
-                <ListItemIcon style={styleList}>
-                  <NotificationsIcon className="ms-auto" />
-                </ListItemIcon>
-              </ListItemButton>
-            </Link>
-           
+              <ListItemIcon style={styleList}>
+                <NotificationsIcon className="ms-auto" />
+              </ListItemIcon>
+            </ListItemButton>
+          </Link>
+            : null}
         </>
       </List>
       <ChangePasswordModal token={token} openModal={openModal} setOpenModal={setOpenModal} />

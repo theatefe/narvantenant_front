@@ -90,10 +90,6 @@ const CreateNotificationModal = (props) => {
       title: "",
       text: "",
       link: "",
-      startedAt: null,
-      endedAt: null,
-      userType: "",
-      classes: "",
       publicOrPrivate: "",
     },
     validationSchema: Yup.object({
@@ -104,15 +100,9 @@ const CreateNotificationModal = (props) => {
         .required("متن اعلان الزامی است")
         .min(3, "متن اعلان باید حداقل ۳ کاراکتر باشد"),
       link: Yup.string(),
-      // userType: Yup.string()
-      //   .required("انتخاب مخاطب اعلان الزامی است")
-      //   .min(1, "مخاطب اعلان انتخاب نشده است"),
-      // publicOrPrivate: Yup.string()
-      //   .required("انتخاب نوع مخاطب الزامی است")
-      //   .min(1, "نوع مخاطب انتخاب نشده است"),
-      startedAt: Yup.string()
-        .required("تاریخ و ساعت ارسال الزامی است")
-        .nullable(),
+      publicOrPrivate: Yup.string()
+        .required("انتخاب نوع مخاطب الزامی است")
+        .min(1, "نوع مخاطب انتخاب نشده است"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
@@ -153,24 +143,10 @@ const CreateNotificationModal = (props) => {
     formik.resetForm();
     setMedia(null);
     setAttachment(null);
-    setStartedDate(null);
-    setSendType('time');
-    setEndedDate([]);
-    setRecivers([]);
-    setSelectedRecivers([]);
     setOpenModal(false);
   };
   // SUBMIT **************************************************
   const submitForm = async (values) => {
-    let receivers = [];
-    if (values.publicOrPrivate === "PRIVATE") {
-      if (selectedRecivers.length === 0) {
-        toast.ErrorNotify("لطفا حداقل یک دریافت‌کننده انتخاب کنید.");
-        setSending(false);
-        return;
-      }
-      receivers = selectedRecivers.map((s) => s.id);
-    }
     const body = {
       "title": values.title,
       "text": values.text,
@@ -179,11 +155,7 @@ const CreateNotificationModal = (props) => {
       "mediaId": media ? media.id : null,
       "attachmentId": attachment ? attachment.id : null,
       "userType": values.userType || null,
-      "active": 'ACTIVE',
       "type": values.publicOrPrivate,
-      "startedAt": georgianDate(ToInt(startedDate)),
-      "endedAt": endedDate ? georgianDate(ToInt(endedDate)) : null,
-      "receivers": receivers,
     }
     if (id) {
       //updated
@@ -221,14 +193,8 @@ const CreateNotificationModal = (props) => {
             title: notification.data.title || "",
             text: notification.data.text || "",
             link: notification.data.link || "",
-            classes: notification.data.classId || "",
-            startedAt: notification.data.startedAt ? jalaliDate(notification.data.startedAt) : null,
-            endedAt: notification.data.endedAt ? jalaliDate(notification.data.endedAt) : null,
-            userType: notification.data.userType === "مربی" ? 'COACH' : notification.data.userType === "شناگر" ? 'STUDENT' : 'ADMIN',
             publicOrPrivate: notification.data.type === "همه افراد" ? 'PUBLIC' : 'PRIVATE',
           });
-          setStartedDate(notification.data.startedAt);
-          setEndedDate(notification.data.endedAt);
           setMedia(notification.data.media || null);
           setAttachment(notification.data.attachment || null);
           const list = notification?.data?.recivers.map((item) => ({
@@ -406,48 +372,9 @@ const CreateNotificationModal = (props) => {
               />
             </Grid>
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <Divider>زمان ارسال</Divider>
-            </Grid>
-            <Grid item xs={sendType === 'between' ? 4 : 6} md={sendType === 'between' ? 4 : 6} sx={{ mx: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="زمان ارسال *"
-                variant="outlined"
-                size="small"
-                value={sendType}
-                onChange={(e) => setSendType(e.target.value)}
-              >
-                <MenuItem value="time"> زمان ارسال</MenuItem>
-                <MenuItem value="between">بازه زمانی ارسال</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={sendType === 'between' ? 4 : 6} md={sendType === 'between' ? 4 : 6} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('startedAt', date); setStartedDate(date); }}
-                selectedDate={formik.values.startedAt}
-                fullWidth
-                label={`تاریخ و ساعت ارسال `}
-              />
-              {formik.touched.startedAt && typeof formik.errors.startedAt === 'string' && (
-                <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.startedAt}</div>
-              )}
-            </Grid>
-            <Grid item xs={4} md={4} sx={{ mx: 'auto', display: sendType === 'between' ? 'block' : 'none' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('endedAt', date); setEndedDate(date); }}
-                selectedDate={formik.values.endedAt}
-                fullWidth
-                label={`تاریخ و ساعت پایان `}
-              />
-              {formik.touched.endedAt && typeof formik.errors.endedAt === 'string' && (
-                <div style={{ color: 'red', fontSize: '12px' }}>{formik.errors.endedAt}</div>
-              )}
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Divider>گیرندگان اعلان</Divider>
             </Grid>
-            <Grid item xs={6} md={formik.values.publicOrPrivate === "PRIVATE" ? 6 : 12} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -464,85 +391,6 @@ const CreateNotificationModal = (props) => {
                 <MenuItem value="PUBLIC">همه افراد</MenuItem>
                 <MenuItem value="PRIVATE">افراد خاص</MenuItem>
               </TextField>
-            </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="مخاطب اعلان *"
-                variant="outlined"
-                name="userType"
-                value={formik.values.userType}
-                onChange={(e) => {
-                  formik.handleChange(e);
-                  setRecivers([]);
-                  setSelectedRecivers([]);
-                  if (e.target.value === 'STUDENT') {
-                    getClassList();
-                  } else {
-                    getCoachList(e.target.value)
-                  }
-                }}
-                onBlur={formik.handleBlur}
-                error={formik.touched.userType && Boolean(formik.errors.userType)}
-                helperText={formik.touched.userType && formik.errors.userType}
-                size="small"
-                sx={{ display: formik.values.publicOrPrivate === "PRIVATE" ? 'block' : 'none' }}
-              >
-                <MenuItem value="COACH">مربیان</MenuItem>
-                <MenuItem value="STUDENT">شناگران</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="انتخاب کلاس آموزشی"
-                variant="outlined"
-                name="classes"
-                size="small"
-                value={formik.values.classes}
-                onChange={(e) => {
-                  formik.handleChange(e);
-                  setRecivers([]);
-                  setSelectedRecivers([]);
-                  getClassEnrollmentList(e.target.value)
-                }}
-                sx={{ display: formik.values.publicOrPrivate === "PRIVATE" && formik.values.userType === "STUDENT" ? 'block' : 'none' }}
-              >
-                {classList.map((item) => (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
-              <TextField
-                fullWidth
-                select
-                label="انتخاب گیرندگان"
-                variant="outlined"
-                name="recivers"
-                size="small"
-                onChange={(e) => handleSelect(e.target.value)}
-                sx={{ display: formik.values.publicOrPrivate === "PRIVATE" ? 'block' : 'none' }}
-              >
-                {recivers.map((item) => (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-                {selectedRecivers.map((item) => (
-                  <Chip
-                    key={item.id}
-                    label={item.name}
-                    onDelete={() => handleDelete(item.id)} // امکان حذف
-                  />
-                ))}
-              </Box>
             </Grid>
             <Grid item xs={12} md={12} sx={{ mx: 'auto' }}>
               <Divider> آپلود فایل </Divider>

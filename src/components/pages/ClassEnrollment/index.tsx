@@ -32,7 +32,7 @@ import {
 // GENERATE TABLE ***********************************************
 const header = ['ردیف', 'نام و نام خانوادگی', 'نام کلاس', 'وضعیت پرداخت شهریه', 'تعداد جلسات مانده', 'تاریخ ثبت'];
 // Generate fake data (e.g., 100 people)
-const columns = [
+let columns = [
   {
     accessorKey: 'id',
     header: 'ردیف',
@@ -80,6 +80,9 @@ const ClassEnrollmentList = () => {
   const isPoolTenant = auth?.userInfo?.tenant?.type === "POOL";
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
+  if (!permissions.find((p) => p.operationId === 'tenantChangeStatusPaymentClassEnrollment')) {
+    columns = columns.filter(i => i.accessorKey !== 'active')
+  }
   // STATE *********************************************************
   const [selectedClassEnrollmentId, setSelectedClassEnrollmentId] = React.useState(null);
   const [data, setData] = React.useState([]);

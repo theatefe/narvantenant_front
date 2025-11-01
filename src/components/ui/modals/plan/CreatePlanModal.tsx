@@ -4,7 +4,8 @@ import React from 'react';
 import PlanUpdateApi from '../../../api/Plan/Update';
 import PlanCreateApi from '../../../api/Plan/Add';
 import GetPlanApi from '../../../api/Plan/GetOne';
-import GetAllStudent from '../../../api/Student/GetAll';
+import ClassListApi from '../../../api/Class/GetAll';
+import GetAllClassEnrollment from '../../../api/ClassEnrollment/GetAll';
 import UploadFileApi from '../../../api/Common/UploadFile';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
@@ -66,6 +67,7 @@ const CreatePlanModal = (props) => {
   // HOOKS FORM **************************************************
   const [sending, setSending] = React.useState(false);
   const [attachFile, setAttachFile] = React.useState(null);
+  const [classes, setClasses] = React.useState([]);
   const [students, setStudents] = React.useState([]);
   // FORMIK *******************************************************
   const formik = useFormik({
@@ -73,6 +75,7 @@ const CreatePlanModal = (props) => {
       title: "",
       description: "",
       status: "",
+      classId: null,
       studentId: null,
     },
     validationSchema: Yup.object({
@@ -96,6 +99,7 @@ const CreatePlanModal = (props) => {
       "description": values.description,
       "status": values.status,
       "attachFileId": attachFile ? attachFile.id : null,
+      "classId": values.classId || null,
       "studentId": values.studentId || null,
     }
     if (id) {
@@ -132,11 +136,13 @@ const CreatePlanModal = (props) => {
         const plan = await GetPlanApi(token, id);
         if (plan.status === 200) {
           formik.setValues({
-            title: plan.data.title || "",
-            description: plan.data.description || "",
-            status: plan.data.status || "",
+            title: plan.data.title || " ",
+            description: plan.data.description || " ",
+            status: plan.data.status || " ",
+            classId: plan.data.classId || " ",
             studentId: plan.data.studentId || null,
           });
+          getStudentsClass(plan.data.classId);
           setAttachFile(plan.data.attachFile);
         } else {
           toast.ErrorNotify(plan.data.error);
@@ -155,15 +161,17 @@ const CreatePlanModal = (props) => {
     formik.resetForm();
     setOpenModal(false);
     setAttachFile(null);
+    setClasses([]);
+    setStudents([]);
   };
   // HANDLE FILE CHANGE **************************************
   const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-          toast.ErrorNotify("فقط آپلود تصویر مجاز است");
-          return;
-        }
+      toast.ErrorNotify("فقط آپلود تصویر مجاز است");
+      return;
+    }
     const formData = {
       file: event.target.files[0],
       dist: event.target.files[0].name,
@@ -194,17 +202,24 @@ const CreatePlanModal = (props) => {
   const handleRemoveImage = () => {
     setAttachFile(null);
   }
+  //GET ALL CLASS ******************************************
+  const getAllClasses = async () => {
+    const result = await ClassListApi(token);
+    if (result.status == 200 || result.status == 201) {
+      setClasses(result.data);
+    }
+  }
   //GET ALL STUDENT ******************************************
-  const getAllStudents = async () => {
-    const result = await GetAllStudent(token);
+  const getStudentsClass = async (classId) => {
+    const result = await GetAllClassEnrollment(token, classId);
     if (result.status == 200 || result.status == 201) {
       setStudents(result.data);
     }
   }
   // USE EFFECT **********************************************
   React.useEffect(() => {
+    getAllClasses();
     getPlan();
-    getAllStudents();
   }, [id]);
   // RETURN **************************************************
   return (
@@ -236,7 +251,7 @@ const CreatePlanModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={6} md={12} sx={{ mx: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`توضیحات `}
@@ -268,23 +283,50 @@ const CreatePlanModal = (props) => {
                 <MenuItem value="PRIVATE"> خصوصی </MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto', display: formik.values.status !== 'PRIVATE' ? 'none' : 'block' }}>
+              <TextField
+                fullWidth
+                select
+                label="انتخاب کلاس آموزشی  *"
+                variant="outlined"
+                name="classId"
+                value={formik.values.classId ?? ''}
+                onChange={(e) => { formik.handleChange(e), getStudentsClass(e.target.value) }}
+                onBlur={formik.handleBlur}
+                size="small"
+                SelectProps={{
+                  displayEmpty: true,
+                }}
+              >
+                {classes && classes.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item?.id}>
+                      {item?.name}
+                    </MenuItem>
+                  )
+                })}
+              </TextField>
+            </Grid>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto', display: formik.values.status !== 'PRIVATE' ? 'none' : 'block' }}>
               <TextField
                 fullWidth
                 select
                 label="انتخاب دانش آموز  *"
                 variant="outlined"
                 name="studentId"
-                value={formik.values.studentId}
+                value={formik.values.studentId ?? ''}
                 onChange={(e) => { formik.handleChange(e) }}
                 onBlur={formik.handleBlur}
                 size="small"
-                disabled={formik.values.status !== 'PRIVATE'}
+                disabled={students.length === 0}
+                SelectProps={{
+                  displayEmpty: true,
+                }}
               >
                 {students && students.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item?.id}>
-                      {item?.user?.name + ' ' + item?.user?.lastName}
+                    <MenuItem key={item?.student?.id} value={item?.student?.id}>
+                      {item?.student?.user?.name + ' ' + item?.student?.user?.lastName}
                     </MenuItem>
                   )
                 })}

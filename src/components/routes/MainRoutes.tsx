@@ -59,6 +59,9 @@ const Plan = Loadable(
 const Notification = Loadable(
   lazy(() => import('../pages/Notification'))
 )
+const NotificationRecipient = Loadable(
+  lazy(() => import ('../pages/NotificationRecipients'))
+)
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -139,7 +142,11 @@ const MainRoutes = {
         {
           path: '/notifications',
           element: <Notification />,
-        }
+        },
+        {
+          path: '/recipients/:notifId',
+          element: <NotificationRecipient />,
+        },
       ],
     },
   ],

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 // REDUX SETTER *****************************************
 import { RootState } from '../../redux/reducers';
 import { setIsLoading, setMetaData } from '../../redux/reducers/page';
@@ -48,19 +49,14 @@ const columns = [
     size: 50,
   },
   {
+    accessorKey: 'link',
+    header: 'لینک',
+    size: 50,
+  },
+  {
     accessorKey: 'type',
     header: 'گیرنده اعلان',
     size: 50,
-  },
-  {
-    accessorKey: 'userType',
-    header: 'مخاطب اعلان',
-    size: 50,
-  },
-  {
-    accessorKey: 'classInfo',
-    header: 'کلاس آموزشی',
-    size: 60,
   },
   {
     accessorKey: 'active',
@@ -125,23 +121,6 @@ const NotificationList = () => {
     setReciversModal(false);
     setModal(false);
   };
-  // GET COLOR STATUS *************************************
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'زمان‌بندی شده':
-        return "info";
-      case 'در حال ارسال':
-        return "warning";
-      case 'ارسال شده':
-        return "success";
-      case 'منقضی شده':
-        return "default";
-      case 'ارسال ناموفق':
-        return "error";
-      default:
-        return "default";
-    }
-  };
   // TOGGLE ACTIVE ****************************************
   const toggleActive = async (id: number) => {
     try {
@@ -173,8 +152,6 @@ const NotificationList = () => {
         id: index + 1,
         title: item.title,
         link: item?.link || "-",
-        classInfo: item.classId ? item?.classInfo?.name + '-' + item?.classInfo?.courseLevel?.title : '-',
-        userType: item?.userType || '-',
         type: item?.type,
         active: (
           <>
@@ -185,11 +162,6 @@ const NotificationList = () => {
                 onChange={() => toggleActive(item.id)}
               />) : item?.active}
           </>
-        ),
-        startDate: (
-          <Tooltip title={jalaliDateWithTime(item.startedAt)} arrow>
-            <span>{jalaliDateWithTime(item.startedAt)}</span>
-          </Tooltip>
         ),
         date: (
           <Tooltip title={jalaliDateWithTime(item.createdAt)} arrow>
@@ -219,13 +191,14 @@ const NotificationList = () => {
                 </span>
               </Tooltip>
             ) : null}
-            <Tooltip className="mx-1" title=" گیرندگان اعلان" arrow>
-              <span
-                className="svg-container cursor-pointer"
-                onClick={() => openReciversModal(item.id)}
-              >
-                <IconUsersGroup className="svg-menu-icon" />
-              </span>
+            <Tooltip className="mx-1 text-dark" title=" گیرندگان اعلان" arrow>
+              <Link to={`/recipients/${item.id}`}>
+                <span
+                  className="svg-container cursor-pointer"
+                >
+                  <IconUsersGroup className="svg-menu-icon" />
+                </span>
+              </Link>
             </Tooltip>
             {permissions.find((p) => p.operationId === "tenantDeleteNotification") ? (
               <Tooltip title="حذف" arrow>

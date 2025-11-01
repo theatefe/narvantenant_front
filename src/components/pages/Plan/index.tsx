@@ -172,7 +172,7 @@ const ProductCatList = () => {
                 <div className="col-6 text-right"><h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 float-left">مدیریت برنامه های غذایی </h3></div>
                 <div className="col-6 text-left">
                   {
-                    //permissions.find((p) => p.operationId === 'tenantCreatePlan') ?
+                    permissions.find((p) => p.operationId === 'tenantCreatePlan') ?
                     <Button
                       onClick={() => {
                         setModal(true);
@@ -185,7 +185,7 @@ const ProductCatList = () => {
                     >
                       ثبت برنامه جدید
                     </Button>
-                    //: null
+                    : null
                   }
                 </div>
                 <CreatePlanModal
