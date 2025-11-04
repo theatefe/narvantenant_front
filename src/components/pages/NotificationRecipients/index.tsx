@@ -237,7 +237,7 @@ const NotificationRecipientsList = () => {
     }
     const body = {
       "notificationId": Number(notifId),
-      "userType": values.userType,
+      "userType": values.userType || null,
       "classId": values.classId || null,
       "startDate": georgianDate(ToInt(values.startDate)),
       "endDate": values.endDate ? georgianDate(ToInt(values.endDate)) : null,

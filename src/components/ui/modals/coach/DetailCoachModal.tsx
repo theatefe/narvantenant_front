@@ -67,7 +67,8 @@ const DetailCoachModal = (props) => {
   }
   // HANDLE CLOSE *****************************************
   const handleCancel = () => {
-    setData(null);
+    setData('');
+    setSelectedImage('');
     setOpenModal(false);
   };
   // OPEN IMAGE DIALOG ***************************************

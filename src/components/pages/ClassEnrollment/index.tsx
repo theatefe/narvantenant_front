@@ -20,6 +20,8 @@ import IconDollarSign from '../../ui/icon/IconDollarSignCircle';
 import * as toast from '../../ui/Toast';
 // component ***************************************************
 import NewDataGrid from '../../ui/grid/NewDataGrid';
+// HELPERS *****************************************************
+import { numberSpace } from '../../helpers/NumberTools'
 // MODELS ******************************************************
 import CreateClassEnrollmentModal from '../../ui/modals/classEnrollment/CreateClassEnrollmentModal';
 import DeleteClassEnrollmentModal from '../../ui/modals/classEnrollment/DeleteClassEnrollmentModal';
@@ -81,7 +83,7 @@ const ClassEnrollmentList = () => {
   const permissions = auth.userInfo.Role.Permissions;
   const token = auth.token;
   if (!permissions.find((p) => p.operationId === 'tenantChangeStatusPaymentClassEnrollment')) {
-    columns = columns.filter(i => i.accessorKey !== 'active')
+    columns = columns.filter(i => i.accessorKey !== 'paymentStatus')
   }
   // STATE *********************************************************
   const [selectedClassEnrollmentId, setSelectedClassEnrollmentId] = React.useState(null);
@@ -141,7 +143,9 @@ const ClassEnrollmentList = () => {
         id: index + 1,
         student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
         class: item?.class?.name,
-        remainingFee: item?.remainingFee + ' ریال ',
+        remainingFee: (<span>
+          <span className='bg-warning text-dark rounded px-3 py-1'>{numberSpace(item?.remainingFee)} ریال </span>
+        </span>),
         paymentStatus: (
           <select
             defaultValue={item.paymentStatus === 'پرداخت شده' ? 'PAID' : item.paymentStatus === 'پرداخت نشده' ? 'UNPAID' : 'HALFPAID'}
