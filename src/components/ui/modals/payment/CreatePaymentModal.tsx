@@ -83,7 +83,7 @@ const CreatePaymentModal = (props) => {
       classId: Yup.string()
         .required("انتخاب کلاس آموزشی الزامی است"),
       studentId: Yup.string()
-        .required(`انتخاب ${isPoolTenant?'شناگر':'دانش آموز'} الزامی است`),
+        .required(`انتخاب ${isPoolTenant ? 'شناگر' : 'دانش آموز'} الزامی است`),
       amount: Yup.string()
         .required("مبلغ پرداختی شهریه الزامی است")
         .min(4, " مبلغ پرداختی باید بیشتر از ۴ رقم باشد"),
@@ -118,7 +118,7 @@ const CreatePaymentModal = (props) => {
             classId: payment.data.classId || "",
             studentId: payment.data.studentId || "",
             amount: payment?.data?.amount || null,
-            paymentMethod: payment?.data?.paymentMethod === "کارت به کارت" ? "CARDTOCARD" : payment?.data?.amount === 'دستگاه کارتخوان' ? "POS" : "CACH",
+            paymentMethod: payment?.data?.paymentMethod == "نقدی" ? "CACH" : payment?.data?.paymentMethod == 'کارت به کارت' ? "CARDTOCARD" : "POS",
             paymentDate: jalaliDate(payment.data.paymentDate) || null,
             paymentDateChanged: false,
           });
@@ -247,7 +247,7 @@ const CreatePaymentModal = (props) => {
               <TextField
                 fullWidth
                 select
-                label={isPoolTenant?'انتخاب شناگر *':'انتخاب دانش آموز *'}
+                label={isPoolTenant ? 'انتخاب شناگر *' : 'انتخاب دانش آموز *'}
                 variant="outlined"
                 name="studentId"
                 value={formik.values.studentId}
@@ -259,7 +259,7 @@ const CreatePaymentModal = (props) => {
               >
                 {students && students.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item?.student?.id}>{isPoolTenant?'شناگر':'دانش آموز'} : {item?.student?.user?.name + ' ' + item?.student?.user?.lastName}</MenuItem>
+                    <MenuItem key={item.id} value={item?.student?.id}>{isPoolTenant ? 'شناگر' : 'دانش آموز'} : {item?.student?.user?.name + ' ' + item?.student?.user?.lastName}</MenuItem>
                   )
                 })}
               </TextField>

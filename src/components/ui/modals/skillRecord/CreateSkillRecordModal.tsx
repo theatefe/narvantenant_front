@@ -69,6 +69,7 @@ const CreateCourseLevelCatModal = (props) => {
       skillId: "",
       record: "",
       selectedDate: "",
+      selectedDateChanged: false,
     },
     validationSchema: Yup.object({
       studentId: Yup.string()
@@ -93,18 +94,15 @@ const CreateCourseLevelCatModal = (props) => {
   });
   // SUBMIT *******************************************************
   const submitForm = async (values) => {
-    if (!selectedDate) {
-      toast.ErrorNotify('انتخاب تاریخ ثبت رکورد الزامی است');
-      return;
-    }
     const bodyRequest = {
       "studentId": values.studentId,
       "skillId": values.skillId,
       "record": values.record,
+      "createdAt": values.selectedDateChanged ? georgianDate(ToInt(values.selectedDate)) : today,
     }
     if (id) {
       //updated
-      const body = { ...bodyRequest, id, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
+      const body = { ...bodyRequest, id }
       const updated = await SkillRedordUpdateApi(token, body);
       if (updated.status === 200) {
         toast.SuccessNotify('رکورد با موفقیت بروزرسانی شد');
@@ -117,7 +115,7 @@ const CreateCourseLevelCatModal = (props) => {
       }
     } else {
       // created
-      const body = { ...bodyRequest, "createdAt": selectedDate ? georgianDate(ToInt(selectedDate)) : today, }
+      const body = { ...bodyRequest }
       const created = await SkillRecordCreateApi(token, body);
       if (created.status === 200) {
         toast.SuccessNotify("رکورد جدید با موفقیت ثبت شد");
@@ -141,6 +139,7 @@ const CreateCourseLevelCatModal = (props) => {
             skillId: skillRecord.data.skillId || "",
             record: skillRecord.data.record || "",
             selectedDate: jalaliDate(skillRecord.data.createdAt) || null,
+            selectedDateChanged: false,
           });
           setData(skillRecord.data);
         } else {
@@ -271,7 +270,10 @@ const CreateCourseLevelCatModal = (props) => {
             </Grid>
             <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('selectedDate', date); setSelectedDate(date); }}
+                setSelectedDate={(date: Date) => {
+                  formik.setFieldValue('selectedDate', date);
+                  formik.setFieldValue('selectedDateChanged', true);
+                }}
                 selectedDate={formik.values.selectedDate}
                 fullWidth
                 label={`تاریخ ثبت رکورد`}

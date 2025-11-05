@@ -18,7 +18,7 @@ import Modal from '@mui/material/Modal';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
 // UI ********************************************************
-import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
+import DatePickersInput from '../../formElement/DatePickerInput';
 // MUi Icon **************************************************
 import CancelIcon from '@mui/icons-material/Cancel';
 import SendIcon from '@mui/icons-material/Send';
@@ -72,6 +72,7 @@ const CreateClassModal = (props) => {
       totalSessions: "",
       tuitionFee: "",
       startDate: "",
+      startDateChanged: false,
     },
     validationSchema: Yup.object({
       courseLevelCategoryId: Yup.string()
@@ -114,7 +115,7 @@ const CreateClassModal = (props) => {
       "endTime": values.endTime,
       "totalSessions": Number(values.totalSessions) || 0,
       "tuitionFee": values.tuitionFee || 0,
-      "startDate": startDate ? georgianDate(ToInt(startDate)) : null,
+      "startDate": values.startDateChanged ? georgianDate(ToInt(values.startDate)) : startDate,
     }
     if (id) {
       //updated
@@ -148,6 +149,7 @@ const CreateClassModal = (props) => {
       try {
         const classInfo = await GetClassApi(token, id);
         if (classInfo.status === 200) {
+          handleSelectCourseLevels(classInfo.data.courseLevel.categoryId);
           formik.setValues({
             name: classInfo.data.name || "",
             code: classInfo.data.code || "",
@@ -160,9 +162,10 @@ const CreateClassModal = (props) => {
             endTime: classInfo.data.endTime || "",
             totalSessions: classInfo.data.totalSessions || "",
             tuitionFee: classInfo.data.tuitionFee || "",
-            startDate: jalaliDate(classInfo.data.startDate) || null,
+            startDate: jalaliDate(classInfo.data.startDate),
+            startDateChanged: false,
           });
-          handleSelectCourseLevels(classInfo.data.courseLevel.categoryId);
+          setStartDate(classInfo.data.startDate);
         } else {
           toast.ErrorNotify(classInfo.data.error);
           setOpenModal(false);
@@ -421,7 +424,7 @@ const CreateClassModal = (props) => {
                 variant="outlined"
                 name="tuitionFee"
                 value={formatAmount(formik.values.tuitionFee)}
-                onChange={(e)=>{
+                onChange={(e) => {
                   const rawValue = unformatAmount(e.target.value);
                   if (/^\d*$/.test(rawValue)) {
                     formik.setFieldValue("tuitionFee", rawValue);
@@ -434,8 +437,11 @@ const CreateClassModal = (props) => {
               />
             </Grid>
             <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('startDate', date); setStartDate(date); }}
+              <DatePickersInput
+                setSelectedDate={(date: Date) => {
+                  formik.setFieldValue('startDate', date);
+                  formik.setFieldValue('startDateChanged', true);
+                }}
                 selectedDate={formik.values.startDate}
                 fullWidth
                 label={`تاریخ شروع کلاس `}

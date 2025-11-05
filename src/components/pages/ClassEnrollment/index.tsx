@@ -56,6 +56,11 @@ let columns = [
     size: 120,
   },
   {
+    accessorKey: 'totalPayment',
+    header: 'مجموع پرداختی',
+    size: 60,
+  },
+  {
     accessorKey: 'remainingFee',
     header: 'مانده شهریه',
     size: 60,
@@ -143,6 +148,9 @@ const ClassEnrollmentList = () => {
         id: index + 1,
         student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
         class: item?.class?.name,
+        totalPayment: (<span>
+          <span className='bg-success text-white rounded px-3 py-1'>{numberSpace(item?.totalPayments)} ریال </span>
+        </span>),
         remainingFee: (<span>
           <span className='bg-warning text-dark rounded px-3 py-1'>{numberSpace(item?.remainingFee)} ریال </span>
         </span>),

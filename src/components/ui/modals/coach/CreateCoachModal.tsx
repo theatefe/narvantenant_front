@@ -23,7 +23,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import { styled } from '@mui/material/styles';
 // UI ********************************************************
-import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
+import DatePickersInput from '../../formElement/DatePickerInput';
 // MUi Icon **************************************************
 import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -90,9 +90,11 @@ const CreateCoachModal = (props) => {
       gender: "",
       nationalCode: "",
       dateOfBirth: null,
+      dateOfBirthChanged: false,
       mobile: "",
       address: "",
-      coachingCardIssueDate: "",
+      coachingCardIssueDate: null,
+      coachingCardIssueDateChanged: false,
       roleId: null,
     },
     validationSchema: Yup.object({
@@ -109,7 +111,7 @@ const CreateCoachModal = (props) => {
         .required("کدملی مربی الزامی است")
         .min(3, "کد ملی مربی باید حداقل ۳ کاراکتر باشد"),
       dateOfBirth: Yup.string()
-              .required("تاریخ تولد الزامی است"),
+        .required("تاریخ تولد الزامی است"),
       mobile: Yup.string()
         .required("شماره همراه مربی الزامی است")
         .min(3, "شماره همراه مربی به درستی وارد نشده است"),
@@ -142,11 +144,11 @@ const CreateCoachModal = (props) => {
         "lastName": values.lastName,
         "gender": values.gender,
         "nationalCode": values.nationalCode,
-        "dateOfBirth": birthDate ? georgianDate(ToInt(birthDate)) : null,
+        "dateOfBirth": values.dateOfBirthChanged ? georgianDate(ToInt(values.dateOfBirth)) : birthDate,
         "mobile": values.mobile,
         "address": values.address,
       },
-      "coachingCardIssueDate": toDate ? georgianDate(ToInt(toDate)) : null,
+      "coachingCardIssueDate": values.coachingCardIssueDateChanged ? georgianDate(ToInt(values.coachingCardIssueDate)) : toDate,
       "coachingCardImageId": coachingCard ? coachingCard.id : null,
       "nationalCardImageId": nationalCard ? nationalCard.id : null,
       "sportsInsuranceImageId": sportsInsuranceCard ? sportsInsuranceCard.id : null,
@@ -193,7 +195,9 @@ const CreateCoachModal = (props) => {
             gender: coach.data.user.gender || "",
             nationalCode: coach.data.user.nationalCode || "",
             dateOfBirth: jalaliDate(coach.data.user.dateOfBirth) || null,
+            dateOfBirthChanged: false,
             coachingCardIssueDate: jalaliDate(coach.data.coachingCardIssueDate) || null,
+            coachingCardIssueDateChanged: false,
             mobile: coach.data.user.mobile || "",
             address: coach.data.user.address || "",
           });
@@ -369,8 +373,11 @@ const CreateCoachModal = (props) => {
               />
             </Grid>
             <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('dateOfBirth', date); setBirthDate(date); }}
+              <DatePickersInput
+                setSelectedDate={(date: Date) => {
+                  formik.setFieldValue('dateOfBirth', date);
+                  formik.setFieldValue("dateOfBirthChanged", true);
+                }}
                 selectedDate={formik.values.dateOfBirth}
                 fullWidth
                 label={`تاریخ تولد `}
@@ -418,8 +425,11 @@ const CreateCoachModal = (props) => {
               </TextField>
             </Grid>
             <Grid item xs={4} md={6} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('coachingCardIssueDate', date); setTodDate(date); }}
+              <DatePickersInput
+                setSelectedDate={(date: Date) => {
+                  formik.setFieldValue('coachingCardIssueDate', date);
+                  formik.setFieldValue("coachingCardIssueDateChanged", true);
+                }}
                 selectedDate={formik.values.coachingCardIssueDate}
                 fullWidth
                 label={`تاریخ صدور کارت مربیگری `}

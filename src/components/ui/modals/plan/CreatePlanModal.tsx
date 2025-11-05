@@ -129,33 +129,6 @@ const CreatePlanModal = (props) => {
       }
     }
   };
-  // GET plan ********************************************
-  const getPlan = async () => {
-    if (id) {
-      try {
-        const plan = await GetPlanApi(token, id);
-        if (plan.status === 200) {
-          formik.setValues({
-            title: plan.data.title || " ",
-            description: plan.data.description || " ",
-            status: plan.data.status || " ",
-            classId: plan.data.classId || " ",
-            studentId: plan.data.studentId || null,
-          });
-          getStudentsClass(plan.data.classId);
-          setAttachFile(plan.data.attachFile);
-        } else {
-          toast.ErrorNotify(plan.data.error);
-          setOpenModal(false);
-        }
-      } catch (error) {
-        console.error("Error loading plan:", error);
-        setOpenModal(false);
-      }
-    } else {
-      formik.resetForm();
-    }
-  }
   // HANDLE CLOSE *****************************************
   const handleCancel = () => {
     formik.resetForm();
@@ -214,6 +187,33 @@ const CreatePlanModal = (props) => {
     const result = await GetAllClassEnrollment(token, classId);
     if (result.status == 200 || result.status == 201) {
       setStudents(result.data);
+    }
+  }
+  // GET plan ********************************************
+  const getPlan = async () => {
+    if (id) {
+      try {
+        const plan = await GetPlanApi(token, id);
+        getStudentsClass(plan.data.classId);
+        if (plan.status === 200) {
+          formik.setValues({
+            title: plan.data.title || " ",
+            description: plan.data.description || " ",
+            status: plan.data.status || " ",
+            classId: plan.data.classId || " ",
+            studentId: plan.data.studentId || '',
+          });
+          setAttachFile(plan.data.attachFile);
+        } else {
+          toast.ErrorNotify(plan.data.error);
+          setOpenModal(false);
+        }
+      } catch (error) {
+        console.error("Error loading plan:", error);
+        setOpenModal(false);
+      }
+    } else {
+      formik.resetForm();
     }
   }
   // USE EFFECT **********************************************
@@ -314,11 +314,10 @@ const CreatePlanModal = (props) => {
                 label="انتخاب دانش آموز  *"
                 variant="outlined"
                 name="studentId"
-                value={formik.values.studentId ?? ''}
+                value={formik.values.studentId}
                 onChange={(e) => { formik.handleChange(e) }}
                 onBlur={formik.handleBlur}
                 size="small"
-                disabled={students.length === 0}
                 SelectProps={{
                   displayEmpty: true,
                 }}
@@ -356,7 +355,7 @@ const CreatePlanModal = (props) => {
                     width: {
                       xs: '100%',
                       sm: 570,
-                      md: 570,
+                      md: 860,
                     },
                     height: {
                       xs: 80,

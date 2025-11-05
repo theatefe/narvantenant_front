@@ -22,7 +22,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import { styled } from '@mui/material/styles';
 // UI ********************************************************
-import DatePickersInputWithTime from '../../formElement/DatePickerInputWithTime';
+import DatePickersInput from '../../formElement/DatePickerInput';
 // MUi Icon **************************************************
 import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -101,6 +101,7 @@ const CreateStudentModal = (props) => {
       gender: "",
       nationalCode: "",
       dateOfBirth: null,
+      dateOfBirthChanged: false,
       mobile: "",
       address: "",
       levelCatId: "",
@@ -163,7 +164,7 @@ const CreateStudentModal = (props) => {
         "lastName": values.lastName,
         "gender": values.gender,
         "nationalCode": values.nationalCode,
-        "dateOfBirth": birthDate ? georgianDate(ToInt(birthDate)) : null,
+        "dateOfBirth": values.dateOfBirthChanged ? georgianDate(ToInt(values.dateOfBirth)) : birthDate,
         "mobile": values.mobile,
         "address": values.address,
       },
@@ -220,6 +221,7 @@ const CreateStudentModal = (props) => {
             gender: student.data?.user?.gender || "",
             nationalCode: student.data?.user?.nationalCode || "",
             dateOfBirth: jalaliDate(student.data.user?.dateOfBirth) || null,
+            dateOfBirthChanged: false,
             mobile: student.data?.user?.mobile || "",
             address: student.data?.user?.address || "",
             levelCatId: student.data?.level?.categoryId || null,
@@ -361,8 +363,11 @@ const CreateStudentModal = (props) => {
               />
             </Grid>
             <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
-              <DatePickersInputWithTime
-                setSelectedDate={(date: Date) => { formik.setFieldValue('dateOfBirth', date); setBirthDate(date); }}
+              <DatePickersInput
+                setSelectedDate={(date: Date) => {
+                  formik.setFieldValue('dateOfBirth', date);
+                  formik.setFieldValue('dateOfBirthChanged', true);
+                }}
                 selectedDate={formik.values.dateOfBirth}
                 fullWidth
                 label={`تاریخ تولد `}
