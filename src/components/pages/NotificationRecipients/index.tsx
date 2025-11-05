@@ -89,6 +89,7 @@ const NotificationRecipientsList = () => {
   const [data, setData] = React.useState([]);
   const [isLoaded, setIsloaded] = React.useState(false);
   const [sending, setSending] = React.useState(false);
+  const [isDesibled, setIsDesibaled] = React.useState(true);
   const [coaches, setCoaches] = React.useState([]);
   const [classes, setClasses] = React.useState([]);
   const [students, setStudents] = React.useState([]);
@@ -150,7 +151,7 @@ const NotificationRecipientsList = () => {
     if (list.status === 200) {
       const arr = list.data.map((item, index: number) => ({
         id: item.id,
-        user: item.user.name + ' ' + item.user.lastName,
+        user: item.user ? item.user.name + ' ' + item.user.lastName : 'کاربر‌اپلیکیشن',
         status: (
           <Tooltip title={item.status} arrow>
             <Chip
@@ -230,7 +231,8 @@ const NotificationRecipientsList = () => {
   }
   // SUBMIT **************************************************
   const submitForm = async (values) => {
-    if (!isPublic&& recivers.length === 0) {
+    setIsDesibaled(true);
+    if (!isPublic && recivers.length === 0) {
       toast.ErrorNotify(" حداقل یک گیرنده را انتخاب کنید.");
       setSending(false);
       return;
@@ -400,6 +402,7 @@ const NotificationRecipientsList = () => {
                                 <DatePickersInput
                                   setSelectedDate={(date: Date) => {
                                     formik.setFieldValue('startDate', date);
+                                    setIsDesibaled(false);
                                   }}
                                   selectedDate={formik.values.startDate}
                                   fullWidth
@@ -448,7 +451,7 @@ const NotificationRecipientsList = () => {
                                   loading={sending}
                                   loadingPosition="start"
                                   variant="contained"
-                                  disabled={sending}
+                                  disabled={isDesibled}
                                 >
                                   افزودن به لیست
                                 </LoadingButton>

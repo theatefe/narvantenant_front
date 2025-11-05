@@ -229,7 +229,7 @@ const AttendanceList = () => {
       }),
     );
     getAttendanceList();
-  }, [setModal]);
+  }, []);
   // RETURN ****************************************************************
   return (
     <Box sx={{ flexGrow: 1 }}>

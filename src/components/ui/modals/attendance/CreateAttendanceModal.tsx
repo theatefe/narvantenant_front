@@ -107,8 +107,10 @@ const CreateAttendanceModal = (props) => {
   }
   // USE EFFECT **********************************************
   React.useEffect(() => {
-    getClassEnrollments();
-  }, [classId]);
+    if (openModal && classId) {
+      getClassEnrollments();
+    }
+  }, [openModal, classId]);
   // RETURN **************************************************
   return (
     <Modal
