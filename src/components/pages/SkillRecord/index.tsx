@@ -43,6 +43,11 @@ const columns = [
     size: 120,
   },
   {
+    accessorKey: 'class',
+    header: 'کلاس آموزشی',
+    size: 60,
+  },
+  {
     accessorKey: 'skill',
     header: 'ماده',
     size: 120,
@@ -54,7 +59,7 @@ const columns = [
   },
   {
     accessorKey: 'user',
-    header: 'کاربر ثبت کننده رکورد',
+    header: 'کاربر ثبت کننده',
     size: 120,
   },
   {
@@ -116,6 +121,7 @@ const SkillRecordList = () => {
       const arr = list.data.map((item, index: number) => ({
         id: index + 1,
         student: item?.student?.user?.name + ' ' + item?.student?.user?.lastName,
+        class: item?.classes?.name,
         skill: item?.skill?.title + ' - ' + item?.skill?.area+'متر',
         user: item?.user?.name + ' ' + item?.user?.lastName,
         area: item?.area + ' متر ',

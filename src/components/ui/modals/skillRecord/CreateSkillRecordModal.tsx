@@ -5,6 +5,8 @@ import SkillRedordUpdateApi from '../../../api/SkillRecord/Update';
 import SkillRecordCreateApi from '../../../api/SkillRecord/Add';
 import GetSkillRecordApi from '../../../api/SkillRecord/GetOne';
 import GetAllStudentApi from '../../../api/Student/GetAll';
+import GetAllClass from '../../../api/Class/GetAll';
+import GetAllClassEnrollment from '../../../api/ClassEnrollment/GetAll';
 import GetAllSkillApi from '../../../api/Skill/GetAll';
 // TOAST ************************************************
 import * as toast from '../../../ui/Toast';
@@ -59,6 +61,7 @@ const CreateCourseLevelCatModal = (props) => {
   const [sending, setSending] = React.useState(false);
   const [data, setData] = React.useState(null);
   const [skills, setSkills] = React.useState([]);
+  const [classes, setClasses] = React.useState([]);
   const [students, setStudents] = React.useState([]);
   const today = new Date();
   const [selectedDate, setSelectedDate] = React.useState(null);
@@ -68,10 +71,13 @@ const CreateCourseLevelCatModal = (props) => {
       studentId: "",
       skillId: "",
       record: "",
+      classId: "",
       selectedDate: "",
       selectedDateChanged: false,
     },
     validationSchema: Yup.object({
+      classId: Yup.string()
+        .required("انتخاب کلاس الزامی است"),
       studentId: Yup.string()
         .required("انتخاب شناگر الزامی است"),
       skillId: Yup.string()
@@ -95,6 +101,7 @@ const CreateCourseLevelCatModal = (props) => {
   // SUBMIT *******************************************************
   const submitForm = async (values) => {
     const bodyRequest = {
+      "classId": values.classId,
       "studentId": values.studentId,
       "skillId": values.skillId,
       "record": values.record,
@@ -138,6 +145,7 @@ const CreateCourseLevelCatModal = (props) => {
             studentId: skillRecord.data.studentId || "",
             skillId: skillRecord.data.skillId || "",
             record: skillRecord.data.record || "",
+            classId: skillRecord.data.classId || "",
             selectedDate: jalaliDate(skillRecord.data.createdAt) || null,
             selectedDateChanged: false,
           });
@@ -155,9 +163,9 @@ const CreateCourseLevelCatModal = (props) => {
     }
   }
   // GET Students ************************************************
-  const getStudents = async () => {
+  const getStudents = async (classId) => {
     try {
-      const students = await GetAllStudentApi(token);
+      const students = await GetAllClassEnrollment(token, classId);
       if (students.status === 200) {
         setStudents(students.data);
       } else {
@@ -166,6 +174,21 @@ const CreateCourseLevelCatModal = (props) => {
       }
     } catch (error) {
       console.error("Error loading students:", error);
+      setOpenModal(false);
+    }
+  }
+  // GET Classes ************************************************
+  const getClasses = async () => {
+    try {
+      const classes = await GetAllClass(token);
+      if (classes.status === 200) {
+        setClasses(classes.data);
+      } else {
+        toast.ErrorNotify(classes.data.error);
+        setOpenModal(false);
+      }
+    } catch (error) {
+      console.error("Error loading classes:", error);
       setOpenModal(false);
     }
   }
@@ -191,7 +214,7 @@ const CreateCourseLevelCatModal = (props) => {
   };
   // USE EFFECT **************************************************
   React.useEffect(() => {
-    getStudents();
+    getClasses();
     getSkills();
     getSkillRecord();
   }, [id]);
@@ -215,6 +238,27 @@ const CreateCourseLevelCatModal = (props) => {
               <TextField
                 fullWidth
                 select
+                label="انتخاب کلاس آموزشی *"
+                variant="outlined"
+                name="classId"
+                value={formik.values.classId}
+                onChange={(e) => { formik.handleChange(e), getStudents(e.target.value) }}
+                onBlur={formik.handleBlur}
+                error={formik.touched.classId && Boolean(formik.errors.classId)}
+                helperText={formik.touched.classId && formik.errors.classId}
+                size="small"
+              >
+                {classes && classes.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item.id}> {item?.name}</MenuItem>
+                  )
+                })}
+              </TextField>
+            </Grid>
+            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+              <TextField
+                fullWidth
+                select
                 label="انتخاب شناگر *"
                 variant="outlined"
                 name="studentId"
@@ -227,12 +271,13 @@ const CreateCourseLevelCatModal = (props) => {
               >
                 {students && students.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item.id}> {item?.user?.name + ' ' + item?.user?.lastName}</MenuItem>
+                    <MenuItem key={item.id} value={item.studentId}>
+                      {item?.student?.user?.name + ' ' + item?.student?.user?.lastName}</MenuItem>
                   )
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto', my: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto', my: 'auto' }}>
               <TextField
                 fullWidth
                 select
@@ -253,7 +298,7 @@ const CreateCourseLevelCatModal = (props) => {
                 })}
               </TextField>
             </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <TextField
                 fullWidth
                 label={`رکورد *`}
@@ -268,7 +313,7 @@ const CreateCourseLevelCatModal = (props) => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={6} md={6} sx={{ mx: 'auto' }}>
+            <Grid item xs={4} md={4} sx={{ mx: 'auto' }}>
               <DatePickersInputWithTime
                 setSelectedDate={(date: Date) => {
                   formik.setFieldValue('selectedDate', date);
