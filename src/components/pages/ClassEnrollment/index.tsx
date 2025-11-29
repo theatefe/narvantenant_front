@@ -16,6 +16,7 @@ import Skeleton from '@mui/material/Skeleton';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IconTrash from '../../ui/icon/IconTrash';
 import IconDollarSign from '../../ui/icon/IconDollarSignCircle';
+import IconChartBar from '../../ui/icon/IconChartSquare';
 // TOAST ******************************************************
 import * as toast from '../../ui/Toast';
 // component ***************************************************
@@ -198,6 +199,18 @@ const ClassEnrollmentList = () => {
                     className="svg-container cursor-pointer"
                   >
                     <IconDollarSign className="svg-menu-icon text-dark" />
+                  </span>
+                </Link>
+              </Tooltip>
+              : null
+            }
+            {permissions.find((p) => p.operationId === 'tenantStudentListSkillRecord') ?
+              <Tooltip className="mx-1" title="نمودار رکورد" arrow>
+                <Link to={`/recordChart/${item?.id}`}>
+                  <span
+                    className="svg-container cursor-pointer"
+                  >
+                    <IconChartBar className="svg-menu-icon text-dark" />
                   </span>
                 </Link>
               </Tooltip>

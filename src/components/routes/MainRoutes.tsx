@@ -7,6 +7,7 @@ import ProtectUserRoute from '../permissions/ProtectUserRoute';
 
 // render - pages
 import Landing from '../pages/Landing';
+import path from 'path';
 
 const CourseLevelCat = Loadable(
   lazy(() => import('../pages/CourseLevelCat'))
@@ -61,6 +62,9 @@ const Notification = Loadable(
 )
 const NotificationRecipient = Loadable(
   lazy(() => import ('../pages/NotificationRecipients'))
+)
+const ChartRecord = Loadable(
+  lazy(() => import ('../pages/RecordChart'))
 )
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -147,6 +151,10 @@ const MainRoutes = {
           path: '/recipients/:notifId',
           element: <NotificationRecipient />,
         },
+        {
+          path: '/recordChart/:id',
+          element: <ChartRecord />,
+        }
       ],
     },
   ],

@@ -20,6 +20,8 @@
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.13",
     "depcheck": "^1.4.7",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.5",
     "express": "^4.19.2",
     "formik": "^2.4.6",
     "jalali-moment": "^3.3.11",
